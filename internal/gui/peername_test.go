@@ -101,16 +101,23 @@ func TestVendorLogosParse(t *testing.T) {
 // MagicDNS name, and the copy button copies the address without expanding
 // the row.
 func TestPeerCopyActions(t *testing.T) {
-	a := demoApp(t)
-	a.networks[0].MagicDNSZone = "et.net"
-	a.expanded = map[string]bool{}
-	tt := ui.NewTester(a.view, 1100, 720)
-	tt.Frame()
+	// Each menu gets a fresh window: on macOS and Linux the menu opens as
+	// the button goes down, and the headless Tester then delivers the
+	// release to the view, which a native menu would have taken.
+	open := func() (*App, *ui.Tester) {
+		a := demoApp(t)
+		a.networks[0].MagicDNSZone = "et.net"
+		a.expanded = map[string]bool{}
+		tt := ui.NewTester(a.view, 1100, 1100) // every peer row in view
+		tt.Frame()
+		return a, tt
+	}
 	for _, tc := range []struct{ item, want string }{
 		{"Copy IP address", "10.144.144.7"},
 		{"Copy MagicDNS name", "phone.et.net"},
 		{"Copy hostname", "phone"},
 	} {
+		_, tt := open()
 		if err := tt.RightClick("Phone"); err != nil {
 			t.Fatal(err)
 		}
@@ -123,7 +130,7 @@ func TestPeerCopyActions(t *testing.T) {
 		}
 	}
 
-	tt.SetClipboard("")
+	a, tt := open()
 	a.mu.Lock()
 	a.details["n1"].Peers = a.details["n1"].Peers[1:2] // only "nas", so its copy button is the one found
 	a.mu.Unlock()
