@@ -8,6 +8,9 @@ package main
 
 import (
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/egoist/mygo"
 	"github.com/egoist/mygo/ui"
@@ -59,6 +62,14 @@ func main() {
 		mygo.App.OnLocaleChanged(func(string) { tray.Refresh() })
 		a.Start()
 	})
+	// A logout or `kill` sends SIGTERM: quit as from the tray, so the
+	// session ends and Follow GUI networks stop cleanly.
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, syscall.SIGTERM, os.Interrupt)
+	go func() {
+		<-sigs
+		a.Quit(false)
+	}()
 	_ = L.PageSettings // the catalogs register the app's languages
 	if err := mygo.App.Run(); err != nil {
 		log.Fatal(err)
