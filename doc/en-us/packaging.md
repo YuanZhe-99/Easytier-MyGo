@@ -5,7 +5,9 @@ platform resources, signs the bundle when `EASYTIER_MYGO_SIGNING_KEY` is set, ru
 `go tool mygo build`, and removes MyGo's WebKitGTK dependency from the `.deb`.
 `go tool mygo build` produces the platform artifacts: on Linux a `.tar.gz` (with `install.sh`, a
 per-user install) and a `.deb`; on Windows an `.exe` and an NSIS installer; on macOS an `.app` and
-a `.dmg` (macOS host required).
+a `.dmg` (macOS host required). With `MYGO_UPDATER_PRIVATE_KEY` set it also writes the signed
+update files of each platform ([ci-cd.md](ci-cd.md)); their release notes are the version's
+section of `doc/en-us/version-history.md`.
 
 ## Bundled binaries
 

@@ -43,6 +43,31 @@
   "ActionUpdateHelper": "Update helper",
   "ActionUseCore": "Use",
   "ActionUseMode": "Use this mode",
+  "ActionCheckAppUpdate": "Check for updates",
+  "ActionInstallUpdate": "Install and restart",
+  "AppUpToDate": "EasyTier MyGo is up to date.",
+  "AppUpdateAvailable": "EasyTier MyGo {version} is available.",
+  "@AppUpdateAvailable": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "AppUpdateCheckFailed": "Could not check for updates. Check the connection and try again.",
+  "AppUpdateInstallFailed": "The update could not be installed. The current version keeps running.",
+  "AppUpdateInstalling": "Downloading the update… {percent}%",
+  "@AppUpdateInstalling": {
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      }
+    }
+  },
+  "AppUpdateUnavailable": "This copy cannot update itself: it is updated by its package manager, or it is a development build.",
+  "NotifyAppUpdateTitle": "EasyTier MyGo update",
+  "SettingsCheckAppUpdates": "Check for app updates daily",
+  "SettingsCheckAppUpdatesHint": "Reads the latest release from GitHub. Updates are signed, and installed only when you choose.",
   "BannerConnecting": "Connecting to the background service…",
   "BannerDisconnected": "Not connected: {error}",
   "@BannerDisconnected": {

@@ -31,6 +31,7 @@ const (
 type tokens struct {
 	download, upload ui.Color
 	good, warn, bad  ui.Color
+	onBad            ui.Color // text on a bad (red) fill
 	local, server    ui.Color
 	peer, relay      ui.Color
 	card, muted      ui.Color
@@ -41,7 +42,7 @@ func tok(c *ui.Context) tokens {
 	t := c.Theme()
 	k := tokens{
 		download: ui.Hex("#2f7bf5"), upload: ui.Hex("#f2930d"),
-		good: t.Success, warn: t.Warning, bad: t.Danger,
+		good: t.Success, warn: t.Warning, bad: t.Danger, onBad: ui.Hex("#ffffff"),
 		local: ui.Hex("#22a559"), server: ui.Hex("#e64980"), peer: ui.Hex("#2f7bf5"), relay: ui.Hex("#8e5cf0"),
 		card: t.Surface, muted: t.TextMuted, hairline: t.Border,
 	}

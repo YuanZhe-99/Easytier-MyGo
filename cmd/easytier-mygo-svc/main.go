@@ -92,12 +92,12 @@ func run(args []string) error {
 		opts.StateDir = orDefault(*stateDir, userStateDir())
 		opts.SocketPath = orDefault(*socket, localapi.UserSocketPath())
 		opts.Authorizer = localapi.Authorizer{OwnerUID: uint32(os.Getuid()), Private: true, OwnerSID: localapi.CurrentSID()}
-		opts.Privileged = os.Geteuid() == 0
+		opts.Privileged = helper.Elevated()
 	case "helper":
 		opts.Host = localapi.HostHelper
 		opts.StateDir = orDefault(*stateDir, helper.StateDir)
 		opts.SocketPath = orDefault(*socket, localapi.SystemSocketPath)
-		opts.Privileged = os.Geteuid() == 0
+		opts.Privileged = helper.Elevated()
 		authz, gid, err := helperAuthorizer(opts.StateDir)
 		if err != nil {
 			return err

@@ -1,7 +1,7 @@
 {
   "name": "EasyTier MyGo",
   "identifier": "com.yuanzhe.easytiermygo",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "main": "./cmd/easytier-mygo",
   "out": "build",
   "i18n": {
@@ -9,6 +9,11 @@
     "source": "en"
   },
   "description": "Native desktop client for EasyTier",
+  "updates": {
+    "publicKey": "lejTxGbHvFFjIDF+T8yxg6fGeqSSLXae60o106rxkB8=",
+    "github": "YuanZhe-99/Easytier-MyGo",
+    "changelog": "doc/en-us/version-history.md"
+  },
   "linux": {
     "maintainer": "yuanzhe",
     "comment": "EasyTier networks on your desktop",

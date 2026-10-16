@@ -40,12 +40,17 @@ type Prefs struct {
 	// at most one check a day, one notification per release.
 	LastCoreCheck time.Time `json:"last_core_check,omitzero"`
 	AnnouncedCore string    `json:"announced_core,omitempty"`
+	// CheckAppUpdates checks GitHub for a newer signed app once a day;
+	// LastAppCheck and AnnouncedApp keep it to one notification a version.
+	CheckAppUpdates bool      `json:"check_app_updates"`
+	LastAppCheck    time.Time `json:"last_app_check,omitzero"`
+	AnnouncedApp    string    `json:"announced_app,omitempty"`
 	// ShowPrereleases lists pre-releases in the core manager.
 	ShowPrereleases bool `json:"show_prereleases,omitempty"`
 }
 
 func defaultPrefs() Prefs {
-	return Prefs{Theme: "system", StartHidden: true, Notify: true, CheckCoreUpdates: true}
+	return Prefs{Theme: "system", StartHidden: true, Notify: true, CheckCoreUpdates: true, CheckAppUpdates: true}
 }
 
 // prefsPath is $XDG_CONFIG_HOME/easytier-mygo/gui.json.

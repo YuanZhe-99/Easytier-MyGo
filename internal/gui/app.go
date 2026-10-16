@@ -71,6 +71,11 @@ type App struct {
 	coresView coresState
 	// coreUpdate is a newer stable EasyTier found by the daily check.
 	coreUpdate string
+	// appUpdate is a newer signed version of the app; updating pauses the
+	// user daemon while it is installed (updateProgress 0–1).
+	appUpdate      *mygo.Update
+	updating       bool
+	updateProgress float64
 	// helperOutdated: the helper is another version and could not update
 	// itself from a signed bundle; updating it needs approval.
 	helperOutdated bool
@@ -126,6 +131,7 @@ func (a *App) Start() {
 	a.openAtLogin = login
 	a.mu.Unlock()
 	go a.connectLoop()
+	go a.appUpdateLoop()
 }
 
 // Stop ends the session (Follow GUI networks stop) and the user daemon.
@@ -181,6 +187,13 @@ func (a *App) connectLoop() {
 				err = a.runSession(localapi.SystemSocketPath)
 			}
 		default:
+			a.mu.Lock()
+			updating := a.updating
+			a.mu.Unlock()
+			if updating {
+				err = errWaitForChoice // the update replaces the daemon's files
+				break
+			}
 			sock := localapi.UserSocketPath()
 			if err = a.user.ensure(a.ctx, sock); err == nil {
 				err = a.runSession(sock)

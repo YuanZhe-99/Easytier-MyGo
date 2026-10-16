@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"runtime"
 	"strconv"
 
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/cores"
@@ -101,13 +102,20 @@ func helperCmd(args []string) error {
 		name := fs.String("name", "", "name of the custom core")
 		from := fs.String("from", "", "directory with easytier-core and easytier-cli")
 		fs.Parse(args[1:])
-		if os.Geteuid() != 0 {
-			return errors.New("adding a core to the helper needs root")
+		if !helper.Elevated() {
+			return errors.New("adding a core to the helper needs administrator rights")
 		}
-		m := cores.Manager{Dir: filepath.Join(helper.StateDir, "cores"), UPX: filepath.Join(helper.BinDir, "upx")}
+		upx := "upx"
+		if runtime.GOOS == "windows" {
+			upx += ".exe"
+		}
+		m := cores.Manager{Dir: filepath.Join(helper.StateDir, "cores"), UPX: filepath.Join(helper.BinDir, upx)}
 		c, err := m.AddCustom(*name, *from)
 		if err != nil {
 			return err
+		}
+		if runtime.GOOS == "windows" {
+			return nil // the state directory's ACL already limits writers
 		}
 		for _, f := range []string{"easytier-core", "easytier-cli"} {
 			if err := os.Chown(filepath.Join(m.Dir, c.Tag, f), 0, 0); err != nil {

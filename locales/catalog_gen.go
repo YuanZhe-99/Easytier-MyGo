@@ -326,6 +326,116 @@ func (msgs Messages) ActionUseMode() string {
 	return Catalog.Format(msgs.locale, "ActionUseMode", nil)
 }
 
+// ActionCheckAppUpdate says "Check for updates"
+// in the language the app shows.
+func ActionCheckAppUpdate() string { return In(i18n.Locale()).ActionCheckAppUpdate() }
+
+// ActionCheckAppUpdate says "Check for updates"
+// in the language of msgs.
+func (msgs Messages) ActionCheckAppUpdate() string {
+	return Catalog.Format(msgs.locale, "ActionCheckAppUpdate", nil)
+}
+
+// ActionInstallUpdate says "Install and restart"
+// in the language the app shows.
+func ActionInstallUpdate() string { return In(i18n.Locale()).ActionInstallUpdate() }
+
+// ActionInstallUpdate says "Install and restart"
+// in the language of msgs.
+func (msgs Messages) ActionInstallUpdate() string {
+	return Catalog.Format(msgs.locale, "ActionInstallUpdate", nil)
+}
+
+// AppUpToDate says "EasyTier MyGo is up to date."
+// in the language the app shows.
+func AppUpToDate() string { return In(i18n.Locale()).AppUpToDate() }
+
+// AppUpToDate says "EasyTier MyGo is up to date."
+// in the language of msgs.
+func (msgs Messages) AppUpToDate() string {
+	return Catalog.Format(msgs.locale, "AppUpToDate", nil)
+}
+
+// AppUpdateAvailable says "EasyTier MyGo {version} is available."
+// in the language the app shows.
+func AppUpdateAvailable(version string) string { return In(i18n.Locale()).AppUpdateAvailable(version) }
+
+// AppUpdateAvailable says "EasyTier MyGo {version} is available."
+// in the language of msgs.
+func (msgs Messages) AppUpdateAvailable(version string) string {
+	return Catalog.Format(msgs.locale, "AppUpdateAvailable", map[string]any{"version": version})
+}
+
+// AppUpdateCheckFailed says "Could not check for updates. Check the connection and try again."
+// in the language the app shows.
+func AppUpdateCheckFailed() string { return In(i18n.Locale()).AppUpdateCheckFailed() }
+
+// AppUpdateCheckFailed says "Could not check for updates. Check the connection and try again."
+// in the language of msgs.
+func (msgs Messages) AppUpdateCheckFailed() string {
+	return Catalog.Format(msgs.locale, "AppUpdateCheckFailed", nil)
+}
+
+// AppUpdateInstallFailed says "The update could not be installed. The current version keeps running."
+// in the language the app shows.
+func AppUpdateInstallFailed() string { return In(i18n.Locale()).AppUpdateInstallFailed() }
+
+// AppUpdateInstallFailed says "The update could not be installed. The current version keeps running."
+// in the language of msgs.
+func (msgs Messages) AppUpdateInstallFailed() string {
+	return Catalog.Format(msgs.locale, "AppUpdateInstallFailed", nil)
+}
+
+// AppUpdateInstalling says "Downloading the update… {percent}%"
+// in the language the app shows.
+func AppUpdateInstalling(percent int) string { return In(i18n.Locale()).AppUpdateInstalling(percent) }
+
+// AppUpdateInstalling says "Downloading the update… {percent}%"
+// in the language of msgs.
+func (msgs Messages) AppUpdateInstalling(percent int) string {
+	return Catalog.Format(msgs.locale, "AppUpdateInstalling", map[string]any{"percent": percent})
+}
+
+// AppUpdateUnavailable says "This copy cannot update itself: it is updated by its package manager, or it is a development build."
+// in the language the app shows.
+func AppUpdateUnavailable() string { return In(i18n.Locale()).AppUpdateUnavailable() }
+
+// AppUpdateUnavailable says "This copy cannot update itself: it is updated by its package manager, or it is a development build."
+// in the language of msgs.
+func (msgs Messages) AppUpdateUnavailable() string {
+	return Catalog.Format(msgs.locale, "AppUpdateUnavailable", nil)
+}
+
+// NotifyAppUpdateTitle says "EasyTier MyGo update"
+// in the language the app shows.
+func NotifyAppUpdateTitle() string { return In(i18n.Locale()).NotifyAppUpdateTitle() }
+
+// NotifyAppUpdateTitle says "EasyTier MyGo update"
+// in the language of msgs.
+func (msgs Messages) NotifyAppUpdateTitle() string {
+	return Catalog.Format(msgs.locale, "NotifyAppUpdateTitle", nil)
+}
+
+// SettingsCheckAppUpdates says "Check for app updates daily"
+// in the language the app shows.
+func SettingsCheckAppUpdates() string { return In(i18n.Locale()).SettingsCheckAppUpdates() }
+
+// SettingsCheckAppUpdates says "Check for app updates daily"
+// in the language of msgs.
+func (msgs Messages) SettingsCheckAppUpdates() string {
+	return Catalog.Format(msgs.locale, "SettingsCheckAppUpdates", nil)
+}
+
+// SettingsCheckAppUpdatesHint says "Reads the latest release from GitHub. Updates are signed, and installed only when you choose."
+// in the language the app shows.
+func SettingsCheckAppUpdatesHint() string { return In(i18n.Locale()).SettingsCheckAppUpdatesHint() }
+
+// SettingsCheckAppUpdatesHint says "Reads the latest release from GitHub. Updates are signed, and installed only when you choose."
+// in the language of msgs.
+func (msgs Messages) SettingsCheckAppUpdatesHint() string {
+	return Catalog.Format(msgs.locale, "SettingsCheckAppUpdatesHint", nil)
+}
+
 // BannerConnecting says "Connecting to the background service…"
 // in the language the app shows.
 func BannerConnecting() string { return In(i18n.Locale()).BannerConnecting() }

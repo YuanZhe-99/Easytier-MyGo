@@ -3,6 +3,19 @@
 The project restarted from 0.1.0 on 2026-10-16. The earlier, inherited history (versions up to
 0.10.80) is preserved under the git tag `archive/v0.10.80` and is not continued.
 
+## 0.1.2 (2026-10-16)
+
+- The app updates itself from GitHub: a daily check (can be turned off) and "Check for updates" in
+  Settings → About; updates are signed (`MYGO_UPDATER_PRIVATE_KEY`) and installed in place on
+  request. Packages from a package manager keep updating through it.
+- Windows: the privileged helper refused every network with a virtual device ("needs the
+  privileged helper") because it took itself for unprivileged; it now checks its token. Adding a
+  custom core to the helper had the same fault.
+- Error messages at the bottom of the window were invisible (text color left unset); they are
+  white on red now.
+- An `instance_id` that is not a UUID is named before the core refuses it without a reason.
+- MyGo v0.5.5 / EasyTier v2.6.4 (checked, unchanged).
+
 ## 0.1.1 (2026-10-16)
 
 - Windows: installing the privileged helper from the GUI failed when the app was installed under

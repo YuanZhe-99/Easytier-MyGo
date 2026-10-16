@@ -421,6 +421,7 @@ func (a *App) aboutSettings(c *ui.Context) {
 		ui.Text(c, L.SettingsAbout()).FontSize(sizeHeading).Bold()
 		ui.Text(c, "EasyTier MyGo "+version.Version).Bold()
 		ui.Text(c, L.AboutVersions(man.Bundled)).FontSize(sizeSmall).TextColor(t.TextMuted)
+		a.appUpdateSettings(c)
 		ui.Text(c, L.AboutLicense()).FontSize(sizeSmall).TextColor(t.TextMuted)
 		ui.Row(c).Gap(12).Children(func() {
 			ui.Link(c, L.AboutSource(), "https://github.com/YuanZhe-99/Easytier-MyGo")

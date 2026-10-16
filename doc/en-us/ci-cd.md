@@ -14,7 +14,11 @@ so a push there is checked only by the local gate.
 Ubuntu (NSIS for the installers), macOS on a macOS runner. A tag publishes the downloads with
 `SHA256SUMS.txt` after checking that it matches `internal/version`. The secret
 `EASYTIER_MYGO_SIGNING_KEY` (from `go run ./tools/sign keygen`) signs the bundles; keep the
-private key only there and in the maintainer's offline copy.
+private key only there and in the maintainer's offline copy. The secret `MYGO_UPDATER_PRIVATE_KEY`
+(from `go tool mygo keygen`; its public key is `updates.publicKey` in `mygo.json`) signs the app
+updates: per platform an archive, deltas from the last versions and `update-<target>.json`, all
+attached to the release. Installed apps read the manifests of the latest release; without the
+secret no updates are published and installed apps stay on their version.
 
 ## Upstream update procedure
 

@@ -86,3 +86,29 @@ func TestStoreConflictAndBackup(t *testing.T) {
 		t.Fatalf("list = %+v, %v", list, err)
 	}
 }
+
+// TestInstanceIDMustBeUUID: the core exits without a reason on an
+// instance_id that is not a UUID (exported configs carry an empty one).
+func TestInstanceIDMustBeUUID(t *testing.T) {
+	for _, tc := range []struct {
+		line string
+		ok   bool
+	}{
+		{``, true},
+		{`instance_id = "0f8fad5b-d9cb-469f-a165-70867728950e"`, true},
+		{`instance_id = "0F8FAD5BD9CB469FA16570867728950E"`, true},
+		{`instance_id = "{0f8fad5b-d9cb-469f-a165-70867728950e}"`, true},
+		{`instance_id = "urn:uuid:0f8fad5b-d9cb-469f-a165-70867728950e"`, true},
+		{`instance_id = ""`, false},
+		{`instance_id = "not-a-uuid"`, false},
+		{`instance_id = "0f8fad5b-d9cb-469f-a165-70867728950"`, false},
+	} {
+		_, err := Parse(tc.line + "\n[network_identity]\nnetwork_name = \"n\"\n")
+		if (err == nil) != tc.ok {
+			t.Errorf("%q: err = %v, want ok=%v", tc.line, err, tc.ok)
+		}
+		if err != nil && !IsInvalid(err) {
+			t.Errorf("%q: %v is not a validation error", tc.line, err)
+		}
+	}
+}

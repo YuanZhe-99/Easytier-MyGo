@@ -185,16 +185,21 @@ func (a *App) toastView(c *ui.Context) {
 	c.After(5*time.Second - time.Since(at))
 	t := c.Theme()
 	k := tok(c)
-	col := t.Inverse
+	// The theme may leave Inverse and InverseText unset (zero is
+	// transparent): fall back the way MyGo's own toasts do.
+	col, text := t.Inverse, t.InverseText
 	if col == (ui.Color{}) {
 		col = t.Text
 	}
+	if text == (ui.Color{}) {
+		text = t.Background
+	}
 	if isErr {
-		col = k.bad
+		col, text = k.bad, k.onBad
 	}
 	ui.Row(c).Absolute().Bottom(16).Left(sidebarW + 16).Right(16).Children(func() {
 		ui.Row(c).FillWidth().Padding(10, 14).Radius(10).Background(col).Gap(8).AlignItems(ui.Center).Children(func() {
-			ui.Text(c, msg).TextColor(t.InverseText).FontSize(sizeSmall).Grow(1)
+			ui.Text(c, msg).TextColor(text).FontSize(sizeSmall).Grow(1)
 			if ui.Button(c, L.ActionDismiss()).Clicked() {
 				a.update(func() { a.toast = "" })
 			}

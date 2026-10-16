@@ -21,14 +21,16 @@ import (
 // ServiceName is the Windows service of the helper.
 const ServiceName = "EasyTierMyGoHelper"
 
-func elevated() bool { return windows.GetCurrentProcessToken().IsElevated() }
+// Elevated reports whether this process has administrator rights (an
+// elevated token; the service runs as SYSTEM).
+func Elevated() bool { return windows.GetCurrentProcessToken().IsElevated() }
 
 // Install copies the binaries, locks down the state directory, records the
 // operator and registers an automatically started service. The helper
 // always runs; Follow GUI is enforced by the daemon, which runs networks
 // only while a GUI session is attached unless background mode is on.
 func Install(o InstallOptions) error {
-	if !elevated() {
+	if !Elevated() {
 		return errors.New("installing the helper needs administrator rights")
 	}
 	stopService()
@@ -117,7 +119,7 @@ func stopService() {
 // Uninstall stops and deletes the service and its files, and the
 // `EasyTier MyGo` folders above them once they are empty.
 func Uninstall(purge bool) error {
-	if !elevated() {
+	if !Elevated() {
 		return errors.New("removing the helper needs administrator rights")
 	}
 	stopService()

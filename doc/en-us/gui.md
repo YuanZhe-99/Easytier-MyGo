@@ -13,6 +13,12 @@ screenshots (`SCREENSHOT_DIR`).
   count, uptime) and Peers | Routes | Events; while stopped, the configuration summary and Edit.
 - **Configuration:** Form | TOML tabs; Save and Save & Apply are separate.
 - **Settings:** General, Run mode, Cores, Advanced, About.
+- **App updates (About):** a daily check (switchable) and "Check for updates" read the signed
+  update of the latest GitHub release; "Install and restart" installs it in place and relaunches.
+  In No privileges mode the user daemon stops during the install (Windows cannot replace running
+  programs) and starts again with the new version; the helper then updates itself from the signed
+  bundle. Copies installed by a package manager (`.deb`) and development builds say they cannot
+  update themselves.
 - **First run:** choose a run mode → install the helper if needed → create or import a network. A
   failed choice (a cancelled prompt, a failed install) is shown on the welcome page under the cards.
 - Every page scrolls.

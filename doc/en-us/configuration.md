@@ -10,7 +10,8 @@ survive.
   mismatch fails with a conflict and leaves the file untouched.
 - **Writes** are atomic, and the previous content is backed up (ten backups per document).
 - **Invalid drafts may be saved.** Activation refuses them, and runs the selected core's
-  `--check-config` first.
+  `--check-config` first. Values the core refuses without a reason are checked by the app first
+  and named: an `instance_id` that is not a UUID (an empty one included).
 
 ## Form projection
 

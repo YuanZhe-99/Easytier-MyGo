@@ -41,6 +41,10 @@ jobs:
           # Signs the bundles (internal/bundlesig); unset, the builds are
           # unsigned and the helper updates need administrator approval.
           EASYTIER_MYGO_SIGNING_KEY: ${{ secrets.EASYTIER_MYGO_SIGNING_KEY }}
+          # Signs the app updates (archive, deltas and update-<target>.json
+          # per platform) that installed apps fetch from the latest release;
+          # unset, no updates are published.
+          MYGO_UPDATER_PRIVATE_KEY: ${{ secrets.MYGO_UPDATER_PRIVATE_KEY }}
         run: scripts/build.sh ${{ matrix.targets }}
 
       - name: Collect the downloads
@@ -53,11 +57,12 @@ jobs:
             case "$target" in
               windows-*)
                 # A portable folder next to the installer.
-                (cd build && zip -qr "../dist/EasyTier-MyGo-$version-$target.zip" "$target" -x '*Setup*.exe')
+                (cd build && zip -qr "../dist/EasyTier-MyGo-$version-$target.zip" "$target" -x '*Setup*.exe' '*.tar.gz' '*.delta' '*/update-*.json')
                 ;;
             esac
           done
-          find build -maxdepth 2 -type f \( -name '*.tar.gz' -o -name '*.deb' -o -name '*Setup*.exe' -o -name '*.dmg' \) -exec cp {} dist/ \;
+          find build -maxdepth 2 -type f \( -name '*.tar.gz' -o -name '*.deb' -o -name '*Setup*.exe' -o -name '*.dmg' \
+            -o -name '*.delta' -o -name 'update-*.json' \) -exec cp {} dist/ \;
           if [ "${{ matrix.name }}" = Linux ]; then
             cp build/linux-amd64/install.sh dist/install.sh
           fi

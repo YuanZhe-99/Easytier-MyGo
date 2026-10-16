@@ -60,6 +60,7 @@ type Summary struct {
 // rewritten from this struct).
 type rawConfig struct {
 	InstanceName string   `toml:"instance_name"`
+	InstanceID   *string  `toml:"instance_id"`
 	Hostname     string   `toml:"hostname"`
 	IPv4         string   `toml:"ipv4"`
 	Listeners    []string `toml:"listeners"`
@@ -82,6 +83,12 @@ func Parse(text string) (Summary, error) {
 	if err := toml.Unmarshal([]byte(text), &raw); err != nil {
 		return Summary{}, &ValidateError{Err: err}
 	}
+	// The core refuses an instance_id that is not a UUID (an empty one, as
+	// some exported configs carry) and exits without saying why.
+	if raw.InstanceID != nil && !isUUID(*raw.InstanceID) {
+		return Summary{}, &ValidateError{Field: "instance_id",
+			Err: errors.New("must be a UUID; remove the line to let EasyTier choose one")}
+	}
 	s := Summary{
 		InstanceName: raw.InstanceName,
 		Hostname:     raw.Hostname,
@@ -96,10 +103,43 @@ func Parse(text string) (Summary, error) {
 	return s, nil
 }
 
-// ValidateError wraps a TOML parse failure.
-type ValidateError struct{ Err error }
+// isUUID reports whether s is a UUID in a form the core accepts: hyphenated,
+// 32 hex digits, braced or as a urn:uuid: URN.
+func isUUID(s string) bool {
+	s = strings.TrimPrefix(strings.ToLower(s), "urn:uuid:")
+	if strings.HasPrefix(s, "{") && strings.HasSuffix(s, "}") {
+		s = s[1 : len(s)-1]
+	}
+	if len(s) == 36 {
+		for _, i := range []int{8, 13, 18, 23} {
+			if s[i] != '-' {
+				return false
+			}
+		}
+		s = strings.ReplaceAll(s, "-", "")
+	}
+	if len(s) != 32 {
+		return false
+	}
+	for _, r := range s {
+		if !strings.ContainsRune("0123456789abcdef", r) {
+			return false
+		}
+	}
+	return true
+}
+
+// ValidateError wraps a TOML parse failure, or a value the core would
+// refuse (Field names it).
+type ValidateError struct {
+	Field string
+	Err   error
+}
 
 func (e *ValidateError) Error() string {
+	if e.Field != "" {
+		return e.Field + ": " + e.Err.Error()
+	}
 	var de *toml.DecodeError
 	if errors.As(e.Err, &de) {
 		row, col := de.Position()

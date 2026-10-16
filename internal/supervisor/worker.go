@@ -18,6 +18,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/YuanZhe-99/Easytier-MyGo/internal/configdoc"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/coreadapter"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/fsutil"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/health"
@@ -387,10 +388,16 @@ func (w *Worker) preflight(ctx context.Context, path string) error {
 	return Preflight(ctx, w.cfg.CoreBin, path)
 }
 
-// Preflight runs `easytier-core --check-config -c path`, which parses a
-// configuration without starting a network.
-// Returns: a *ConfigError when the core rejects it.
+// Preflight checks a configuration without starting a network: the values
+// the core refuses without a reason (configdoc.Parse), then
+// `easytier-core --check-config -c path`.
+// Returns: a *ConfigError when either rejects it.
 func Preflight(ctx context.Context, coreBin, path string) error {
+	if text, err := os.ReadFile(path); err == nil {
+		if _, err := configdoc.Parse(string(text)); err != nil {
+			return &ConfigError{Detail: ScrubDetail(err.Error())}
+		}
+	}
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
 	out, err := exec.CommandContext(ctx, coreBin, "--check-config", "-c", path).CombinedOutput()
