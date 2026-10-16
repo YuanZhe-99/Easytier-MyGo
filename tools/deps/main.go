@@ -228,7 +228,7 @@ func fetch(args []string) error {
 	if runner == "none" {
 		runner = ""
 	}
-	if runner == "" {
+	if runner == "" && anyUPX(dest) {
 		fmt.Fprintln(os.Stderr, "deps: warning: no upx to run here; the core stays UPX-packed (slow to start)")
 	}
 	if err := cores.UnpackUPX(dest, runner); err != nil {

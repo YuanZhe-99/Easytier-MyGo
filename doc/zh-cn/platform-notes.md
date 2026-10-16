@@ -3,7 +3,7 @@
 | 平台 | 状态 |
 |---|---|
 | Linux（systemd） | 主平台。新 daemon、运行方式与助手已实现并验证（见下）；GUI 正在重建。 |
-| macOS | 已实现；CI 冒烟测试（用户态 daemon 与助手，`no_tun`）在 GitHub runner 上通过；未经真机验证：用户态 daemon、LaunchDaemon 助手、经 `osascript` 的管理员授权、签名自更新。 |
+| macOS | 已实现；CI 冒烟测试（用户态 daemon 与助手，`no_tun`）在 GitHub runner 上通过；用户态 daemon 与 GUI 启动的 daemon 子进程已在真机验证（见下）；未经真机验证：LaunchDaemon 助手、经 `osascript` 的管理员授权、签名自更新。 |
 | Windows（x64、ARM64） | 已实现；CI 冒烟测试（用户态 daemon 与助手，`no_tun`）在 GitHub runner 上通过；未经真机验证：用户态 daemon、服务助手、经 PowerShell 的 UAC、AF_UNIX 上按 SID 授权、内核的作业对象、签名自更新。 |
 
 ## Linux
@@ -43,6 +43,20 @@
 
 在真机验证之前，这些只是可编译并通过 vet 的设计，而不是结果。
 目前已在 Windows 11 ARM64（Go 1.27.2，无 C 编译器）上验证：本地检查全部通过；`scripts/smoke.sh user` 通过用户态 daemon 在附带的 v2.6.4 内核上运行 `no_tun` 网络，并通过 API 关闭。通过 UAC 安装和移除的特权助手，在会话连接时（`ctl watch`）为非管理员 operator 运行同一网络；卸载会移除服务、二进制、状态以及 `%ProgramFiles%` 与 `%ProgramData%` 下的 `EasyTier MyGo` 文件夹。
+
+已在 macOS 27.0.1、Apple M1 上验证（2026-10-16，Homebrew 安装的 Go 1.27.2，EasyTier v2.6.4）：
+
+| 检查 | 结果 |
+|---|---|
+| 本地检查 | 通过，包括 `CGO_ENABLED=0` |
+| 冒烟脚本 | `scripts/smoke.sh user` 通过 |
+| 用户态 daemon，两个 `no_tun` 网络 | 经网卡地址互为对等节点并连接；live adapter 测试在两个内核上通过 |
+| 崩溃恢复 | `kill -9` 内核 → 由有界恢复重启，回到健康 |
+| 生命线 | 管道 EOF 停止内核与 daemon；socket 被移除 |
+| 软件包 | `scripts/build.sh` 构建出 `.app` 与 `.dmg` |
+| GUI 的 daemon 子进程 | 无特权方式下，`.app` 从其资源目录启动 daemon（socket 权限 0600，位于临时目录下）；`kill -9` GUI 会停止 daemon 及其内核 |
+
+macOS 上未验证：LaunchDaemon 助手及其 `osascript` 授权、助手自更新、TUN，以及 GUI 外观（未截图）。
 
 ## 已知限制
 

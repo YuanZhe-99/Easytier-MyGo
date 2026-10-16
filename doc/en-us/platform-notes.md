@@ -3,7 +3,7 @@
 | Platform | Status |
 |---|---|
 | Linux (systemd) | Primary platform. New daemon, run modes and helper implemented and verified (below); the GUI is being rebuilt. |
-| macOS | Implemented; CI smoke tests (user daemon and helper, `no_tun`) pass on GitHub runners; not verified on a real machine: user daemon, LaunchDaemon helper, administrator prompt through `osascript`, signed self-update. |
+| macOS | Implemented; CI smoke tests (user daemon and helper, `no_tun`) pass on GitHub runners; the user daemon and the GUI's daemon child are verified on a real machine (below); not verified on a real machine: LaunchDaemon helper, administrator prompt through `osascript`, signed self-update. |
 | Windows (x64, ARM64) | Implemented; CI smoke tests (user daemon and helper, `no_tun`) pass on GitHub runners; not verified on a real machine: user daemon, service helper, UAC through PowerShell, SID authorization over AF_UNIX, job object for cores, signed self-update. |
 
 ## Linux
@@ -60,6 +60,21 @@ and shuts it down through the API. The helper, installed and removed through UAC
 network for a non-administrator operator while a session is attached (`ctl watch`); uninstalling
 removes the service, the binaries, the state and the `EasyTier MyGo` folders under `%ProgramFiles%`
 and `%ProgramData%`.
+
+Verified on macOS 27.0.1, Apple M1 (2026-10-16, Go 1.27.2 from Homebrew, EasyTier v2.6.4):
+
+| Check | Result |
+|---|---|
+| Local gate | Passes, including `CGO_ENABLED=0` |
+| Smoke script | `scripts/smoke.sh user` passes |
+| User daemon, two `no_tun` networks | Peer over the interface address and connect; live adapter test passes on both cores |
+| Crash recovery | `kill -9` of a core → restarted by bounded recovery, back to healthy |
+| Lifeline | Pipe EOF stops the cores and the daemon; the socket is removed |
+| Packages | `scripts/build.sh` builds the `.app` and the `.dmg` |
+| GUI daemon child | In no-privileges mode the `.app` starts the daemon from its resources (socket 0600 under the temporary directory); `kill -9` of the GUI stops the daemon and its core |
+
+Not verified on macOS: the LaunchDaemon helper and its `osascript` prompt, helper self-update, TUN,
+and the GUI's appearance (no screenshot was taken).
 
 ## Known limitations
 

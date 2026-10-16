@@ -3,8 +3,10 @@
 ## 要求
 
 - Go 1.27.2（`go.mod`）；MyGo 是 Go 工具依赖（`go tool mygo …`）。
-- 运行 GUI 需要 Linux 桌面；托盘需要 `libayatana-appindicator3-1`。
-- 用 `upx` 解压内置的 EasyTier 二进制（见 [easytier-upstream.md](easytier-upstream.md)）。
+- 运行 GUI 需要 Linux 桌面；托盘需要 `libayatana-appindicator3-1`。macOS 主机同样可以构建和运行本应用；
+  在 macOS 上用 Homebrew 安装 Go（`brew install go`）。
+- 在 Linux 和 Windows 上用 `upx` 解压内置的 EasyTier 二进制（见
+  [easytier-upstream.md](easytier-upstream.md)）；macOS 的发布二进制没有压缩。
 
 ## 命令
 
@@ -35,7 +37,7 @@ $C connect <ID>
 $C watch <ID>      # networks run while a session is attached
 ```
 
-开发用网络配置需要显式且未占用的监听端口（`listeners = ["tcp://0.0.0.0:21110"]`），除非在测试特权路径，否则要设 `[flags] no_tun = true`。第二个本地内核必须拨本机网卡地址，而不是 `127.0.0.1`。
+开发用网络配置需要显式且未占用的监听端口（`listeners = ["tcp://0.0.0.0:21110"]`），除非在测试特权路径，否则要设 `[flags] no_tun = true`。第二个本地内核必须拨本机网卡地址，而不是 `127.0.0.1`。Socket 路径要短：macOS 最多接受 103 字节（Linux 107），超长时 `Listen` 会拒绝。
 
 ## Live adapter 测试
 

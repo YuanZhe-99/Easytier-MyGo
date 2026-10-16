@@ -34,6 +34,15 @@ type Handler interface {
 	Stream(ctx context.Context, req Request, access Access, send func(Response) error)
 }
 
+// maxSocketPath is the longest socket path the kernel accepts: sun_path
+// less its terminating NUL, 104 bytes on macOS and 108 elsewhere.
+var maxSocketPath = func() int {
+	if runtime.GOOS == "darwin" {
+		return 103
+	}
+	return 107
+}()
+
 // ListenOptions configures Listen.
 type ListenOptions struct {
 	// Path is the socket path.
@@ -60,8 +69,13 @@ func Listen(path string) (net.Listener, error) {
 
 // ListenWith creates the daemon socket with explicit ownership and mode.
 // A zero Mode means 0600 (the per-user default).
+// Notes: a path longer than the kernel's limit is refused with a readable
+// error instead of bind's EINVAL.
 func ListenWith(o ListenOptions) (net.Listener, error) {
 	path := o.Path
+	if len(path) > maxSocketPath {
+		return nil, fmt.Errorf("socket path is %d bytes, longer than the %d this system allows: %s", len(path), maxSocketPath, path)
+	}
 	mode := o.Mode
 	if mode == 0 {
 		mode = 0o600

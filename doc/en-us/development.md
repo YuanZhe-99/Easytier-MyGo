@@ -3,8 +3,10 @@
 ## Requirements
 
 - Go 1.27.2 (`go.mod`); MyGo is a Go tool dependency (`go tool mygo …`).
-- Linux desktop for the GUI; `libayatana-appindicator3-1` for the tray.
-- `upx` to unpack the bundled EasyTier binaries (see [easytier-upstream.md](easytier-upstream.md)).
+- Linux desktop for the GUI; `libayatana-appindicator3-1` for the tray. macOS hosts build and run
+  the app too; install Go there with Homebrew (`brew install go`).
+- `upx` to unpack the bundled EasyTier binaries on Linux and Windows (see
+  [easytier-upstream.md](easytier-upstream.md)); macOS release binaries are not packed.
 
 ## Commands
 
@@ -38,7 +40,8 @@ $C watch <ID>      # networks run while a session is attached
 
 The dev network config needs explicit, unused listener ports (`listeners = ["tcp://0.0.0.0:21110"]`)
 and `[flags] no_tun = true` unless the privileged path is being tested. A second local core must
-dial the machine's interface address, not `127.0.0.1`.
+dial the machine's interface address, not `127.0.0.1`. Keep the socket path short: macOS accepts at
+most 103 bytes (Linux 107), and `Listen` refuses a longer one.
 
 ## Live adapter test
 

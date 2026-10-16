@@ -153,3 +153,19 @@ func writeZipFile(f *zip.File, dst string, mode os.FileMode) error {
 	}
 	return os.WriteFile(dst, b, mode)
 }
+
+// anyUPX reports whether dir holds a UPX-packed executable other than upx
+// itself.
+// Notes: macOS release binaries are not packed, so no upx is needed there.
+func anyUPX(dir string) bool {
+	entries, err := os.ReadDir(dir)
+	if err != nil {
+		return false
+	}
+	for _, e := range entries {
+		if !e.IsDir() && e.Name() != "upx" && e.Name() != "upx.exe" && cores.IsUPX(filepath.Join(dir, e.Name())) {
+			return true
+		}
+	}
+	return false
+}

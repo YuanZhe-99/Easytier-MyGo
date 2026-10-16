@@ -4,3 +4,7 @@ mygo_windows_*.syso
 /.dev/
 # Fetched EasyTier binaries (go run ./tools/deps fetch)
 /resources/*-*/
+# Stray build outputs at the repository root
+/easytier-mygo
+/easytier-mygo-svc
+/easytier-mygo-ctl
