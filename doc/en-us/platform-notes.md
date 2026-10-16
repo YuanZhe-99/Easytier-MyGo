@@ -26,6 +26,9 @@ Verified on the development machine (2026-10-16, EasyTier v2.6.4, isolated ports
 | Follow GUI | Session end stops cores and removes the devices; 60 s idle exit; socket reactivation |
 | Background mode | Service enabled at boot; networks run without a session; off restores Follow GUI (no reboot tested) |
 | Core manager (user daemon) | Download v2.7.0 (SHA-256 verified), switch running networks to it and back, remove it |
+| Core manager (helper) | The helper downloads v2.7.0 itself; TUN networks run on it and back on the bundled core |
+| GUI (real desktop, XFCE) | Live data, chart, peers, tray registered; kill -9 or SIGTERM of the GUI stops its daemon and cores |
+| GUI run-mode switch | No privileges → Follow GUI without a prompt; networks copied to the helper and connected; quitting the GUI stops them |
 
 ## macOS and Windows
 
