@@ -3,7 +3,7 @@
 The project restarted from 0.1.0 on 2026-10-16. The earlier, inherited history (versions up to
 0.10.80) is preserved under the git tag `archive/v0.10.80` and is not continued.
 
-## 0.1.0 — Rework (unreleased)
+## 0.1.0 — First release of the rework (2026-10-16)
 
 - Reset baseline: inherited tests, measurement scripts, acceptance documents and the ACL editor
   engine removed; documentation rewritten.
@@ -14,5 +14,12 @@ The project restarted from 0.1.0 on 2026-10-16. The earlier, inherited history (
 - New runtime: network store, per-network supervisor with apply rollback, local API v2 with
   sessions, run modes (no privileges / Follow GUI / background) and the Linux privileged helper.
 - Health grace period after a deliberate start lowered from 45 s to 15 s.
+- New GUI: dashboard with a live traffic chart, nodes with connection details, form and TOML
+  editing, run modes, core manager, tray, four languages, light and dark themes.
+- Packages: Linux tar.gz and `.deb`, Windows installer and portable zip (x64, ARM64), macOS disk
+  image; signed bundles let the privileged helper update itself without a prompt.
+- macOS and Windows backends: implemented, CI smoke tests with `no_tun` networks.
+- Not yet included: structured ACL editor, TCP/DNS probes, persistent traffic history, monitoring
+  an external core.
 - Core manager: choose the bundled core, download official releases (pre-releases on request) or
   add a custom build; upx 5.2.1 bundled; the adapter reads both v2.6 and v2.7 output.

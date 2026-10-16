@@ -1,6 +1,6 @@
 # EasyTier MyGo 文档
 
-**本文档是代码的权威说明。** `doc/en-us/` 为源文本，`doc/zh-cn/` 逐文件镜像。计划与待办不写在这里，只在仓库根目录的 `PLAN.md` 中。
+**本文档是代码的权威说明。** `doc/en-us/` 为源文本，`doc/zh-cn/` 逐文件镜像。计划与待办不写在这里；有进行中的多步计划时，只写在仓库根目录的 `PLAN.md` 中。
 
 EasyTier MyGo 是 [EasyTier](https://github.com/EasyTier/EasyTier) 的原生桌面客户端，使用 Go 与 [MyGo](https://github.com/egoist/mygo) 编写。Linux 是主平台；Windows 与 macOS 后端为实验性质，尚未在真机上验证。
 

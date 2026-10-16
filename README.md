@@ -4,8 +4,8 @@ A native desktop client for [EasyTier](https://github.com/EasyTier/EasyTier), bu
 [MyGo](https://github.com/egoist/mygo). A small daemon runs the EasyTier core, watches its health,
 and recovers local faults without ever overriding what you asked for.
 
-> **Status:** 0.1.0 is feature-complete on Linux and not yet released. The Windows and macOS
-> backends are implemented but not yet verified on real machines. See [PLAN.md](PLAN.md) and the
+> **Status:** 0.1.0 is the first release. Linux is fully tested; the Windows (x64, ARM64) and macOS
+> backends pass CI smoke tests but have not been tried on real machines yet. See the
 > [platform notes](doc/en-us/platform-notes.md).
 
 ## Highlights

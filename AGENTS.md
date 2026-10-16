@@ -25,7 +25,7 @@ about to change, verify against the code, then fix the docs in the same commit.
 
 | Question | Read |
 |---|---|
-| Current plan, milestones, open work | `PLAN.md` |
+| Current plan and open work (only while a multi-step plan is active) | `PLAN.md` |
 | Processes, packages, local API, cross-cutting rules | `doc/en-us/architecture.md` |
 | Run modes, privileged helper, authorization | `doc/en-us/run-modes.md` |
 | Health vocabulary, policy, recovery semantics | `doc/en-us/health-monitoring.md` |
@@ -70,7 +70,7 @@ change updates **all** language directories in the same commit, translated per
 **Put explanation in the docs, not here.** This file is for agent instructions only.
 
 **Plans live only in `PLAN.md`** — never in `doc/`. Delete items from `PLAN.md` as soon as they are
-done; long-lived contracts move into the docs.
+done; long-lived contracts move into the docs. When the plan is complete, delete `PLAN.md`.
 
 Add a `doc/en-us/version-history.md` entry for each release. Documentation-only commits do not
 bump versions or create tags.
@@ -206,9 +206,8 @@ binaries under `resources/<goos>-<goarch>/`, or machine-specific state.
 
 ## MyApps milestone releases
 
-The version stays 0.1.0 until the rework in `PLAN.md` is complete and the user confirms the first
-release (`v0.1.0`). After that, each completed milestone increments the patch version by 0.0.1;
-the user decides when to release.
+For each completed milestone, increment the patch version by 0.0.1; the user decides when to
+release. Documentation-only changes do not bump the version.
 
 License: GPL-3.0 (`LICENSE`). Do not copy code from repositories with incompatible licenses.
 Bundled EasyTier binaries are LGPL-3.0 and ship with their license text and source location.

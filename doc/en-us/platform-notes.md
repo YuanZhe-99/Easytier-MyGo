@@ -3,8 +3,8 @@
 | Platform | Status |
 |---|---|
 | Linux (systemd) | Primary platform. New daemon, run modes and helper implemented and verified (below); the GUI is being rebuilt. |
-| macOS | Implemented, not verified on a real machine: user daemon, LaunchDaemon helper, administrator prompt through `osascript`, signed self-update. |
-| Windows (x64, ARM64) | Implemented, not verified on a real machine: user daemon, service helper, UAC through PowerShell, SID authorization over AF_UNIX, job object for cores, signed self-update. |
+| macOS | Implemented; CI smoke tests (user daemon and helper, `no_tun`) pass on GitHub runners; not verified on a real machine: user daemon, LaunchDaemon helper, administrator prompt through `osascript`, signed self-update. |
+| Windows (x64, ARM64) | Implemented; CI smoke tests (user daemon and helper, `no_tun`) pass on GitHub runners; not verified on a real machine: user daemon, service helper, UAC through PowerShell, SID authorization over AF_UNIX, job object for cores, signed self-update. |
 
 ## Linux
 
@@ -34,7 +34,8 @@ Verified on the development machine (2026-10-16, EasyTier v2.6.4, isolated ports
 | Open at login | The switch writes `~/.config/autostart/EasyTier-MyGo.desktop`; a login launch starts hidden in the tray and connects the networks |
 | Packages | tar.gz installed with `install.sh` into a test home runs a network on the bundled core; `.deb` depends on GTK 3 and the tray library only |
 | Smoke script | `scripts/smoke.sh user` and `helper` pass on this machine |
-| Helper self-update | Signed bundle accepted without a prompt (binary replaced, helper restarted); unsigned and tampered bundles refused |
+| Helper self-update | Signed bundle accepted without a prompt (binary replaced, helper restarted); unsigned and tampered bundles refused; the bundle signed by `release.yml` with the GitHub secret is accepted too |
+| GUI helper buttons | Remove and install through the real polkit dialog (pkexec), operator recorded |
 
 ## macOS and Windows
 
@@ -59,3 +60,18 @@ Until verified on real machines, these are designs that compile and pass vet, no
 The development machine runs a production EasyTier core as root (RPC 15888, listeners 11010,
 device `easytier0`). Never touch it. Development cores use explicit RPC ports from 25888 and
 listener ports from 21110.
+
+## Known limitations
+
+- The EasyTier core's own RPC portal (TCP on loopback, a port from 25888 up) is reachable by every
+  local user, so a local user can query or reconfigure a running core through `easytier-cli`. The
+  app's local API is protected; the core's portal is not. Single-user desktops are the target.
+- The privileged helper runs cores as root/SYSTEM; its API is limited to the operator and the
+  `easytier-mygo` group, and path-valued config options are refused.
+- macOS and Windows have passed CI smoke tests with `no_tun` networks only; TUN (utun, WinTun) is
+  untested there.
+- Cores marked untested may change their CLI output or config format; the app degrades to
+  "status unreadable" without restarting anything, and the previous core can be selected again.
+- Unauthenticated GitHub API requests are limited to 60 per hour; release lists are cached with
+  their ETag and fetched only on request or by the daily check.
+- MyGo's `.deb` declares WebKitGTK for every app; `scripts/build.sh` removes that dependency.

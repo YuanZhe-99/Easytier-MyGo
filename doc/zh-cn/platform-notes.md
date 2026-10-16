@@ -3,8 +3,8 @@
 | 平台 | 状态 |
 |---|---|
 | Linux（systemd） | 主平台。新 daemon、运行方式与助手已实现并验证（见下）；GUI 正在重建。 |
-| macOS | 已实现，未经真机验证：用户态 daemon、LaunchDaemon 助手、经 `osascript` 的管理员授权、签名自更新。 |
-| Windows（x64、ARM64） | 已实现，未经真机验证：用户态 daemon、服务助手、经 PowerShell 的 UAC、AF_UNIX 上按 SID 授权、内核的作业对象、签名自更新。 |
+| macOS | 已实现；CI 冒烟测试（用户态 daemon 与助手，`no_tun`）在 GitHub runner 上通过；未经真机验证：用户态 daemon、LaunchDaemon 助手、经 `osascript` 的管理员授权、签名自更新。 |
+| Windows（x64、ARM64） | 已实现；CI 冒烟测试（用户态 daemon 与助手，`no_tun`）在 GitHub runner 上通过；未经真机验证：用户态 daemon、服务助手、经 PowerShell 的 UAC、AF_UNIX 上按 SID 授权、内核的作业对象、签名自更新。 |
 
 ## Linux
 
@@ -33,7 +33,8 @@
 | 登录时打开 | 开关会写入 `~/.config/autostart/EasyTier-MyGo.desktop`；登录启动时隐藏在托盘中并连接网络 |
 | 安装包 | 用 `install.sh` 把 tar.gz 安装到测试用的 home 后，可用内置内核运行网络；`.deb` 只依赖 GTK 3 与托盘库 |
 | 冒烟脚本 | `scripts/smoke.sh user` 与 `helper` 在本机通过 |
-| 助手自更新 | 签名的构建包无需弹窗即被接受（替换二进制并重启助手）；未签名或被篡改的构建包被拒绝 |
+| 助手自更新 | 签名的构建包无需弹窗即被接受（替换二进制并重启助手）；未签名或被篡改的构建包被拒绝；`release.yml` 用 GitHub secret 签名的构建包同样被接受 |
+| GUI 助手按钮 | 经真实 polkit 对话框（pkexec）卸载与安装，operator 被记录 |
 
 ## macOS 与 Windows
 
@@ -45,3 +46,12 @@
 ## 本机注意
 
 开发机以 root 运行着生产 EasyTier 内核（RPC 15888、监听 11010、设备 `easytier0`）。绝不触碰它。开发用内核使用显式端口：RPC 从 25888 起，监听从 21110 起。
+
+## 已知限制
+
+- EasyTier 内核自带的 RPC portal（回环 TCP，端口从 25888 起）对本机所有用户可达，本机用户可以通过 `easytier-cli` 查询或修改运行中的内核。本应用的本地 API 受保护，内核的 portal 不受保护。目标场景是单用户桌面。
+- 特权助手以 root/SYSTEM 运行内核；其 API 仅限 operator 与 `easytier-mygo` 组，并拒绝路径类配置项。
+- macOS 与 Windows 只在 CI 冒烟测试中用 `no_tun` 网络验证过；TUN（utun、WinTun）在这两个平台上未测试。
+- 标为未测试的内核可能改变 CLI 输出或配置格式；应用会降级为“无法读取状态”而不重启任何东西，也可以重新选回之前的内核。
+- 未认证的 GitHub API 请求每小时限 60 次；发布列表按 ETag 缓存，只在请求时或每日检查时获取。
+- MyGo 生成的 `.deb` 对所有应用都声明依赖 WebKitGTK；`scripts/build.sh` 会去掉该依赖。

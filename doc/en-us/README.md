@@ -1,8 +1,8 @@
 # EasyTier MyGo documentation
 
 **These docs are the authoritative description of the code.** `doc/en-us/` is the source;
-`doc/zh-cn/` mirrors it file for file. Plans and open work are not documented here; they live only
-in the repository's `PLAN.md`.
+`doc/zh-cn/` mirrors it file for file. Plans and open work are not documented here; while a
+multi-step plan is active it lives only in the repository's `PLAN.md`.
 
 EasyTier MyGo is a native desktop client for [EasyTier](https://github.com/EasyTier/EasyTier),
 written in Go with [MyGo](https://github.com/egoist/mygo). Linux is the primary platform; the

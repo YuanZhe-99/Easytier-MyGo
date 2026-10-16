@@ -43,6 +43,14 @@ the confirmation window (30 s), the worker returns to the revision that was runn
 Checks run every second while a session displays the network (or while its core is not healthy)
 and every 10 s otherwise; one `node` and one `-v peer` query feed both health and traffic.
 
+## Performance
+
+Targets: with the dashboard open and refreshing every second, the daemon and GUI together use at
+most 5 % of one core per network; hidden in the tray, at most 1 %. Sessions receive changes as
+pushed increments (at most every 500 ms), the curve lives in a fixed ring buffer, and one
+`node` plus one `-v peer` query feeds both health and traffic. Measured values are in
+[platform-notes.md](platform-notes.md).
+
 ## Cores
 
 The daemon runs the core selected in its settings: the bundled one (default), an official release
