@@ -69,34 +69,51 @@ func (a *App) switchMode(from, to runChoice, unset bool) error {
 			return err
 		}
 	}
-	// The helper starts on demand; set its background mode first, so a
-	// helper in background mode stops running networks the user daemon is
-	// about to take over.
+	moving := !unset && (from == choiceUser) != (to == choiceUser)
+	src, dst := userSock, helperSock
+	if to == choiceUser {
+		src, dst = helperSock, userSock
+		if err := a.user.ensure(ctx, userSock); err != nil {
+			return err
+		}
+	}
+	// 1. Copy the networks (not connected yet) when the target has none.
+	var toConnect []string
+	if moving {
+		ids, err := copyNetworks(ctx, src, dst)
+		if err != nil {
+			return fmt.Errorf("%s: %w", L.ModeCopyFailed(), err)
+		}
+		toConnect = ids
+	}
+	// 2. Stop the source's networks before the target starts its copies:
+	// both would claim the same ports and devices.
+	if moving {
+		if from == choiceUser {
+			a.user.stop()
+			waitGone(ctx, userSock)
+		} else {
+			disconnectAll(ctx, helperSock)
+		}
+	}
+	// 3. The helper's mode: background or Follow GUI.
 	if to != choiceUser || from != choiceUser {
 		hc := localapi.NewClient(helperSock)
 		if cur, err := hc.Do(ctx, localapi.Request{Type: localapi.RequestSettingsGet}); err == nil {
-			s := *cur.Settings
-			s.Background = to == choiceBackground
-			if _, err := hc.Do(ctx, localapi.Request{Type: localapi.RequestSettingsSet, Settings: &s}); err != nil {
+			st := *cur.Settings
+			st.Background = to == choiceBackground
+			if _, err := hc.Do(ctx, localapi.Request{Type: localapi.RequestSettingsSet, Settings: &st}); err != nil {
 				return err
 			}
-			a.update(func() { a.settings = s })
+			a.update(func() { a.settings = st })
 		} else if to != choiceUser {
 			return err
 		}
 	}
-	// Bring the networks along when the target has none.
-	if !unset && (from == choiceUser) != (to == choiceUser) {
-		src, dst := userSock, helperSock
-		if to == choiceUser {
-			src, dst = helperSock, userSock
-			if err := a.user.ensure(ctx, userSock); err != nil {
-				return err
-			}
-		}
-		if err := copyNetworks(ctx, src, dst); err != nil {
-			return fmt.Errorf("%s: %w", L.ModeCopyFailed(), err)
-		}
+	// 4. Connect the copies the user had connected.
+	dc := localapi.NewClient(dst)
+	for _, id := range toConnect {
+		_, _ = dc.Do(ctx, localapi.Request{Type: localapi.RequestConnect, Network: id})
 	}
 	a.mu.Lock()
 	if to == choiceUser {
@@ -110,45 +127,84 @@ func (a *App) switchMode(from, to runChoice, unset bool) error {
 		return err
 	}
 	if to != choiceUser {
-		a.user.stop() // its networks stop; the helper runs them now
+		a.user.stop()
 	}
 	a.reconnect()
 	return nil
 }
 
-// copyNetworks copies every network (document, name, intent) from one
-// daemon to another that has none yet.
-func copyNetworks(ctx context.Context, srcSock, dstSock string) error {
+// waitGone waits until nothing answers on a socket (the user daemon
+// stopped its networks and exited).
+func waitGone(ctx context.Context, sock string) {
+	c := localapi.NewClient(sock)
+	deadline := time.Now().Add(15 * time.Second)
+	for time.Now().Before(deadline) {
+		if _, err := c.Do(ctx, localapi.Request{Type: localapi.RequestInfo}); err != nil {
+			return
+		}
+		time.Sleep(200 * time.Millisecond)
+	}
+}
+
+// disconnectAll stops every network of a daemon (the user's intent moves
+// with the networks to the other daemon).
+func disconnectAll(ctx context.Context, sock string) {
+	c := localapi.NewClient(sock)
+	list, err := c.Do(ctx, localapi.Request{Type: localapi.RequestNetworks})
+	if err != nil {
+		return
+	}
+	for _, n := range list.Networks {
+		if n.Run {
+			_, _ = c.Do(ctx, localapi.Request{Type: localapi.RequestDisconnect, Network: n.ID})
+		}
+	}
+}
+
+// copyNetworks copies every network (document and name) from one daemon
+// to another that has none yet, without connecting them.
+// Returns: the target IDs of the networks that were connected at the source.
+func copyNetworks(ctx context.Context, srcSock, dstSock string) ([]string, error) {
 	src, dst := localapi.NewClient(srcSock), localapi.NewClient(dstSock)
 	have, err := dst.Do(ctx, localapi.Request{Type: localapi.RequestNetworks})
 	if err != nil {
-		return err
-	}
-	if len(have.Networks) > 0 {
-		return nil
+		return nil, err
 	}
 	list, err := src.Do(ctx, localapi.Request{Type: localapi.RequestNetworks})
 	if err != nil {
 		if errors.Is(err, localapi.ErrNotRunning) {
-			return nil // nothing to bring along
+			return nil, nil // nothing to bring along
 		}
-		return err
+		return nil, err
 	}
+	if len(have.Networks) > 0 {
+		// The target keeps its own networks; connect those whose names the
+		// user had connected at the source.
+		var ids []string
+		for _, n := range list.Networks {
+			for _, h := range have.Networks {
+				if n.Run && h.Name == n.Name {
+					ids = append(ids, h.ID)
+				}
+			}
+		}
+		return ids, nil
+	}
+	var ids []string
 	for _, n := range list.Networks {
 		doc, err := src.Do(ctx, localapi.Request{Type: localapi.RequestConfigGet, Network: n.ID})
 		if err != nil {
-			return err
+			return nil, err
 		}
 		created, err := dst.Do(ctx, localapi.Request{Type: localapi.RequestNetworkCreate, Name: n.Name, Text: doc.Config.Text})
 		if err != nil {
-			return err
+			return nil, err
 		}
 		if n.Run && len(created.Networks) > 0 {
-			id := created.Networks[len(created.Networks)-1].ID
-			_, _ = dst.Do(ctx, localapi.Request{Type: localapi.RequestConnect, Network: id})
+			ids = append(ids, created.Networks[len(created.Networks)-1].ID)
 		}
 	}
-	return nil
+	return ids, nil
 }
 
 // bundleDir is where the daemon binary and the bundled core live.

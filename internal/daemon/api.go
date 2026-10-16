@@ -3,6 +3,8 @@ package daemon
 import (
 	"context"
 	"errors"
+	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 
@@ -73,6 +75,8 @@ func (d *Daemon) Handle(ctx context.Context, req localapi.Request, access locala
 		if err := d.store.Delete(req.Network); err != nil {
 			return failOf(err)
 		}
+		// The network's run state (core log, recovery budget) goes with it.
+		_ = os.RemoveAll(filepath.Join(d.opts.StateDir, "run", req.Network))
 		d.notify()
 		return localapi.Response{OK: true, Networks: d.statuses()}
 	case localapi.RequestNetworkRename:

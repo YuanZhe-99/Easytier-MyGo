@@ -99,9 +99,11 @@ StateDirectory=easytier-mygo
 StateDirectoryMode=0700
 NoNewPrivileges=yes
 ProtectSystem=full
+# The helper updates its own binaries from signed bundles.
+ReadWritePaths=%[4]s
 PrivateTmp=yes
 
 [Install]
 WantedBy=multi-user.target
-`, Unit, svcPath(), IdleExit)
+`, Unit, svcPath(), IdleExit, BinDir)
 }

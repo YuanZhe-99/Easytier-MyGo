@@ -31,7 +31,7 @@
 已完成：`scripts/build.sh`、`release.yml`（actionlint 通过）、许可证文件随包、`.deb` 去掉 WebKitGTK、交叉构建时用主机 upx 解压、签名构建包与助手自更新（`internal/bundlesig`，公钥已内嵌；私钥在维护者本机 `~/.local/share/easytier-mygo-release/release.key`）；本机构建 Linux 产物并用 install.sh 安装运行；Linux 上交叉构建 Windows exe。
 不做：`.deb` postinst 自动安装助手（GUI 一次授权即可安装，postinst 只增加风险）。
 剩余：
-1. 实机：用签名构建重装助手一次（需密码），再验证无弹窗自更新；GUI 内“后台服务”、切回“免授权”、从 GUI 卸载/安装助手（pkexec 图形授权）。
+1. 实机剩余：从 GUI 按钮卸载/安装助手（pkexec 图形授权，需要用户在屏幕前输入密码；命令行等价路径已用 sudo 实测）。（签名自更新、后台服务、各方向切换已实测。）
 2. GitHub 远端建立后：把私钥设为 secret `EASYTIER_MYGO_SIGNING_KEY`，手动触发一次 release.yml 与 ci.yml 并检查产物（含 macOS dmg、Windows NSIS）。
 
 ### P4 macOS / Windows 后端（实现 + CI 编译/单测，标注未实机验证）

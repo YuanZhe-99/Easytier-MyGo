@@ -30,6 +30,8 @@ Verified on the development machine (2026-10-16, EasyTier v2.6.4, isolated ports
 | GUI (real desktop, XFCE) | Live data, chart, peers, tray registered; kill -9 or SIGTERM of the GUI stops its daemon and cores |
 | CPU, two `no_tun` networks, 120 s | Dashboard visible: GUI 3.5 %, daemon 1.3 %, cores 0.9 % (5.7 % of one core in total). Hidden in the tray: GUI 0.4 %, daemon 0.4 %, cores 0.6 % (1.4 %). GUI RSS 140–160 MB, daemon 18 MB |
 | GUI run-mode switch | No privileges → Follow GUI without a prompt; networks copied to the helper and connected; quitting the GUI stops them |
+| GUI Background service | No privileges → Background: networks move to the helper, service enabled at boot; quitting the GUI keeps them running; Background → No privileges stops them in the helper, disables the boot start and connects them in the user daemon; no port conflicts during switches |
+| Helper self-update | Signed bundle accepted without a prompt (binary replaced, helper restarted); unsigned and tampered bundles refused |
 
 ## macOS and Windows
 
