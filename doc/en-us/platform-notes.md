@@ -4,7 +4,7 @@
 |---|---|
 | Linux (systemd) | Primary platform. New daemon, run modes and helper implemented and verified (below); the GUI is being rebuilt. |
 | macOS | Implemented; CI smoke tests (user daemon and helper, `no_tun`) pass on GitHub runners; the user daemon, the GUI's daemon child and the LaunchDaemon helper (installed with `sudo`, `no_tun` and TUN) are verified on a real machine (below); not verified on a real machine: administrator prompt through `osascript`, signed self-update. |
-| Windows (x64, ARM64) | Implemented; CI smoke tests (user daemon and helper, `no_tun`) pass on GitHub runners; not verified on a real machine: user daemon, service helper, UAC through PowerShell, SID authorization over AF_UNIX, job object for cores, signed self-update. |
+| Windows (x64, ARM64) | Implemented; CI smoke tests (user daemon and helper, `no_tun`) pass on GitHub runners; the user daemon and the service helper (installed through UAC, SID authorization over AF_UNIX, `no_tun`) are verified on a real ARM64 machine (below); not verified on a real machine: the GUI, TUN (WinTun), job object for cores, signed self-update. |
 
 ## Linux
 

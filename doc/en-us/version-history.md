@@ -18,7 +18,9 @@ The project restarted from 0.1.0 on 2026-10-16. The earlier, inherited history (
   editing, run modes, core manager, tray, four languages, light and dark themes.
 - Packages: Linux tar.gz and `.deb`, Windows installer and portable zip (x64, ARM64), macOS disk
   image; signed bundles let the privileged helper update itself without a prompt.
-- macOS and Windows backends: implemented, CI smoke tests with `no_tun` networks.
+- macOS and Windows backends: implemented, CI smoke tests with `no_tun` networks; verified on real
+  machines (macOS 27 on Apple M1, including the helper with TUN; Windows 11 ARM64, user daemon and
+  helper with `no_tun`).
 - Not yet included: structured ACL editor, TCP/DNS probes, persistent traffic history, monitoring
   an external core.
 - Core manager: choose the bundled core, download official releases (pre-releases on request) or

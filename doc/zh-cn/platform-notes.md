@@ -4,7 +4,7 @@
 |---|---|
 | Linux（systemd） | 主平台。新 daemon、运行方式与助手已实现并验证（见下）；GUI 正在重建。 |
 | macOS | 已实现；CI 冒烟测试（用户态 daemon 与助手，`no_tun`）在 GitHub runner 上通过；用户态 daemon、GUI 启动的 daemon 子进程与 LaunchDaemon 助手（用 `sudo` 安装，`no_tun` 与 TUN）已在真机验证（见下）；未经真机验证：经 `osascript` 的管理员授权、签名自更新。 |
-| Windows（x64、ARM64） | 已实现；CI 冒烟测试（用户态 daemon 与助手，`no_tun`）在 GitHub runner 上通过；未经真机验证：用户态 daemon、服务助手、经 PowerShell 的 UAC、AF_UNIX 上按 SID 授权、内核的作业对象、签名自更新。 |
+| Windows（x64、ARM64） | 已实现；CI 冒烟测试（用户态 daemon 与助手，`no_tun`）在 GitHub runner 上通过；用户态 daemon 与服务助手（经 UAC 安装，AF_UNIX 上按 SID 授权，`no_tun`）已在 ARM64 真机验证（见下）；未经真机验证：GUI、TUN（WinTun）、内核的作业对象、签名自更新。 |
 
 ## Linux
 
