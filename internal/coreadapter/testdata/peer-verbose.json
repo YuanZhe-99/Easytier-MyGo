@@ -1,0 +1,99 @@
+[
+  {
+    "route": {
+      "peer_id": 479170460,
+      "ipv4_addr": {
+        "address": {
+          "addr": 177220610
+        },
+        "network_length": 24
+      },
+      "next_hop_peer_id": 479170460,
+      "cost": 1,
+      "path_latency": 1,
+      "proxy_cidrs": [],
+      "hostname": "dev-b",
+      "stun_info": {
+        "udp_nat_type": 6,
+        "tcp_nat_type": 6,
+        "last_update_time": 0,
+        "public_ip": [],
+        "min_port": 22000,
+        "max_port": 32000
+      },
+      "inst_id": "68b30278-08e9-44c9-9b16-b8ea8d24765f",
+      "version": "2.6.4-8428a89d",
+      "feature_flag": {
+        "is_public_server": false,
+        "avoid_relay_data": false,
+        "kcp_input": true,
+        "no_relay_kcp": false,
+        "support_conn_list_sync": true,
+        "quic_input": true,
+        "no_relay_quic": false,
+        "is_credential_peer": false,
+        "need_p2p": false,
+        "disable_p2p": false,
+        "ipv6_public_addr_provider": false
+      },
+      "next_hop_peer_id_latency_first": 479170460,
+      "cost_latency_first": 1,
+      "path_latency_latency_first": 1,
+      "ipv6_addr": null,
+      "public_ipv6_addr": null,
+      "ipv6_public_addr_prefix": null
+    },
+    "peer": {
+      "peer_id": 479170460,
+      "conns": [
+        {
+          "conn_id": "7b559d8a-22e1-4f05-a3d0-693fbc1deb3d",
+          "my_peer_id": 527529765,
+          "peer_id": 479170460,
+          "features": [],
+          "tunnel": {
+            "tunnel_type": "tcp",
+            "local_addr": {
+              "url": "tcp://0.0.0.0:21110"
+            },
+            "remote_addr": {
+              "url": "tcp://198.51.100.10:37515"
+            },
+            "resolved_remote_addr": {
+              "url": "tcp://198.51.100.10:37515"
+            }
+          },
+          "stats": {
+            "rx_bytes": 5434,
+            "tx_bytes": 6191,
+            "rx_packets": 52,
+            "tx_packets": 52,
+            "latency_us": 450
+          },
+          "loss_rate": 0.0,
+          "is_client": false,
+          "network_name": "example-net",
+          "is_closed": false,
+          "noise_local_static_pubkey": [],
+          "noise_remote_static_pubkey": [],
+          "secure_auth_level": 0,
+          "peer_identity_type": 0
+        }
+      ],
+      "default_conn_id": {
+        "part1": 2069208458,
+        "part2": 585191173,
+        "part3": 2748344639,
+        "part4": 3156077373
+      },
+      "directly_connected_conns": [
+        {
+          "part1": 2069208458,
+          "part2": 585191173,
+          "part3": 2748344639,
+          "part4": 3156077373
+        }
+      ]
+    }
+  }
+]

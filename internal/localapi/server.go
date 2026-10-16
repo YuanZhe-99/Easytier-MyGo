@@ -1,0 +1,230 @@
+package localapi
+
+import (
+	"bufio"
+	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
+	"net"
+	"os"
+	"path/filepath"
+	"sync"
+	"time"
+)
+
+// maxRequestSize bounds one request line; snapshots are responses, so
+// requests stay small.
+const maxRequestSize = 1 << 20
+
+// Handler answers requests. Handle runs on the connection's goroutine and
+// may block; implementations must be safe for concurrent calls.
+//
+// Access is the tier the connection was granted (see Authorizer). A
+// handler must enforce it: the server refuses requests above AccessRead
+// before they reach the handler, but a handler that exposes data (such as
+// config text) still checks the tier itself.
+type Handler interface {
+	Handle(ctx context.Context, req Request, access Access) Response
+}
+
+// ListenOptions configures Listen.
+type ListenOptions struct {
+	// Path is the socket path.
+	Path string
+	// Mode is the socket's file mode. A per-user socket is 0600; a system
+	// socket is 0660 so its group can connect, or 0666 when other local
+	// users may read.
+	Mode os.FileMode
+	// DirMode is the socket directory's mode when Group is set: 0750 for a
+	// group-only socket, 0755 when other users may reach it.
+	DirMode os.FileMode
+	// Group, when non-zero, chowns the socket directory and socket to
+	// that gid (a system socket's authorized group). Requires privilege.
+	Group int
+	// Authorizer decides each connection's tier.
+	Authorizer Authorizer
+}
+
+// Listen creates the daemon socket, replacing a stale one but refusing to
+// take over from a live daemon.
+func Listen(path string) (net.Listener, error) {
+	return ListenWith(ListenOptions{Path: path, Mode: 0o600})
+}
+
+// ListenWith creates the daemon socket with explicit ownership and mode.
+// A zero Mode means 0600 (the per-user default).
+func ListenWith(o ListenOptions) (net.Listener, error) {
+	path := o.Path
+	mode := o.Mode
+	if mode == 0 {
+		mode = 0o600
+	}
+	dir := filepath.Dir(path)
+	if err := os.MkdirAll(dir, 0o700); err != nil {
+		return nil, err
+	}
+	// A system socket lets its group traverse the directory; a per-user
+	// socket stays owner-only. DirMode widens it to others when they may
+	// read.
+	if o.Group != 0 {
+		if err := os.Chown(dir, -1, o.Group); err != nil {
+			return nil, fmt.Errorf("chown socket directory: %w", err)
+		}
+		dirMode := o.DirMode
+		if dirMode == 0 {
+			dirMode = 0o750
+		}
+		if err := os.Chmod(dir, dirMode); err != nil {
+			return nil, fmt.Errorf("chmod socket directory: %w", err)
+		}
+	}
+	if _, err := os.Stat(path); err == nil {
+		// A socket file exists: is something listening?
+		conn, dialErr := net.DialTimeout("unix", path, time.Second)
+		if dialErr == nil {
+			conn.Close()
+			return nil, fmt.Errorf("management service already running on %s", path)
+		}
+		if err := os.Remove(path); err != nil {
+			return nil, fmt.Errorf("remove stale socket: %w", err)
+		}
+	}
+	ln, err := net.Listen("unix", path)
+	if err != nil {
+		return nil, err
+	}
+	if o.Group != 0 {
+		if err := os.Chown(path, -1, o.Group); err != nil {
+			ln.Close()
+			return nil, fmt.Errorf("chown socket: %w", err)
+		}
+	}
+	if err := os.Chmod(path, mode); err != nil {
+		ln.Close()
+		return nil, err
+	}
+	return ln, nil
+}
+
+// Serve accepts connections until ctx is cancelled, answering each
+// request on its own line. Access is decided once per connection from the
+// kernel-reported peer identity (see Authorizer); connections whose
+// identity cannot be read, or that are denied, are closed without a
+// reply.
+//
+// Serve assumes a private (per-user) socket whose owner is this process:
+// only that user can reach it, so connections get write access. Use
+// ServeWith for a system socket with a group.
+func Serve(ctx context.Context, ln net.Listener, h Handler) error {
+	return ServeWith(ctx, ln, h, Authorizer{
+		OwnerUID: uint32(os.Getuid()),
+		Private:  true,
+	})
+}
+
+// ServeWith is Serve with an explicit authorizer.
+func ServeWith(ctx context.Context, ln net.Listener, h Handler, authz Authorizer) error {
+	go func() {
+		<-ctx.Done()
+		ln.Close()
+	}()
+	var connections sync.WaitGroup
+	defer connections.Wait()
+	for {
+		conn, err := ln.Accept()
+		if err != nil {
+			if ctx.Err() != nil {
+				return nil
+			}
+			var ne net.Error
+			if errors.As(err, &ne) && ne.Timeout() {
+				continue
+			}
+			return err
+		}
+		connections.Add(1)
+		go func() { defer connections.Done(); serveConn(ctx, conn, h, authz) }()
+	}
+}
+
+func serveConn(ctx context.Context, conn net.Conn, h Handler, authz Authorizer) {
+	defer conn.Close()
+	done := make(chan struct{})
+	defer close(done)
+	go func() {
+		select {
+		case <-ctx.Done():
+			// Interrupt idle reads without racing the final response from an
+			// active shutdown handler. The handler receives ctx cancellation;
+			// its response is written before serveConn closes the connection.
+			_ = conn.SetReadDeadline(time.Now())
+			_ = conn.SetWriteDeadline(time.Now().Add(5 * time.Second))
+		case <-done:
+		}
+	}()
+	peer, err := peerCredentials(conn)
+	var access Access
+	if err != nil {
+		access = AccessDenied
+	} else {
+		access = authz.Access(peer)
+	}
+	if access == AccessDenied {
+		// No identity, or not authorized: answer nothing at all.
+		return
+	}
+	reader := bufio.NewReaderSize(conn, maxRequestSize)
+	for {
+		if ctx.Err() != nil {
+			return
+		}
+		line, err := reader.ReadSlice('\n')
+		if errors.Is(err, bufio.ErrBufferFull) {
+			// ReadSlice never allocates beyond the request limit. Do not echo
+			// attacker-controlled input (it can also contain config secrets).
+			_ = conn.SetWriteDeadline(time.Now().Add(5 * time.Second))
+			_, _ = conn.Write([]byte(fmt.Sprintf("{\"version\":%d,\"ok\":false,\"error\":\"request exceeds one MiB limit\"}\n", ProtocolVersion)))
+			return
+		}
+		if err != nil {
+			if err != io.EOF {
+				// The peer went away mid-line; nothing to answer.
+				_ = err
+			}
+			return
+		}
+		var req Request
+		var resp Response
+		if err := json.Unmarshal(line, &req); err != nil {
+			resp = Response{Version: ProtocolVersion, OK: false, Error: "bad request: " + err.Error()}
+		} else if req.Version != ProtocolVersion {
+			resp = Response{Version: ProtocolVersion, OK: false,
+				Error: fmt.Sprintf("protocol version mismatch: request %d, daemon %d", req.Version, ProtocolVersion)}
+		} else if !access.allows(req.Type) {
+			resp = Response{Version: ProtocolVersion, OK: false, Error: ErrForbidden{Tier: access, Type: req.Type}.Error()}
+		} else {
+			resp = h.Handle(ctx, req, access)
+		}
+		if resp.Version == 0 {
+			resp.Version = ProtocolVersion
+		}
+		payload, err := json.Marshal(resp)
+		if err != nil {
+			return
+		}
+		_ = conn.SetWriteDeadline(time.Now().Add(5 * time.Second))
+		if _, err := conn.Write(append(payload, '\n')); err != nil {
+			return
+		}
+	}
+}
+
+// StatsOf compresses a status snapshot for logs.
+func StatsOf(s *Status) string {
+	if s == nil {
+		return "no status"
+	}
+	return fmt.Sprintf("round %d, %d components, checked %s", s.Round, len(s.Health), s.CheckedAt.Format(time.RFC3339))
+}

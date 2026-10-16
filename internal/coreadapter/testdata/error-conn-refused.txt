@@ -1,0 +1,7 @@
+Error: failed to get manage client
+
+Caused by:
+    0: Rust error: failed to connect to server: Url { scheme: "tcp", cannot_be_a_base: false, username: "", password: None, host: Some(Domain("127.0.0.1")), port: Some(25999), path: "", query: None, fragment: None }
+    1: failed to connect to server: Url { scheme: "tcp", cannot_be_a_base: false, username: "", password: None, host: Some(Domain("127.0.0.1")), port: Some(25999), path: "", query: None, fragment: None }
+    2: io error: Connection refused (os error 111)
+    3: Connection refused (os error 111)

@@ -1,0 +1,6 @@
+/build/
+/.mygo/
+mygo_windows_*.syso
+/.dev/
+# Fetched EasyTier binaries (go run ./tools/deps fetch)
+/resources/*-*/

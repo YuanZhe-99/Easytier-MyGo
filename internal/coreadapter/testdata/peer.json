@@ -1,0 +1,30 @@
+[
+  {
+    "cidr": "10.144.44.1/24",
+    "ipv4": "10.144.44.1",
+    "hostname": "dev-a",
+    "cost": "Local",
+    "lat_ms": "-",
+    "loss_rate": "-",
+    "rx_bytes": "-",
+    "tx_bytes": "-",
+    "tunnel_proto": "-",
+    "nat_type": "Symmetric",
+    "id": "527529765",
+    "version": "2.6.4-8428a89d"
+  },
+  {
+    "cidr": "10.144.44.2/24",
+    "ipv4": "10.144.44.2",
+    "hostname": "dev-b",
+    "cost": "p2p",
+    "lat_ms": "0.45",
+    "loss_rate": "0.0%",
+    "rx_bytes": "5.43 kB",
+    "tx_bytes": "6.19 kB",
+    "tunnel_proto": "tcp",
+    "nat_type": "Symmetric",
+    "id": "479170460",
+    "version": "2.6.4-8428a89d"
+  }
+]

@@ -1,0 +1,14 @@
+Temporary icons
+===============
+
+resources/icon.png (composed onto a blue gradient tile) and resources/tray/template*.png
+use artwork from EasyTier-iOS:
+
+  https://github.com/EasyTier/EasyTier-iOS
+  EasyTier/AppIcon.icon/Assets/icon.png
+  EasyTier/Assets.xcassets/MenuBarIcon.imageset/MenuBarIcon(@2x).png
+  Copyright (C) 2026 Chenx Dust and Yin Mo
+  License: GNU General Public License v3.0 or later
+
+They are placeholders. Before the first public release, confirm the artwork's origin or replace it
+with original artwork.
