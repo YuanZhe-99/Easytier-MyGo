@@ -7,7 +7,7 @@
 - 固定在 `third_party/easytier.json`（内置 tag、已测试 tag、各平台 URL 与 SHA-256）。`go run ./tools/deps check` 将其与最新稳定版比较。
 - 资产名：`easytier-<os>-<arch>-<tag>.zip`，os 为 `linux|macos|windows`，arch 为 `x86_64`，以及 Linux/macOS 用 `aarch64`、Windows 用 `arm64`。每个压缩包有一个顶层目录，内含 `easytier-core`、`easytier-cli` 和 Web 控制台二进制（本应用不用）。Windows 包另含 `wintun.dll`、`Packet.dll` 与 `WinDivert64.sys`。
 - 校验和：v2.6.4 没有发布校验文件；GitHub API 的 `assets[].digest` 提供 SHA-256。v2.7.0 起有 `SHA256SUMS` 资产。
-- **发布的可执行文件经过 UPX 压缩。** 每次启动都要解压，导致每次 `easytier-cli` 调用约耗 250 ms CPU（v2.6.4，Linux x86_64，2026-10-16 实测）；解压后同样的调用约 3 ms。`tools/deps fetch` 会用 `upx -d` 解压。
+- **发布的可执行文件经过 UPX 压缩。** 每次启动都要解压，导致每次 `easytier-cli` 调用约耗 250 ms CPU（v2.6.4，Linux x86_64，2026-10-16 实测）；解压后同样的调用约 3 ms，对运行中内核的真实查询（`node`、`-v peer`、`peer`、`route`）约 4 ms。`tools/deps fetch` 会用 `upx -d` 解压。
 - `easytier-core` 与 `easytier-cli` 必须来自同一 release；两者的 RPC 客户端在 v2.7.0 发生了变化。
 - 许可证：LGPL-3.0。
 

@@ -27,6 +27,10 @@ const maxRequestSize = 1 << 20
 // config text) still checks the tier itself.
 type Handler interface {
 	Handle(ctx context.Context, req Request, access Access) Response
+	// Stream serves a session (RequestSessionAttach): it sends frames until
+	// ctx ends (the client closed the connection or the server stops) and
+	// then returns. send fails once the client is gone.
+	Stream(ctx context.Context, req Request, access Access, send func(Response) error)
 }
 
 // ListenOptions configures Listen.
@@ -203,7 +207,10 @@ func serveConn(ctx context.Context, conn net.Conn, h Handler, authz Authorizer) 
 			resp = Response{Version: ProtocolVersion, OK: false,
 				Error: fmt.Sprintf("protocol version mismatch: request %d, daemon %d", req.Version, ProtocolVersion)}
 		} else if !access.allows(req.Type) {
-			resp = Response{Version: ProtocolVersion, OK: false, Error: ErrForbidden{Tier: access, Type: req.Type}.Error()}
+			resp = Response{Version: ProtocolVersion, OK: false, Code: CodeForbidden, Error: ErrForbidden{Tier: access, Type: req.Type}.Error()}
+		} else if req.Type == RequestSessionAttach {
+			stream(ctx, conn, reader, h, req, access)
+			return
 		} else {
 			resp = h.Handle(ctx, req, access)
 		}
@@ -221,10 +228,37 @@ func serveConn(ctx context.Context, conn net.Conn, h Handler, authz Authorizer) 
 	}
 }
 
-// StatsOf compresses a status snapshot for logs.
-func StatsOf(s *Status) string {
-	if s == nil {
-		return "no status"
+// stream runs a session on conn: the handler's frames are written as
+// lines, and the session ends when the client closes its side (detected by
+// a read returning) or the server stops.
+func stream(ctx context.Context, conn net.Conn, reader *bufio.Reader, h Handler, req Request, access Access) {
+	ctx, cancel := context.WithCancel(ctx)
+	defer cancel()
+	go func() {
+		// A session client sends nothing more; any read result (EOF, an
+		// error, stray data) ends the session.
+		_ = conn.SetReadDeadline(time.Time{})
+		_, _ = reader.ReadByte()
+		cancel()
+	}()
+	var mu sync.Mutex
+	send := func(resp Response) error {
+		mu.Lock()
+		defer mu.Unlock()
+		if ctx.Err() != nil {
+			return ctx.Err()
+		}
+		resp.Version = ProtocolVersion
+		payload, err := json.Marshal(resp)
+		if err != nil {
+			return err
+		}
+		_ = conn.SetWriteDeadline(time.Now().Add(5 * time.Second))
+		if _, err := conn.Write(append(payload, '\n')); err != nil {
+			cancel()
+			return err
+		}
+		return nil
 	}
-	return fmt.Sprintf("round %d, %d components, checked %s", s.Round, len(s.Health), s.CheckedAt.Format(time.RFC3339))
+	h.Stream(ctx, req, access, send)
 }

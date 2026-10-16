@@ -52,3 +52,30 @@ func TestTrackerIsBounded(t *testing.T) {
 		t.Fatalf("%d points retained, want 4", n)
 	}
 }
+
+// TestRingIncrementalReads: a reader polling with its last sequence gets
+// every new point exactly once, and old points fall out of a full ring.
+func TestRingIncrementalReads(t *testing.T) {
+	r := NewRing(3)
+	if got := r.Since(0); got != nil {
+		t.Fatalf("empty ring returned %v", got)
+	}
+	for i := 0; i < 2; i++ {
+		r.Add(Point{RxBytesPS: float64(i)})
+	}
+	got := r.Since(0)
+	if len(got) != 2 || got[0].Seq != 1 || got[1].Seq != 2 {
+		t.Fatalf("Since(0) = %+v", got)
+	}
+	last := got[1].Seq
+	for i := 2; i < 6; i++ {
+		r.Add(Point{RxBytesPS: float64(i)})
+	}
+	got = r.Since(last)
+	if len(got) != 3 || got[0].Seq != 4 || got[2].Seq != 6 || got[2].RxBytesPS != 5 {
+		t.Fatalf("after overflow Since(%d) = %+v", last, got)
+	}
+	if got := r.Since(6); got != nil {
+		t.Fatalf("nothing new expected, got %+v", got)
+	}
+}

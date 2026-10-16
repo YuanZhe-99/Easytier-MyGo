@@ -8,7 +8,10 @@ import (
 	"sync"
 
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/health"
+	"github.com/YuanZhe-99/Easytier-MyGo/internal/supervisor"
 )
+
+var scrubDetail = supervisor.ScrubDetail
 
 // eventStore keeps the durable health timeline: a JSONL file in the state
 // directory plus an in-memory ring for the API. Records are one line per
@@ -19,6 +22,8 @@ type eventStore struct {
 	path         string
 	ring         []health.Event
 	max          int
+	// seq counts appended events, so sessions can push only new ones.
+	seq uint64
 	persistError string
 }
 
@@ -43,6 +48,7 @@ func (s *eventStore) appendEvent(ev health.Event) {
 	ev.Reason = scrubDetail(ev.Reason)
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	s.seq++
 	s.ring = append(s.ring, ev)
 	if len(s.ring) > s.max {
 		s.ring = s.ring[len(s.ring)-s.max:]
@@ -79,6 +85,21 @@ func (s *eventStore) persistenceError() string {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.persistError
+}
+
+// since returns the events appended after sequence seq (bounded by the
+// ring) and the current sequence.
+func (s *eventStore) since(seq uint64) ([]health.Event, uint64) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	if seq >= s.seq {
+		return nil, s.seq
+	}
+	n := int(s.seq - seq)
+	if n > len(s.ring) {
+		n = len(s.ring)
+	}
+	return append([]health.Event(nil), s.ring[len(s.ring)-n:]...), s.seq
 }
 
 // recent returns the newest n events, oldest first.

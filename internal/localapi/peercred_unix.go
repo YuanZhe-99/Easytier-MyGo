@@ -21,14 +21,7 @@ func peerCredentials(conn net.Conn) (Peer, error) {
 	}
 	var peer Peer
 	var credErr error
-	if err := raw.Control(func(fd uintptr) {
-		uid, gid, pid, err := socketCredentials(int(fd))
-		if err != nil {
-			credErr = err
-			return
-		}
-		peer = Peer{UID: uid, GID: gid, PID: pid, Known: true}
-	}); err != nil {
+	if err := raw.Control(func(fd uintptr) { peer, credErr = socketCredentials(int(fd)) }); err != nil {
 		return Peer{}, err
 	}
 	if credErr != nil {

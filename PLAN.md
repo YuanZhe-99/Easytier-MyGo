@@ -9,10 +9,9 @@
 - **D3** 版本唯一来源 `internal/version`；release 检查 tag==版本。
 - **D4** Linux 发布 tar.gz + .deb（去 webkit 依赖、补 `libayatana-appindicator3-1`、带助手单元）；AppImage/RPM 以后再议。
 - **D5** 图标暂借 EasyTier-iOS（`resources/NOTICE`），首次公开发布前核实来源或替换。
-- **D6 采集**：EasyTier 发布二进制是 UPX 压缩的，解压后单次 CLI 调用 ~3 ms CPU（原 ~250 ms）。继续用 CLI；P1 实测性能目标，达不到才做原生 RPC。
-- **D7 Git**：本地已打 `archive/v0.10.80`；P0 结束时 main 改为新根提交（0.1.0 基线），推 tag 与强推 Gitea main 前须用户确认。
+- **D6 采集**：EasyTier 发布二进制是 UPX 压缩的，解压后单次 CLI 调用 ~3 ms CPU（原 ~250 ms）。2026-10-16 实测：对运行中内核的真实查询约 4 ms CPU，1 s 刷新 <0.5% 单核 → 继续用 CLI，不做原生 RPC。
 - **D8** 重构期间固定 0.1.0；用户确认后打 v0.1.0；之后每里程碑 +0.0.1。
-- **D9 内核管理**：内置 core = 最新稳定版（已测试）；用户可自选官方正式版/预发布（开关）/自定义二进制，标“已测试/未测试”；从不自动下载；core 与 cli 同 release；未测试版本先 `--check-config`；启动失败可一键切回。助手档的官方内核由助手自行下载校验（不弹窗），自定义二进制每次需管理员认证。用户目录 `~/.local/share/easytier-mygo/cores/<tag>/`，助手目录 `/var/lib/easytier-mygo/cores/<tag>/`。发布二进制需 UPX 解压（运行时需要解压能力：随包附带 upx 或其他方案，P1 决定）。
+- **D9 内核管理**：内置 core = 最新稳定版（已测试）；用户可自选官方正式版/预发布（开关）/自定义二进制，标“已测试/未测试”；从不自动下载；core 与 cli 同 release；未测试版本先 `--check-config`；启动失败可一键切回。助手档的官方内核由助手自行下载校验（不弹窗），自定义二进制每次需管理员认证。用户目录 `~/.local/share/easytier-mygo/cores/<tag>/`，助手目录 `/var/lib/easytier-mygo/cores/<tag>/`。发布二进制需 UPX 解压：Linux/Windows 随包附带官方 upx 二进制供内核管理解压下载的内核；无 upx 或解压失败时照常使用并降低刷新频率。
 - **D10** 界面语言 en / zh-Hans / zh-Hant / ja（MyGo ARB），zh-Hant/ja 标注待母语者复核。
 
 ## 性能设计与目标
@@ -28,11 +27,7 @@
 
 ## 里程碑
 
-### P0 重置与基线（只剩 Git 收尾）
-- [ ] D7：用户确认后推 `archive/v0.10.80` 到 Gitea，并用新根提交（本地分支 `main-0.1.0`）强推替换 Gitea main。
-
 ### P1 运行时、特权助手与运行方式（Linux）
-0. spike：用 dev core 实测解压后的 CLI 真实查询成本；socket 激活 + 空闲退出 + 会话绑定原型（本机安装助手需用户输入密码，测完卸载）。
 1. 删除推迟功能的代码：TCP/DNS 探测（`internal/diagnostics`）、流量历史持久化（telemetry history*）、离线 profile CLI 子命令、manifest 运行时。
 2. 包：`internal/profiles`（原文+元数据+持久意图）、`internal/supervisor`（每网络 worker）、`internal/daemon`（宿主、API、授权）、`internal/platform/{linux,darwin,windows}`、`internal/cores`、`internal/helper`（install/uninstall/update/install-custom-core）。
 3. 动态多网络 API、RPC 端口自动分配、冲突检测、`session.attach`；ProtocolVersion → 2。
@@ -66,6 +61,5 @@
 - macOS socket 激活、Windows 服务 DACL 无法实机验证 → CI 冒烟 + 明确标注。
 - MyGo 迭代极快 → 每次先升 MyGo，migrate-ui + Tester 回归。
 - MyGo `.deb` 硬依赖 webkit → 后处理或自建 deb，向上游反馈。
-- 运行时 UPX 解压：用户下载的内核也需解压，否则 CLI 每次 ~250 ms → P1 决定（附带 upx / 只在助手侧解压 / 原生 RPC）。
 - 未测试内核改变 CLI JSON 或配置格式 → 预检、采集失败降级、一键回退、adapter 宽容未知字段。
 - GitHub API 未认证 60 次/小时 → 缓存 + ETag，只在手动或每日检查时请求。

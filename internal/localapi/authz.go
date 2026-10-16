@@ -44,6 +44,9 @@ type Peer struct {
 	UID uint32
 	GID uint32
 	PID uint32
+	// Groups are the peer's supplementary groups (Linux: from /proc, macOS:
+	// from LOCAL_PEERCRED); membership in any of them counts.
+	Groups []uint32
 	// Known is false when the platform could not report an identity.
 	Known bool
 }
@@ -91,10 +94,10 @@ func (a Authorizer) Access(p Peer) Access {
 		// a configuration problem and refuse.
 		return AccessDenied
 	}
-	if slices.Contains(a.WriteUIDs, p.UID) || slices.Contains(a.WriteGIDs, p.GID) {
+	if slices.Contains(a.WriteUIDs, p.UID) || p.inAny(a.WriteGIDs) {
 		return AccessWrite
 	}
-	if slices.Contains(a.ReadUIDs, p.UID) || slices.Contains(a.ReadGIDs, p.GID) {
+	if slices.Contains(a.ReadUIDs, p.UID) || p.inAny(a.ReadGIDs) {
 		return AccessRead
 	}
 	if a.AllowOthersRead {
@@ -103,6 +106,20 @@ func (a Authorizer) Access(p Peer) Access {
 	// A system socket's mode lets the group in; anyone else who reaches
 	// it (a misconfigured mode) is refused rather than silently downgraded.
 	return AccessDenied
+}
+
+// inAny reports whether the peer's primary or any supplementary group is
+// in gids.
+func (p Peer) inAny(gids []uint32) bool {
+	if slices.Contains(gids, p.GID) {
+		return true
+	}
+	for _, g := range p.Groups {
+		if slices.Contains(gids, g) {
+			return true
+		}
+	}
+	return false
 }
 
 // allows reports whether the tier permits a request type.
@@ -123,23 +140,18 @@ func (t Access) Allows(req RequestType) bool { return t.allows(req) }
 // writeRequests are the requests that change state or expose secrets.
 // Everything not listed here is readable by an AccessRead peer.
 var writeRequests = map[RequestType]bool{
-	RequestLoggingCheck:   true, // writes a temporary probe; never automatic/read-tier I/O
-	RequestLoggingSave:    true,
-	RequestProfileRename:  true,
-	RequestHistorySave:    true,
-	RequestHistoryDelete:  true,
-	RequestProbeGet:       true,
-	RequestProbeSave:      true,
-	RequestCheck:          true,
-	RequestCoreStart:      true,
-	RequestCoreStop:       true,
-	RequestGrantRetry:     true,
 	RequestConfigGet:      true, // returns the raw text, which holds the secret
 	RequestConfigSave:     true,
-	RequestConfigCreate:   true,
-	RequestConfigDelete:   true,
-	RequestConfigValidate: true, // echoes the text back
-	RequestConfigActivate: true,
+	RequestNetworkCreate:  true,
+	RequestNetworkDelete:  true,
+	RequestNetworkRename:  true,
+	RequestConnect:        true,
+	RequestDisconnect:     true,
+	RequestApply:          true,
+	RequestRetry:          true,
+	RequestSettingsSet:    true,
+	RequestSessionAttach:  true, // a session can stop networks when it ends
+	RequestSessionWatch:   true,
 	RequestShutdown:       true,
 }
 

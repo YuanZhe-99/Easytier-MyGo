@@ -15,7 +15,8 @@ version; re-check them when the bundled version moves.
   From v2.7.0 a `SHA256SUMS` asset exists.
 - **The release executables are UPX-packed.** Every start decompresses them, which costs about
   250 ms of CPU per `easytier-cli` call (v2.6.4, Linux x86_64, measured 2026-10-16); unpacked, the
-  same call takes about 3 ms. `tools/deps fetch` unpacks them with `upx -d`.
+  same call takes about 3 ms, and a real query against a running core (`node`, `-v peer`, `peer`,
+  `route`) about 4 ms. `tools/deps fetch` unpacks them with `upx -d`.
 - Always ship `easytier-core` and `easytier-cli` from the same release; their RPC client changed in
   v2.7.0.
 - License: LGPL-3.0.
