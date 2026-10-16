@@ -5,7 +5,7 @@ so a push there is checked only by the local gate.
 
 | Workflow | Trigger | Does |
 |---|---|---|
-| `ci.yml` | push to `main`, pull requests, manual | Formatting, vet, tests (also with `CGO_ENABLED=0`), MyGo vet, doc mirror check, upstream pins; build and unit tests on Windows and macOS. |
+| `ci.yml` | push to `main`, pull requests, manual | Formatting, vet, tests (also with `CGO_ENABLED=0`), MyGo vet, interface catalogs, doc mirror check, upstream pins; build and unit tests on Windows and macOS. |
 | `upstream.yml` | weekly, manual | `go run ./tools/deps check -strict`; opens an issue when MyGo or EasyTier has a newer release. |
 | `dependabot.yml` | weekly | Action and Go module updates. |
 

@@ -332,11 +332,20 @@
     }
   },
   "PeerDirect": "Direct",
+  "PeerPublicServer": "Public server",
   "PeerRelay": "{hops, plural, one {Relay} other {Relay ×#}}",
   "@PeerRelay": {
     "placeholders": {
       "hops": {
         "type": "int"
+      }
+    }
+  },
+  "PeerSubnets": "Shares {subnets}",
+  "@PeerSubnets": {
+    "placeholders": {
+      "subnets": {
+        "type": "String"
       }
     }
   },

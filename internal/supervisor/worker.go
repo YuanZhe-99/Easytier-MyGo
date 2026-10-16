@@ -692,7 +692,7 @@ func detailOf(node *coreadapter.NodeInfo, pairs []coreadapter.PeerRoutePair, now
 		SampledAt:  now,
 	}
 	d.Peers = append(d.Peers, localapi.PeerInfo{Hostname: node.Hostname, IPv4: node.IPv4Addr, Local: true,
-		NATType: node.STUNInfo.UDPNATType.String(), Version: node.Version})
+		NATType: node.STUNInfo.UDPNATType.String(), Version: node.Version, Subnets: node.ProxyCIDRs})
 	for _, p := range pairs {
 		if p.Route.PeerID == node.PeerID {
 			continue
@@ -703,6 +703,9 @@ func detailOf(node *coreadapter.NodeInfo, pairs []coreadapter.PeerRoutePair, now
 			Direct:   len(p.Peer.Conns) > 0,
 			NATType:  p.Route.STUNInfo.UDPNATType.String(),
 			Version:  p.Route.Version,
+			Subnets:  p.Route.ProxyCIDRs,
+
+			PublicServer: p.Route.FeatureFlag["is_public_server"],
 		}
 		if p.Route.IPv4Addr != nil {
 			pi.IPv4 = p.Route.IPv4Addr.String()

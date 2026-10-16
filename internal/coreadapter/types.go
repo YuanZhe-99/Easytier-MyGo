@@ -184,6 +184,8 @@ type PeerRoute struct {
 	NextHopPeerIDLatFirst   uint32   `json:"next_hop_peer_id_latency_first"`
 	CostLatencyFirst        uint32   `json:"cost_latency_first"`
 	PathLatencyLatencyFirst uint32   `json:"path_latency_latency_first"`
+	// FeatureFlag carries is_public_server and similar node traits.
+	FeatureFlag map[string]bool `json:"feature_flag"`
 }
 
 // PeerConnInfo is the connection view of a remote peer.

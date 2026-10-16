@@ -1870,6 +1870,16 @@ func (msgs Messages) PeerDirect() string {
 	return Catalog.Format(msgs.locale, "PeerDirect", nil)
 }
 
+// PeerPublicServer says "Public server"
+// in the language the app shows.
+func PeerPublicServer() string { return In(i18n.Locale()).PeerPublicServer() }
+
+// PeerPublicServer says "Public server"
+// in the language of msgs.
+func (msgs Messages) PeerPublicServer() string {
+	return Catalog.Format(msgs.locale, "PeerPublicServer", nil)
+}
+
 // PeerRelay says "{hops, plural, one {Relay} other {Relay ×#}}"
 // in the language the app shows.
 func PeerRelay(hops int) string { return In(i18n.Locale()).PeerRelay(hops) }
@@ -1878,6 +1888,16 @@ func PeerRelay(hops int) string { return In(i18n.Locale()).PeerRelay(hops) }
 // in the language of msgs.
 func (msgs Messages) PeerRelay(hops int) string {
 	return Catalog.Format(msgs.locale, "PeerRelay", map[string]any{"hops": hops})
+}
+
+// PeerSubnets says "Shares {subnets}"
+// in the language the app shows.
+func PeerSubnets(subnets string) string { return In(i18n.Locale()).PeerSubnets(subnets) }
+
+// PeerSubnets says "Shares {subnets}"
+// in the language of msgs.
+func (msgs Messages) PeerSubnets(subnets string) string {
+	return Catalog.Format(msgs.locale, "PeerSubnets", map[string]any{"subnets": subnets})
 }
 
 // PeerThisDevice says "This device"

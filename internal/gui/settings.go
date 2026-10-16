@@ -1,6 +1,7 @@
 package gui
 
 import (
+	_ "embed"
 	"fmt"
 	"slices"
 
@@ -13,6 +14,12 @@ import (
 	L "github.com/YuanZhe-99/Easytier-MyGo/locales"
 	"github.com/YuanZhe-99/Easytier-MyGo/third_party"
 )
+
+//go:embed assets/icon.png
+var appIconPNG []byte
+
+// appIcon is the app's icon for the welcome page (nil if undecodable).
+var appIcon, _ = ui.DecodeBitmap(appIconPNG)
 
 // coresState is the core manager's view state.
 type coresState struct {
@@ -431,6 +438,9 @@ func (a *App) welcomeView(c *ui.Context) {
 	a.mu.Unlock()
 	ui.Scroll(c.Key("welcome")).Fill().Background(t.Background).Padding(40).Gap(20).AlignItems(ui.Center).Children(func() {
 		ui.Column(c).MaxWidth(860).Gap(16).Children(func() {
+			if appIcon != nil {
+				ui.Image(c, appIcon).Width(72).Height(72)
+			}
 			ui.Text(c, L.WelcomeTitle()).FontSize(28).Bold()
 			ui.Text(c, L.WelcomeBody()).TextColor(t.TextMuted)
 			a.modeCards(c, choiceUser, busy)

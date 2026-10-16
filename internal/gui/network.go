@@ -3,6 +3,7 @@ package gui
 import (
 	"fmt"
 	"slices"
+	"strings"
 
 	"github.com/egoist/mygo/ui"
 
@@ -249,7 +250,7 @@ func (a *App) peerList(c *ui.Context, d *localapi.NetworkDetail) {
 					switch {
 					case p.Local:
 						col, label = k.local, L.PeerThisDevice()
-					case p.Version == "" && p.IPv4 == "":
+					case p.PublicServer:
 						col = k.server
 					}
 					ui.Box(c).Width(36).Height(36).Radius(18).Background(col.Alpha(0.14)).Center().Children(func() {
@@ -268,7 +269,14 @@ func (a *App) peerList(c *ui.Context, d *localapi.NetworkDetail) {
 							name = p.Hostname + "  (" + L.PeerThisDevice() + ")"
 						}
 						ui.Text(c, name).Bold().Ellipsis("…").NoWrap()
-						ui.Text(c, joinDot(nonEmpty(shortIP(p.IPv4), p.Tunnel, natLabel(p.NATType)))).FontSize(sizeSmall).TextColor(t.TextMuted).NoWrap()
+						sub := nonEmpty(shortIP(p.IPv4), p.Tunnel, natLabel(p.NATType))
+						if p.PublicServer {
+							sub = append([]string{L.PeerPublicServer()}, sub...)
+						}
+						ui.Text(c, joinDot(sub)).FontSize(sizeSmall).TextColor(t.TextMuted).NoWrap()
+						if len(p.Subnets) > 0 {
+							ui.Text(c, L.PeerSubnets(strings.Join(p.Subnets, ", "))).FontSize(sizeSmall).TextColor(t.TextMuted).Selectable()
+						}
 					})
 					if p.Local {
 						return

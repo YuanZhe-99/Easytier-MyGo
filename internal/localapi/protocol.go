@@ -235,19 +235,23 @@ type NetworkDetail struct {
 
 // PeerInfo is one node of the network.
 type PeerInfo struct {
-	Hostname  string     `json:"hostname"`
-	IPv4      string     `json:"ipv4,omitempty"`
-	Local     bool       `json:"local,omitempty"`
-	Direct    bool       `json:"direct"` // p2p rather than relayed
-	Cost      int        `json:"cost"`
-	LatencyMS float64    `json:"latency_ms"`
-	LossRate  float64    `json:"loss_rate"`
-	Tunnel    string     `json:"tunnel,omitempty"`
-	NATType   string     `json:"nat_type,omitempty"`
-	Version   string     `json:"version,omitempty"`
-	RxBytes   uint64     `json:"rx_bytes"`
-	TxBytes   uint64     `json:"tx_bytes"`
-	Conns     []ConnInfo `json:"conns,omitempty"`
+	Hostname  string  `json:"hostname"`
+	IPv4      string  `json:"ipv4,omitempty"`
+	Local     bool    `json:"local,omitempty"`
+	Direct    bool    `json:"direct"` // p2p rather than relayed
+	Cost      int     `json:"cost"`
+	LatencyMS float64 `json:"latency_ms"`
+	LossRate  float64 `json:"loss_rate"`
+	Tunnel    string  `json:"tunnel,omitempty"`
+	NATType   string  `json:"nat_type,omitempty"`
+	Version   string  `json:"version,omitempty"`
+	// PublicServer marks a shared relay server rather than a member.
+	PublicServer bool `json:"public_server,omitempty"`
+	// Subnets are the local networks the node shares.
+	Subnets []string   `json:"subnets,omitempty"`
+	RxBytes uint64     `json:"rx_bytes"`
+	TxBytes uint64     `json:"tx_bytes"`
+	Conns   []ConnInfo `json:"conns,omitempty"`
 }
 
 // ConnInfo is one tunnel connection to a peer.

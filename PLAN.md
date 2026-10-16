@@ -31,7 +31,6 @@
 已完成：新 GUI（网络仪表盘+实时图、节点、表单/TOML 编辑、新建/导入、设置：常规/运行方式/内核管理/关于、首次向导、托盘三态与按档位退出、关窗隐藏、通知、四语、浅/深色）；`internal/gui/gui_test.go` 渲染全部页面（可输出截图）；本机实机：用户态模式连接、实时数据、托盘注册、kill -9 GUI 后 daemon 与内核随之退出。
 剩余：
 1. 助手相关实机剩余：GUI 中的“后台服务”与切回“免授权”、`helper add-core`、从 GUI 安装/卸载助手（pkexec 流程）。（免授权→随界面切换、助手侧内核管理已实测。）
-2. GUI 补充：路由/子网页签；首次向导里放应用图标；节点行公共服务器的识别。（删除、逐连接详情、每日内核检查、诊断导出已完成；性能已实测，见 platform-notes。）
 
 ### P3 打包、签名与发布 CI
 - `scripts/build.sh <platform>`：deps fetch → 构建 svc/ctl 进 resources → `go tool mygo build`。
