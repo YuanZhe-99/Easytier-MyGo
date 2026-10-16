@@ -24,6 +24,9 @@ const (
 	cardRadius  float32 = 12
 	cardPad     float32 = 16
 	gap         float32 = 12
+	avatarSize  float32 = 36 // a peer's round avatar
+	logoSize    float32 = 22 // a vendor logo inside it (about 64%)
+	copyIconSz  float32 = 13 // the copy button beside a peer's address
 )
 
 // tokens are the app's named colors, derived from the theme so they work

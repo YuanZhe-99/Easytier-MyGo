@@ -11,3 +11,19 @@ use artwork from EasyTier-iOS:
   License: GNU General Public License v3.0 or later
 
 The maintainer chose this artwork for the app icon (2026-10-16).
+
+The interface icons drawn in internal/gui/shell.go are from Lucide:
+
+  https://lucide.dev
+  Copyright (c) Lucide Contributors 2022 (portions Copyright (c) 2013-2022 Cole Bemis)
+  License: ISC
+
+Vendor logos
+============
+
+internal/gui/assets/logos/*.svg are vendor and operating-system marks shown in the peer list.
+Their source and license are listed per file in internal/gui/assets/logos/SOURCES.md: most are
+Simple Icons (CC0 1.0) or public-domain files from Wikimedia Commons; some have no recorded
+source. Every mark is a trademark of its owner, used only to identify a device's maker; this
+implies no affiliation or endorsement, and a mark is removed if its owner asks. These files are
+not part of EasyTier MyGo's GPL-3.0 source.

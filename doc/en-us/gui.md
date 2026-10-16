@@ -10,7 +10,7 @@ screenshots (`SCREENSHOT_DIR`).
   Logs and Settings.
 - **Network page:** a header card (name, EasyTier version, status badge, Connect/Disconnect);
   while running, the traffic row, the live traffic chart, info tiles (virtual IPv4, NAT type, peer
-  count, uptime) and Peers | Routes | Events; while stopped, the configuration summary and Edit.
+  count, uptime) and Peers | Events; while stopped, the configuration summary and Edit.
 - **Configuration:** Form | TOML tabs; Save and Save & Apply are separate.
 - **Settings:** General, Run mode, Cores, Advanced, About.
 - **App updates (About):** a daily check (switchable) and "Check for updates" read the signed
@@ -22,6 +22,27 @@ screenshots (`SCREENSHOT_DIR`).
 - **First run:** choose a run mode → install the helper if needed → create or import a network. A
   failed choice (a cancelled prompt, a failed install) is shown on the welcome page under the cards.
 - Every page scrolls.
+
+## Peer rows
+
+- **Name** (`friendlyName`): a machine-style hostname (only ASCII letters, digits, `-` and `_`)
+  is shown with spaces and the usual capitalization: `macbook-pro` → MacBook Pro,
+  `Intel-NUC8i5BEH` → Intel NUC8i5BEH, `Mac-mini-2024` → Mac mini 2024. Words the user already
+  capitalized keep their spelling; lower-case words mixing letters and digits (`nuc8i5beh`) are left
+  alone. Any other hostname is shown as it is. The raw hostname is the row's tooltip.
+- **Avatar** (`vendorLogo`): when a hostname word names a known maker, product line, operating
+  system or provider (`mac`, `iphone`, `nuc`, `linksys`, `windows`, `aws`, …), the avatar shows that
+  vendor's monochrome logo in the row's color; otherwise the first letter of the name. Only whole
+  words match (split at separators, letter–digit and lower–upper boundaries), so `hp` does not match
+  `php-dev`. Makers come before operating systems. This device keeps its dot.
+- **Copy:** right-clicking a row (Ctrl-click on macOS, Shift+F10) offers Copy IP address, Copy
+  MagicDNS name and Copy hostname; a copy button beside the address appears while the row is hovered
+  or focused. A toast confirms what was copied.
+- **MagicDNS name** (`magicDNSName`): `<hostname>.<zone>` in lower case, offered only when the
+  network's saved configuration has `accept_dns = true` and the hostname is a single DNS label. The
+  zone is `tld_dns_zone` without its trailing dot, `et.net` by default (see `easytier-upstream.md`).
+- Vendor logos are trademarks of their owners, used only to identify a device's maker; their sources
+  are listed in `internal/gui/assets/logos/SOURCES.md` (see `packaging.md`, "Vendor logos").
 
 ## Wording rules
 

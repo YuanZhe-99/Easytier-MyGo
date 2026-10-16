@@ -3,13 +3,21 @@
 The project restarted from 0.1.0 on 2026-10-16. The earlier, inherited history (versions up to
 0.10.80) is preserved under the git tag `archive/v0.10.80` and is not continued.
 
-## Unreleased
+## 0.1.4 (2026-10-16)
 
+- Peer list: machine-style hostnames are shown as friendly names (`macbook-pro` → MacBook Pro,
+  `Intel-NUC8i5BEH` → Intel NUC8i5BEH); the raw hostname is the row's tooltip.
+- Peer list: the avatar shows the vendor's logo when the hostname names a known maker, product
+  line, operating system or provider (Apple, Intel, Linksys, Windows, …); 63 bundled logos, sources
+  in `internal/gui/assets/logos/SOURCES.md`.
+- Peer list: right-click a peer to copy its IP address, MagicDNS name (when `accept_dns` is on) or
+  hostname; a copy button beside the address appears on hover.
 - Security: the privileged helper's signed self-update checked the bundle in the user-writable
   app folder and then read every file there again to copy it, so a program running as the same
   user could swap in its own binary between the two reads and have it installed and run as
   root/SYSTEM. The helper now reads each file once and installs exactly the bytes it verified
   (Windows, macOS, Linux).
+- MyGo v0.5.5 / EasyTier v2.6.4 (checked, unchanged).
 
 ## 0.1.3 (2026-10-16)
 

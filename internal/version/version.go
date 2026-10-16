@@ -5,7 +5,7 @@ import "strings"
 
 // Version is the product version. mygo.json must carry the same value
 // (checked by TestManifestMatches); release tags are "v" + Version.
-const Version = "0.1.3"
+const Version = "0.1.4"
 
 // Older reports whether version a ("0.1.0", "v0.1.2") is older than b.
 func Older(a, b string) bool {

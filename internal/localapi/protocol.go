@@ -196,15 +196,18 @@ type NetworkStatus struct {
 	Lifecycle health.Lifecycle     `json:"lifecycle"`
 	Recovery  health.RecoveryState `json:"recovery"`
 
-	NetworkName string    `json:"network_name,omitempty"`
-	Hostname    string    `json:"hostname,omitempty"`
-	VirtualIPv4 string    `json:"virtual_ipv4,omitempty"`
-	PeerCount   int       `json:"peer_count"`
-	NATType     string    `json:"nat_type,omitempty"`
-	CoreVersion string    `json:"core_version,omitempty"`
-	NoTUN       bool      `json:"no_tun"`
-	StartedAt   time.Time `json:"started_at,omitzero"`
-	CheckedAt   time.Time `json:"checked_at,omitzero"`
+	NetworkName string `json:"network_name,omitempty"`
+	Hostname    string `json:"hostname,omitempty"`
+	VirtualIPv4 string `json:"virtual_ipv4,omitempty"`
+	PeerCount   int    `json:"peer_count"`
+	NATType     string `json:"nat_type,omitempty"`
+	CoreVersion string `json:"core_version,omitempty"`
+	NoTUN       bool   `json:"no_tun"`
+	// MagicDNSZone is the saved document's MagicDNS zone ("et.net"); empty
+	// when accept_dns is off. Peers resolve as <hostname>.<zone>.
+	MagicDNSZone string    `json:"magic_dns_zone,omitempty"`
+	StartedAt    time.Time `json:"started_at,omitzero"`
+	CheckedAt    time.Time `json:"checked_at,omitzero"`
 
 	RxRate  float64 `json:"rx_rate"` // bytes/s of the latest sample
 	TxRate  float64 `json:"tx_rate"`

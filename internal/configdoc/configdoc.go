@@ -54,6 +54,10 @@ type Summary struct {
 	Listeners    int    `json:"listeners"`
 	Peers        int    `json:"peers"`
 	NoTun        bool   `json:"no_tun,omitempty"`
+	// MagicDNSZone is the zone peers are published under when accept_dns is
+	// on ("et.net" unless tld_dns_zone says otherwise, without the trailing
+	// dot); empty when MagicDNS is off.
+	MagicDNSZone string `json:"magic_dns_zone,omitempty"`
 }
 
 // rawConfig mirrors the fields the summary cares about. Everything else in
@@ -72,7 +76,9 @@ type rawConfig struct {
 		URI string `toml:"uri"`
 	} `toml:"peer"`
 	Flags struct {
-		NoTun *bool `toml:"no_tun"`
+		NoTun      *bool  `toml:"no_tun"`
+		AcceptDNS  *bool  `toml:"accept_dns"`
+		TLDDNSZone string `toml:"tld_dns_zone"`
 	} `toml:"flags"`
 }
 
@@ -101,7 +107,25 @@ func Parse(text string) (Summary, error) {
 	if raw.Flags.NoTun != nil {
 		s.NoTun = *raw.Flags.NoTun
 	}
+	if raw.Flags.AcceptDNS != nil && *raw.Flags.AcceptDNS {
+		s.MagicDNSZone = MagicDNSZone(raw.Flags.TLDDNSZone)
+	}
 	return s, nil
+}
+
+// DefaultMagicDNSZone is the core's zone when tld_dns_zone is not set
+// (DEFAULT_ET_DNS_ZONE upstream, "et.net.").
+const DefaultMagicDNSZone = "et.net"
+
+// MagicDNSZone normalizes a tld_dns_zone value for display.
+// Returns: the default zone for an empty value, otherwise the value
+// lower-cased and without its trailing dot.
+func MagicDNSZone(tld string) string {
+	z := strings.ToLower(strings.TrimSuffix(strings.TrimSpace(tld), "."))
+	if z == "" {
+		return DefaultMagicDNSZone
+	}
+	return z
 }
 
 // NewUUID returns a random (version 4) UUID in the hyphenated form the core

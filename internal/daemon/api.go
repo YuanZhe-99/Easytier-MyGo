@@ -391,7 +391,7 @@ func (d *Daemon) decorate(s *localapi.NetworkStatus, p profiles.Profile) {
 	if text, entry, err := d.store.Config(p.ID); err == nil {
 		s.Saved = entry.Revision
 		if sum, err := configdoc.Parse(text); err == nil {
-			s.NetworkName, s.NoTUN = sum.NetworkName, sum.NoTun
+			s.NetworkName, s.NoTUN, s.MagicDNSZone = sum.NetworkName, sum.NoTun, sum.MagicDNSZone
 		}
 	}
 	if p.Run && s.State == localapi.StateStopped && s.Error == "" {

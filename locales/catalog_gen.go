@@ -598,6 +598,16 @@ func (msgs Messages) CloseQuit() string {
 	return Catalog.Format(msgs.locale, "CloseQuit", nil)
 }
 
+// Copied says "Copied {text}"
+// in the language the app shows.
+func Copied(text string) string { return In(i18n.Locale()).Copied(text) }
+
+// Copied says "Copied {text}"
+// in the language of msgs.
+func (msgs Messages) Copied(text string) string {
+	return Catalog.Format(msgs.locale, "Copied", map[string]any{"text": text})
+}
+
 // CoreBundled says "Bundled"
 // in the language the app shows.
 func CoreBundled() string { return In(i18n.Locale()).CoreBundled() }
@@ -1998,6 +2008,36 @@ func PeerConnections(count int) string { return In(i18n.Locale()).PeerConnection
 // in the language of msgs.
 func (msgs Messages) PeerConnections(count int) string {
 	return Catalog.Format(msgs.locale, "PeerConnections", map[string]any{"count": count})
+}
+
+// PeerCopyDNS says "Copy MagicDNS name"
+// in the language the app shows.
+func PeerCopyDNS() string { return In(i18n.Locale()).PeerCopyDNS() }
+
+// PeerCopyDNS says "Copy MagicDNS name"
+// in the language of msgs.
+func (msgs Messages) PeerCopyDNS() string {
+	return Catalog.Format(msgs.locale, "PeerCopyDNS", nil)
+}
+
+// PeerCopyHostname says "Copy hostname"
+// in the language the app shows.
+func PeerCopyHostname() string { return In(i18n.Locale()).PeerCopyHostname() }
+
+// PeerCopyHostname says "Copy hostname"
+// in the language of msgs.
+func (msgs Messages) PeerCopyHostname() string {
+	return Catalog.Format(msgs.locale, "PeerCopyHostname", nil)
+}
+
+// PeerCopyIP says "Copy IP address"
+// in the language the app shows.
+func PeerCopyIP() string { return In(i18n.Locale()).PeerCopyIP() }
+
+// PeerCopyIP says "Copy IP address"
+// in the language of msgs.
+func (msgs Messages) PeerCopyIP() string {
+	return Catalog.Format(msgs.locale, "PeerCopyIP", nil)
 }
 
 // PeerDirect says "Direct"

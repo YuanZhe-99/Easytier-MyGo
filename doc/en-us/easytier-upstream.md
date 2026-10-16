@@ -52,6 +52,10 @@ manager.
 - `--rpc-portal` defaults to 15888 when unset; always pass an explicit port.
 - Without `--daemon`-style supervision a core can be alive with no running instance; health checks
   cover this.
+- MagicDNS (v2.6.4 source, `instance/dns_server`): with `[flags] accept_dns = true` a node
+  publishes an A record `<hostname>.<zone>` for every route with a hostname. The zone is
+  `[flags] tld_dns_zone`, `et.net.` by default (`DEFAULT_ET_DNS_ZONE`); the hostname is used as it
+  is, so names with spaces or dots do not form a single label.
 
 ## Privileges
 

@@ -220,11 +220,14 @@ func (a *App) networkTabs(c *ui.Context, n localapi.NetworkStatus) {
 		eventTimeline(c, evs, false)
 		return
 	}
-	a.peerList(c, detail)
+	a.peerList(c, n.MagicDNSZone, detail)
 }
 
 // peerList shows the nodes of the network (local node first).
-func (a *App) peerList(c *ui.Context, d *localapi.NetworkDetail) {
+// Inputs: zone is the network's MagicDNS zone, "" when MagicDNS is off.
+// Side effects: a row's context menu and copy button write to the clipboard
+// and show a toast; clicking a peer with connections expands it.
+func (a *App) peerList(c *ui.Context, zone string, d *localapi.NetworkDetail) {
 	t := c.Theme()
 	k := tok(c)
 	if d == nil || len(d.Peers) == 0 {
@@ -236,44 +239,85 @@ func (a *App) peerList(c *ui.Context, d *localapi.NetworkDetail) {
 			if i > 0 {
 				ui.Divider(c)
 			}
-			key := fmt.Sprintf("%s/%s/%d", d.Status.ID, p.Hostname, i)
+			// Keyed by identity, not position, so expansion survives
+			// reordering.
+			key := d.Status.ID + "/" + p.Hostname + "/" + p.IPv4
 			a.mu.Lock()
 			open := a.expanded[key]
 			a.mu.Unlock()
-			row := ui.ButtonBase(c.Key("peer-" + key)).FillWidth().Label(p.Hostname)
+			name := friendlyName(p.Hostname)
+			ip, dns := shortIP(p.IPv4), magicDNSName(p.Hostname, zone)
+			copyText := func(s string) {
+				c.WriteClipboard(s)
+				a.update(func() { a.setToast(L.Copied(s), false) })
+			}
+			row := ui.ButtonBase(c.Key("peer-" + key)).FillWidth().Label(name)
+			if name != p.Hostname {
+				row.Tooltip(p.Hostname)
+			}
 			if row.Clicked() && !p.Local && len(p.Conns) > 0 {
 				a.update(func() { a.expanded[key] = !open })
 			}
+			row.ContextMenu(func(m *ui.Menu) {
+				if m.Item(L.PeerCopyIP()).Disabled(ip == "").Chosen() {
+					copyText(ip)
+				}
+				if dns != "" && m.Item(L.PeerCopyDNS()).Chosen() {
+					copyText(dns)
+				}
+				if m.Item(L.PeerCopyHostname()).Chosen() {
+					copyText(p.Hostname)
+				}
+			})
+			showCopy := row.Hovered() || row.FocusWithin()
 			row.Children(func() {
 				ui.Row(c).FillWidth().Padding(10, 12).Gap(12).AlignItems(ui.Center).Children(func() {
-					col, label := k.peer, "P"
+					col := k.peer
 					switch {
 					case p.Local:
-						col, label = k.local, L.PeerThisDevice()
+						col = k.local
 					case p.PublicServer:
 						col = k.server
 					}
-					ui.Box(c).Width(36).Height(36).Radius(18).Background(col.Alpha(0.14)).Center().Children(func() {
-						initial := label
-						if !p.Local && p.Hostname != "" {
-							initial = string([]rune(p.Hostname)[:1])
+					ui.Box(c).Width(avatarSize).Height(avatarSize).Radius(avatarSize / 2).Background(col.Alpha(0.14)).Center().Children(func() {
+						switch logo := vendorLogo(p.Hostname); {
+						case p.Local:
+							ui.Text(c, "●").TextColor(col).Bold()
+						case logo != nil:
+							w, h := logo.Size()
+							lw := logoSize
+							if h > w {
+								lw = logoSize * w / h
+							}
+							ui.Icon(c, logo).Width(lw).TextColor(col)
+						default:
+							ui.Text(c, avatarInitial(name)).TextColor(col).Bold()
 						}
-						if p.Local {
-							initial = "●"
-						}
-						ui.Text(c, initial).TextColor(col).Bold()
 					})
 					ui.Column(c).Grow(1).Gap(2).Children(func() {
-						name := p.Hostname
+						title := name
 						if p.Local {
-							name = p.Hostname + "  (" + L.PeerThisDevice() + ")"
+							title = name + "  (" + L.PeerThisDevice() + ")"
 						}
-						ui.Text(c, name).Bold().Ellipsis("…").NoWrap()
-						sub := nonEmpty(shortIP(p.IPv4), p.Tunnel, natLabel(p.NATType))
+						ui.Text(c, title).Bold().Ellipsis("…").NoWrap()
+						sub := nonEmpty(ip, p.Tunnel, natLabel(p.NATType))
 						if p.PublicServer {
 							sub = append([]string{L.PeerPublicServer()}, sub...)
 						}
-						ui.Text(c, joinDot(sub)).FontSize(sizeSmall).TextColor(t.TextMuted).NoWrap()
+						ui.Row(c).Gap(6).AlignItems(ui.Center).Children(func() {
+							ui.Text(c, joinDot(sub)).FontSize(sizeSmall).TextColor(t.TextMuted).NoWrap()
+							if ip == "" {
+								return
+							}
+							b := ui.ButtonBase(c.Key("copy-" + key)).Label(L.PeerCopyIP()).Tooltip(L.PeerCopyIP()).Padding(2).Radius(4)
+							if !showCopy {
+								b.Opacity(0)
+							}
+							if b.Clicked() {
+								copyText(ip)
+							}
+							b.Children(func() { ui.Icon(c, iconCopy).Width(copyIconSz).TextColor(t.TextMuted) })
+						})
 						if len(p.Subnets) > 0 {
 							ui.Text(c, L.PeerSubnets(strings.Join(p.Subnets, ", "))).FontSize(sizeSmall).TextColor(t.TextMuted).Selectable()
 						}

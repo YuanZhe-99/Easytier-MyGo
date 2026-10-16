@@ -7,11 +7,11 @@ effects and notes where non-trivial).
 | Package | Role | Start with |
 |---|---|---|
 | `cmd/easytier-mygo` | GUI entry point | `main` |
-| `internal/gui` | GUI state, views, tray | `App`, `App.view`, `App.connectLoop` |
+| `internal/gui` | GUI state, views, tray | `App`, `App.view`, `App.connectLoop`, `App.peerList`, `friendlyName`, `vendorLogo`, `magicDNSName` |
 | `cmd/easytier-mygo-svc` | Daemon entry point and helper subcommands | `run`, `helperCmd` |
 | `cmd/easytier-mygo-ctl` | Local API command-line client | `main` |
 | `internal/health` | Health engine | `Engine.Observe`, `Policy`, `DefaultPolicy` |
-| `internal/configdoc` | Raw config documents | `Store`, `Extract`, `Changes`, `ApplyValues`, `NewUUID` |
+| `internal/configdoc` | Raw config documents | `Store`, `Extract`, `Changes`, `ApplyValues`, `NewUUID`, `MagicDNSZone` |
 | `internal/coreadapter` | `easytier-cli` wrapper | `CLI`, `KindOf`, `ErrorKind` |
 | `internal/telemetry` | Rates from counters, curve ring | `Tracker.Observe`, `Ring` |
 | `internal/localapi` | Local API protocol and server | `ProtocolVersion`, `Request`, `Client.Attach`, `Authorizer` |

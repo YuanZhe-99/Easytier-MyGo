@@ -23,4 +23,30 @@ These directories are build inputs and are not committed.
 EasyTier MyGo is GPL-3.0. The bundled EasyTier binaries are LGPL-3.0: every distribution carries
 their license text and the source location recorded in `third_party/easytier.json`. The icon
 comes from EasyTier-iOS (GPL-3.0-or-later); see `resources/NOTICE`. The bundled `upx` is
-GPL-2.0-or-later with the UPX exception; its license ships as `upx-COPYING`.
+GPL-2.0-or-later with the UPX exception; its license ships as `upx-COPYING`. The interface icons
+are Lucide (ISC). Vendor logos are not GPL-3.0 source; see below.
+
+## Vendor logos
+
+The peer list's vendor logos ([gui.md](gui.md), "Peer rows") are SVG files in
+`internal/gui/assets/logos/`, embedded into the GUI at build time; the app never downloads them.
+`SOURCES.md` in that directory lists each file's brand, source, license and trademark owner, and
+`resources/NOTICE` summarizes it for distributions. Most files come from
+[Simple Icons](https://simpleicons.org/) (CC0 1.0), the rest from Wikimedia Commons (public-domain
+text or simple-geometry logos) or have no recorded source, which `SOURCES.md` says.
+
+To add or update a logo:
+
+1. Download `icons/<slug>.svg` from a pinned release of the `simple-icons` npm package, for example
+   `https://cdn.jsdelivr.net/npm/simple-icons@<version>/icons/<slug>.svg`, or a public-domain file
+   from Wikimedia Commons. Prefer Simple Icons: its files are CC0, monochrome, one path in a
+   24 × 24 view box.
+2. Save it as `internal/gui/assets/logos/<slug>.svg` (lower-case brand name, no separators). It must
+   be monochrome shapes only: no text, embedded images or filters (`ui.ParseSVG`); the color comes
+   from the row.
+3. Add its row to `SOURCES.md` (file, brand, source link, license, trademark owner).
+4. Add the brand's hostname words to `vendorKeywords` in `internal/gui/vendorlogo.go` and a case to
+   `TestVendorLogoName`. `TestVendorLogosParse` fails for a file that does not parse or a keyword
+   whose logo is missing.
+
+A mark is removed if its owner asks.

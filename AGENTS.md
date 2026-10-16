@@ -41,19 +41,22 @@ about to change, verify against the code, then fix the docs in the same commit.
 ## Required workflow
 
 1. Treat the user's message as the modification request.
-2. Before editing, fetch the relevant remote(s) and check whether the local branch is behind.
-   Resolve any divergence before starting.
-3. Run `go run ./tools/deps check`. If MyGo or EasyTier has a newer release, follow
-   [Upstream versions](#upstream-versions) first.
-4. Read per [Reading order](#reading-order). Plan when the work is non-trivial; multi-step plans go
+2. **Before any edit, do both checks — every time, not only for releases:**
+   - `git fetch` every remote (`origin` and `github`) and check whether the local branch is behind
+     or diverged. Resolve any divergence before starting.
+   - Run `go run ./tools/deps check` to see whether MyGo or EasyTier has a newer release. If either
+     moved, follow [Upstream versions](#upstream-versions) first, before the requested change.
+
+   Repeat both checks right before a release commit.
+3. Read per [Reading order](#reading-order). Plan when the work is non-trivial; multi-step plans go
    into `PLAN.md`.
-5. Keep changes scoped. Do not revert unrelated work in the tree.
-6. Update documentation in the same change set — see
+4. Keep changes scoped. Do not revert unrelated work in the tree.
+5. Update documentation in the same change set — see
    [Documentation maintenance](#documentation-maintenance).
-7. Verify — see [Verification](#verification).
-8. Report briefly, in English and Chinese: what changed, what was verified (with evidence), the
+6. Verify — see [Verification](#verification).
+7. Report briefly, in English and Chinese: what changed, what was verified (with evidence), the
    current version, the configured remotes, and anything that could not be done.
-9. Ask before pushing. The user decides when to release.
+8. Ask before pushing. The user decides when to release.
 
 ## Documentation maintenance
 
@@ -203,8 +206,14 @@ binaries under `resources/<goos>-<goarch>/`, or machine-specific state.
 
 ## MyApps milestone releases
 
-For each completed milestone, increment the patch version by 0.0.1; the user decides when to
-release. Documentation-only changes do not bump the version.
+Choose the bump by the size of the change and propose it; the user confirms the version and
+decides when to release:
+
+- **Patch (0.0.1)** for fixes and small, incremental features.
+- **Minor (0.1.0, resetting the patch)** for a substantial improvement: a new major feature area,
+  a reworked interface, or a change in behavior users must learn.
+
+Documentation-only changes do not bump the version.
 
 License: GPL-3.0 (`LICENSE`). Do not copy code from repositories with incompatible licenses.
 Bundled EasyTier binaries are LGPL-3.0 and ship with their license text and source location.

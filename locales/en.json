@@ -111,6 +111,14 @@
   "ChartWindowLabel": "Time span",
   "CloseHide": "Hide to tray",
   "CloseQuit": "Quit",
+  "Copied": "Copied {text}",
+  "@Copied": {
+    "placeholders": {
+      "text": {
+        "type": "String"
+      }
+    }
+  },
   "CoreBundled": "Bundled",
   "CoreInUse": "In use",
   "CoreInstalled": "Installed",
@@ -359,6 +367,9 @@
       }
     }
   },
+  "PeerCopyDNS": "Copy MagicDNS name",
+  "PeerCopyHostname": "Copy hostname",
+  "PeerCopyIP": "Copy IP address",
   "PeerDirect": "Direct",
   "PeerPublicServer": "Public server",
   "PeerRelay": "{hops, plural, one {Relay} other {Relay ×#}}",

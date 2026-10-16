@@ -143,3 +143,22 @@ func TestInstanceIDFormFill(t *testing.T) {
 		t.Fatalf("NewUUID: %q %q", a, b)
 	}
 }
+
+// TestMagicDNSZone: the summary carries the MagicDNS zone only when
+// accept_dns is on, with the core's default and a custom tld_dns_zone.
+func TestMagicDNSZone(t *testing.T) {
+	for _, tc := range []struct{ flags, want string }{
+		{"", ""},
+		{"accept_dns = false\ntld_dns_zone = \"lan.\"", ""},
+		{"accept_dns = true", "et.net"},
+		{"accept_dns = true\ntld_dns_zone = \"Home.Lan.\"", "home.lan"},
+	} {
+		s, err := Parse("instance_name = \"x\"\n[flags]\n" + tc.flags + "\n")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if s.MagicDNSZone != tc.want {
+			t.Errorf("flags %q: zone %q, want %q", tc.flags, s.MagicDNSZone, tc.want)
+		}
+	}
+}

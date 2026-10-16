@@ -36,6 +36,9 @@
 | tested / untested | 已测试 / 未测试 |
 | instance ID | 实例 ID |
 | Dock (macOS) | 程序坞 |
+| MagicDNS name | MagicDNS 名称 |
+| vendor logo | 厂商标志 |
+| friendly name (of a peer) | 友好名称 |
 
 ## 6. 审阅清单
 

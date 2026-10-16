@@ -30,6 +30,7 @@
 - 两个本地内核无法经回环握手：连接器会把源地址绑定到网卡，因此应拨本机网卡地址（`tcp://<iface-ip>:<port>`）。
 - 未设置时 `--rpc-portal` 默认 15888；请始终显式指定端口。
 - 没有 `--daemon` 式守护时，内核可能活着却没有运行实例；健康检查覆盖了这种情况。
+- MagicDNS（v2.6.4 源码，`instance/dns_server`）：设置 `[flags] accept_dns = true` 时，节点会为每条带主机名的路由发布 A 记录 `<hostname>.<zone>`。zone 取 `[flags] tld_dns_zone`，默认 `et.net.`（`DEFAULT_ET_DNS_ZONE`）；主机名按原样使用，因此含空格或点的名称无法构成单个标签。
 
 ## 权限
 
