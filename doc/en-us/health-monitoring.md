@@ -64,4 +64,6 @@ later sees what happened while it was closed.
 
 The GUI shows plain-language states. Internal reason codes, policy numbers and revision hashes
 belong in diagnostics and the log details, not in the main interface. Stale or disconnected data is
-always marked; green never outlives its evidence.
+always marked; green never outlives its evidence. A stopped network publishes no verdict (level
+`unknown`, lifecycle `stopped`, no reason), and a restart starts from no evidence, so it never
+shows as connected before a new check.

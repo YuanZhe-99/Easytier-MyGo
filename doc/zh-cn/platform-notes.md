@@ -3,7 +3,7 @@
 | 平台 | 状态 |
 |---|---|
 | Linux（systemd） | 主平台。新 daemon、运行方式与助手已实现并验证（见下）；GUI 正在重建。 |
-| macOS | 已实现；CI 冒烟测试（用户态 daemon 与助手，`no_tun`）在 GitHub runner 上通过；用户态 daemon 与 GUI 启动的 daemon 子进程已在真机验证（见下）；未经真机验证：LaunchDaemon 助手、经 `osascript` 的管理员授权、签名自更新。 |
+| macOS | 已实现；CI 冒烟测试（用户态 daemon 与助手，`no_tun`）在 GitHub runner 上通过；用户态 daemon、GUI 启动的 daemon 子进程与 LaunchDaemon 助手（用 `sudo` 安装，`no_tun` 与 TUN）已在真机验证（见下）；未经真机验证：经 `osascript` 的管理员授权、签名自更新。 |
 | Windows（x64、ARM64） | 已实现；CI 冒烟测试（用户态 daemon 与助手，`no_tun`）在 GitHub runner 上通过；未经真机验证：用户态 daemon、服务助手、经 PowerShell 的 UAC、AF_UNIX 上按 SID 授权、内核的作业对象、签名自更新。 |
 
 ## Linux
@@ -55,14 +55,19 @@
 | 生命线 | 管道 EOF 停止内核与 daemon；socket 被移除 |
 | 软件包 | `scripts/build.sh` 构建出 `.app` 与 `.dmg` |
 | GUI 的 daemon 子进程 | 无特权方式下，`.app` 从其资源目录启动 daemon（socket 权限 0600，位于临时目录下）；`kill -9` GUI 会停止 daemon 及其内核 |
+| 助手安装（`sudo … --operator`） | LaunchDaemon 已加载，二进制归 root 所有，operator 以非 root 用户获得写权限 |
+| 助手，随界面 | 已连接的网络在没有会话时保持停止，有会话时以 root 运行；会话全部结束后所有内核停止 |
+| 助手与 TUN | 两个 TUN 网络获得带地址的 `utun` 设备并互为对等节点；停止后设备消失 |
+| 助手卸载 `--purge` | 移除 LaunchDaemon、二进制、状态、`EasyTier MyGo` 文件夹与 socket 目录 |
+| Daemon 测试 | `internal/daemon` 测试也在 macOS 上运行（以前仅限 Linux） |
 
-macOS 上未验证：LaunchDaemon 助手及其 `osascript` 授权、助手自更新、TUN，以及 GUI 外观（未截图）。
+macOS 上未验证：GUI 安装按钮触发的 `osascript` 授权、助手自更新，以及 GUI 外观（未截图）。
 
 ## 已知限制
 
 - EasyTier 内核自带的 RPC portal（回环 TCP，端口从 25888 起）对本机所有用户可达，本机用户可以通过 `easytier-cli` 查询或修改运行中的内核。本应用的本地 API 受保护，内核的 portal 不受保护。目标场景是单用户桌面。
 - 特权助手以 root/SYSTEM 运行内核；其 API 仅限 operator 与 `easytier-mygo` 组，并拒绝路径类配置项。
-- macOS 与 Windows 只在 CI 冒烟测试中用 `no_tun` 网络验证过；TUN（utun、WinTun）在这两个平台上未测试。
+- Windows 只验证过 `no_tun` 网络；WinTun 未测试。macOS 的 TUN（utun）已通过助手验证。
 - 标为未测试的内核可能改变 CLI 输出或配置格式；应用会降级为“无法读取状态”而不重启任何东西，也可以重新选回之前的内核。
 - 未认证的 GitHub API 请求每小时限 60 次；发布列表按 ETag 缓存，只在请求时或每日检查时获取。
 - MyGo 生成的 `.deb` 对所有应用都声明依赖 WebKitGTK；`scripts/build.sh` 会去掉该依赖。

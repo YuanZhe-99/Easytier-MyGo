@@ -13,7 +13,7 @@
 ## 授权
 
 - 安装或卸载助手时询问一次：pkexec（Linux）、管理员密码（macOS）、UAC（Windows）。执行安装的用户成为 **operator**。
-- 助手的 socket 接受 operator 及 `easytier-mygo` 组成员（含附属组）的写入，拒绝其他用户。
+- 助手的 socket 接受 operator 及 `easytier-mygo` 组成员（含附属组）的写入，拒绝其他用户。只有 Linux 安装程序会创建该组；在 macOS 上，管理员自行创建后才生效。
 - 只有以下情况会弹出授权：安装或卸载助手、安装自定义内核二进制、用未签名构建更新助手。启动 GUI 时绝不弹出。
 
 ## 会话绑定

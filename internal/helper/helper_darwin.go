@@ -11,6 +11,7 @@ import (
 
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/bundlesig"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/fsutil"
+	"github.com/YuanZhe-99/Easytier-MyGo/internal/localapi"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/version"
 )
 
@@ -74,7 +75,8 @@ func Install(o InstallOptions) error {
 	return launchctl("bootstrap", "system", plistPath())
 }
 
-// Uninstall unloads and removes the helper.
+// Uninstall unloads and removes the helper, its empty socket directory and
+// the `EasyTier MyGo` folder above its files once that is empty.
 func Uninstall(purge bool) error {
 	if os.Geteuid() != 0 {
 		return errors.New("removing the helper needs administrator rights")
@@ -83,11 +85,13 @@ func Uninstall(purge bool) error {
 	if err := os.Remove(plistPath()); err != nil && !errors.Is(err, os.ErrNotExist) {
 		return err
 	}
-	if err := os.RemoveAll(BinDir); err != nil {
+	// The daemon removes its socket on exit; the directory stays behind.
+	_ = os.Remove(filepath.Dir(localapi.SystemSocketPath))
+	if err := removeWithParent(BinDir); err != nil {
 		return err
 	}
 	if purge {
-		return os.RemoveAll(StateDir)
+		return removeWithParent(StateDir)
 	}
 	return nil
 }

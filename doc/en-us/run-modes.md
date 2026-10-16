@@ -17,7 +17,8 @@ installed, and never again when the GUI starts. The GUI itself never runs elevat
 - Installing or uninstalling the helper asks once: pkexec (Linux), the administrator password
   (macOS), UAC (Windows). The installing user becomes the **operator**.
 - The helper's socket accepts writes from the operator and from members of the `easytier-mygo`
-  group (supplementary groups included); other users are refused.
+  group (supplementary groups included); other users are refused. Only the Linux installer creates
+  the group; on macOS it is honored when an administrator creates it.
 - Prompts appear only for: installing or uninstalling the helper, installing a custom core binary,
   and updating the helper from an unsigned build. Never on GUI start.
 

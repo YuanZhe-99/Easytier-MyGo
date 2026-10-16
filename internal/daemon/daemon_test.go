@@ -1,4 +1,4 @@
-//go:build linux
+//go:build linux || darwin
 
 package daemon
 
@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"os/exec"
 	"os/signal"
 	"path/filepath"
 	"strings"
@@ -112,7 +113,7 @@ func start(t *testing.T, mutate func(*Options)) *harness {
 	policy.RecoveryEnabled = true
 	opts := Options{
 		Host: localapi.HostUser, Version: "test", StateDir: filepath.Join(dir, "state"),
-		SocketPath: filepath.Join(dir, "ctl.sock"),
+		SocketPath: shortSocket(t),
 		Authorizer: localapi.Authorizer{OwnerUID: uint32(os.Getuid()), Private: true},
 		CoreBin:    filepath.Join(bin, "easytier-core"), CLIBin: filepath.Join(bin, "easytier-cli"),
 		RPCPortBase: 35888, Policy: policy, Logf: t.Logf,
@@ -201,6 +202,28 @@ func TestNetworksFollowSessions(t *testing.T) {
 	h.eventually("stopped after the session", func() bool { return h.status(id).State == localapi.StateStopped })
 	if !h.status(id).Run {
 		t.Fatal("the user's intent must survive the session")
+	}
+}
+
+// TestStoppedNetworkKeepsNoVerdict: once a network stops, its last health
+// verdict is gone, and reconnecting does not show the old "connected"
+// before a new check (stale green state, found on macOS).
+func TestStoppedNetworkKeepsNoVerdict(t *testing.T) {
+	h := start(t, nil)
+	id := h.create(noTUN)
+	h.do(localapi.Request{Type: localapi.RequestConnect, Network: id})
+	detach := h.attach(id)
+	h.eventually("connected", func() bool { return h.status(id).State == localapi.StateConnected })
+	detach()
+	h.eventually("stopped", func() bool { return h.status(id).State == localapi.StateStopped })
+	s := h.status(id)
+	if s.Level != health.LevelUnknown || s.Cause != health.CauseNone || s.Reason != "" || s.Lifecycle != health.LifecycleStopped {
+		t.Fatalf("a stopped network still carries a verdict: level %v cause %v reason %q lifecycle %v", s.Level, s.Cause, s.Reason, s.Lifecycle)
+	}
+	detach = h.attach(id)
+	defer detach()
+	if st := h.status(id).State; st == localapi.StateConnected {
+		t.Fatal("reconnecting showed connected before any new check")
 	}
 }
 
@@ -318,19 +341,48 @@ func TestLifelineEndsDaemon(t *testing.T) {
 
 // coreProcesses finds the fake cores started from this test's directory.
 func coreProcesses(t *testing.T, dir string) []int {
-	entries, _ := os.ReadDir("/proc")
+	prefix := filepath.Join(dir, "bin", "easytier-core")
 	var out []int
+	if _, err := os.Stat("/proc/self/cmdline"); err != nil {
+		// No procfs (macOS): ps lists every process with its command line.
+		lines, err := exec.Command("ps", "-axo", "pid=,command=").Output()
+		if err != nil {
+			t.Fatal(err)
+		}
+		for _, line := range strings.Split(string(lines), "\n") {
+			var pid int
+			fields := strings.Fields(line)
+			if len(fields) >= 2 && strings.HasPrefix(fields[1], prefix) {
+				if _, err := fmt.Sscan(fields[0], &pid); err == nil {
+					out = append(out, pid)
+				}
+			}
+		}
+		return out
+	}
+	entries, _ := os.ReadDir("/proc")
 	for _, e := range entries {
 		var pid int
 		if _, err := fmt.Sscan(e.Name(), &pid); err != nil {
 			continue
 		}
 		cmd, err := os.ReadFile(filepath.Join("/proc", e.Name(), "cmdline"))
-		if err == nil && strings.HasPrefix(string(cmd), filepath.Join(dir, "bin", "easytier-core")) {
+		if err == nil && strings.HasPrefix(string(cmd), prefix) {
 			out = append(out, pid)
 		}
 	}
 	return out
+}
+
+// shortSocket is a socket path in a short temporary directory: test
+// directories named after long tests exceed macOS's 103-byte limit.
+func shortSocket(t *testing.T) string {
+	dir, err := os.MkdirTemp("", "etm")
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Cleanup(func() { os.RemoveAll(dir) })
+	return filepath.Join(dir, "ctl.sock")
 }
 
 func coreCount(t *testing.T, dir string) int { return len(coreProcesses(t, dir)) }

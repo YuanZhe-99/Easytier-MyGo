@@ -331,6 +331,9 @@ func (w *Worker) handle(ctx context.Context, cmd command) error {
 		w.pending = nil
 		w.recoveryAt = time.Time{}
 		err := w.proc.Stop(10 * time.Second)
+		// The last round described the stopped core: a restart starts
+		// from no evidence, never from the old verdict.
+		w.rawCore, w.rawInst = health.Observation{}, health.Observation{}
 		w.setError("")
 		return err
 	case "apply":
@@ -603,6 +606,8 @@ func (w *Worker) publish() { w.publishWith(nil, nil, w.cfg.Now()) }
 
 // publishWith refreshes the snapshot from the engine and, when a round
 // answered, from the node and peer data.
+// Notes: a stopped network publishes no health verdict (level unknown,
+// no reason), so a green state never outlives its evidence.
 func (w *Worker) publishWith(node *coreadapter.NodeInfo, pairs []coreadapter.PeerRoutePair, now time.Time) {
 	coreSt, _ := w.engine.State(w.core)
 	instSt, _ := w.engine.State(w.inst)
@@ -636,6 +641,13 @@ func (w *Worker) publishWith(node *coreadapter.NodeInfo, pairs []coreadapter.Pee
 		w.snapshot.detail = detailOf(node, pairs, now)
 	}
 	if !w.run {
+		// A stopped network has no verdict; the engine keeps the last one
+		// for recovery bookkeeping only.
+		s.Lifecycle = health.LifecycleStopped
+		if alive, _ := w.proc.Alive(); alive {
+			s.Lifecycle = health.LifecycleStopping
+		}
+		s.Level, s.Cause, s.Reason = health.LevelUnknown, health.CauseNone, ""
 		s.VirtualIPv4, s.PeerCount, s.RxRate, s.TxRate = "", 0, 0, 0
 		w.snapshot.detail = localapi.NetworkDetail{}
 	}

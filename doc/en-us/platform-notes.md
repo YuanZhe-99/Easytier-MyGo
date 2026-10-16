@@ -3,7 +3,7 @@
 | Platform | Status |
 |---|---|
 | Linux (systemd) | Primary platform. New daemon, run modes and helper implemented and verified (below); the GUI is being rebuilt. |
-| macOS | Implemented; CI smoke tests (user daemon and helper, `no_tun`) pass on GitHub runners; the user daemon and the GUI's daemon child are verified on a real machine (below); not verified on a real machine: LaunchDaemon helper, administrator prompt through `osascript`, signed self-update. |
+| macOS | Implemented; CI smoke tests (user daemon and helper, `no_tun`) pass on GitHub runners; the user daemon, the GUI's daemon child and the LaunchDaemon helper (installed with `sudo`, `no_tun` and TUN) are verified on a real machine (below); not verified on a real machine: administrator prompt through `osascript`, signed self-update. |
 | Windows (x64, ARM64) | Implemented; CI smoke tests (user daemon and helper, `no_tun`) pass on GitHub runners; not verified on a real machine: user daemon, service helper, UAC through PowerShell, SID authorization over AF_UNIX, job object for cores, signed self-update. |
 
 ## Linux
@@ -72,8 +72,13 @@ Verified on macOS 27.0.1, Apple M1 (2026-10-16, Go 1.27.2 from Homebrew, EasyTie
 | Lifeline | Pipe EOF stops the cores and the daemon; the socket is removed |
 | Packages | `scripts/build.sh` builds the `.app` and the `.dmg` |
 | GUI daemon child | In no-privileges mode the `.app` starts the daemon from its resources (socket 0600 under the temporary directory); `kill -9` of the GUI stops the daemon and its core |
+| Helper install (`sudo … --operator`) | LaunchDaemon loaded, binaries root-owned, the operator gets write access as a non-root user |
+| Helper, Follow GUI | A connected network stays stopped without a session, runs as root with one; ending the sessions stops every core |
+| Helper with TUN | Two TUN networks get `utun` devices with their addresses and peer; the devices go away when they stop |
+| Helper uninstall `--purge` | Removes the LaunchDaemon, the binaries, the state, the `EasyTier MyGo` folder and the socket directory |
+| Daemon tests | `internal/daemon` tests run on macOS too (they used to be Linux-only) |
 
-Not verified on macOS: the LaunchDaemon helper and its `osascript` prompt, helper self-update, TUN,
+Not verified on macOS: the `osascript` prompt from the GUI's install button, helper self-update,
 and the GUI's appearance (no screenshot was taken).
 
 ## Known limitations
@@ -83,8 +88,8 @@ and the GUI's appearance (no screenshot was taken).
   app's local API is protected; the core's portal is not. Single-user desktops are the target.
 - The privileged helper runs cores as root/SYSTEM; its API is limited to the operator and the
   `easytier-mygo` group, and path-valued config options are refused.
-- macOS and Windows have passed CI smoke tests with `no_tun` networks only; TUN (utun, WinTun) is
-  untested there.
+- Windows has passed `no_tun` networks only; WinTun is untested. macOS TUN (utun) is verified
+  through the helper.
 - Cores marked untested may change their CLI output or config format; the app degrades to
   "status unreadable" without restarting anything, and the previous core can be selected again.
 - Unauthenticated GitHub API requests are limited to 60 per hour; release lists are cached with
