@@ -31,13 +31,12 @@
 已完成：`scripts/build.sh`、`release.yml`（actionlint 通过）、许可证文件随包、`.deb` 去掉 WebKitGTK、交叉构建时用主机 upx 解压、签名构建包与助手自更新（`internal/bundlesig`，公钥已内嵌；私钥在维护者本机 `~/.local/share/easytier-mygo-release/release.key`）；本机构建 Linux 产物并用 install.sh 安装运行；Linux 上交叉构建 Windows exe。
 不做：`.deb` postinst 自动安装助手（GUI 一次授权即可安装，postinst 只增加风险）。
 剩余：
-1. 实机剩余：从 GUI 按钮卸载/安装助手（pkexec 图形授权，需要用户在屏幕前输入密码；命令行等价路径已用 sudo 实测）。（签名自更新、后台服务、各方向切换已实测。）
-2. GitHub 远端建立后：把私钥设为 secret `EASYTIER_MYGO_SIGNING_KEY`，手动触发一次 release.yml 与 ci.yml 并检查产物（含 macOS dmg、Windows NSIS）。
+1. GitHub 远端已建立（2026-10-16）：把私钥设为 secret `EASYTIER_MYGO_SIGNING_KEY`，手动触发一次 release.yml 与 ci.yml 并检查产物（含 macOS dmg、Windows NSIS）。
 
 ### P4 macOS / Windows（已实现，未经真机验证）
 已完成：每平台 socket 路径；Windows 用户态 daemon 以 `--parent-pid` 绑定 GUI；Windows AF_UNIX 按 SID 授权；macOS LaunchDaemon 助手、Windows 服务助手（安装/卸载/状态/签名自更新）；Windows 内核作业对象；GUI 按平台提权（osascript / UAC）。全部可交叉编译并通过 vet。
 冒烟测试：`scripts/smoke.sh user|helper` 已在本机 Linux 通过，并接入 `ci.yml` 的 smoke 作业（Linux/macOS/Windows runner）。
-剩余：GitHub 可用后查看 smoke 作业结果并修正 macOS/Windows 问题；有真机后实测 TUN（macOS utun 需 root、Windows wintun）。
+剩余：smoke 作业修正中（Linux 通过；macOS 用户态通过；Windows x64/ARM64 修复后待复跑）；有真机后实测 TUN（macOS utun 需 root、Windows wintun）。
 
 ### P5 0.1.0 收尾
 - 升级到届时最新 MyGo/EasyTier 并复验；Linux 全量走查（三档、TUN/no_tun、自启、托盘、崩溃回收、助手签名自更新、内核切换与回退）；文档定稿；version-history 0.1.0；用户确认后打 tag 推送。
