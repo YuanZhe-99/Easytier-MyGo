@@ -5,6 +5,7 @@
 | 工作流 | 触发 | 内容 |
 |---|---|---|
 | `ci.yml` | 推送到 `main`、拉取请求、手动 | 格式、vet、测试（含 `CGO_ENABLED=0`）、MyGo vet、界面目录、文档镜像检查、上游固定版本；在 Windows 与 macOS 上构建并跑单元测试。 |
+| `ci.yml` → smoke | 检查之后 | 在 Linux、macOS、Windows runner 上运行 `scripts/smoke.sh user` 和 `helper`：分别经用户态 daemon 和已安装的助手运行一个 `no_tun` 网络，然后卸载。 |
 | `upstream.yml` | 每周、手动 | `go run ./tools/deps check -strict`；MyGo 或 EasyTier 有新版时开 issue。 |
 | `dependabot.yml` | 每周 | Action 与 Go 模块更新。 |
 

@@ -36,7 +36,8 @@
 
 ### P4 macOS / Windows（已实现，未经真机验证）
 已完成：每平台 socket 路径；Windows 用户态 daemon 以 `--parent-pid` 绑定 GUI；Windows AF_UNIX 按 SID 授权；macOS LaunchDaemon 助手、Windows 服务助手（安装/卸载/状态/签名自更新）；Windows 内核作业对象；GUI 按平台提权（osascript / UAC）。全部可交叉编译并通过 vet。
-剩余：GitHub 可用后在 macOS/Windows runner 上做冒烟测试（安装助手、跑 no_tun 网络、卸载）；有真机后实测 TUN（macOS utun 需 root、Windows wintun）。
+冒烟测试：`scripts/smoke.sh user|helper` 已在本机 Linux 通过，并接入 `ci.yml` 的 smoke 作业（Linux/macOS/Windows runner）。
+剩余：GitHub 可用后查看 smoke 作业结果并修正 macOS/Windows 问题；有真机后实测 TUN（macOS utun 需 root、Windows wintun）。
 
 ### P5 0.1.0 收尾
 - 升级到届时最新 MyGo/EasyTier 并复验；Linux 全量走查（三档、TUN/no_tun、自启、托盘、崩溃回收、助手签名自更新、内核切换与回退）；文档定稿；version-history 0.1.0；用户确认后打 tag 推送。
