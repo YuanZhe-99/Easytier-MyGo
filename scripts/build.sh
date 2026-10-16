@@ -28,6 +28,12 @@ for t in "${targets[@]}"; do
 		CGO_ENABLED=0 GOOS="$goos" GOARCH="$goarch" go build -trimpath -ldflags="-s -w" \
 			-o "resources/$key/bin/$cmd$ext" "./cmd/$cmd"
 	done
+	# Release builds sign the bundle, so the privileged helper can update
+	# itself from it without an administrator prompt.
+	if [ -n "${EASYTIER_MYGO_SIGNING_KEY:-}" ]; then
+		go run ./tools/sign sign -dir "resources/$key/bin" \
+			-version "$(sed -n 's/^const Version = "\(.*\)"/\1/p' internal/version/version.go)"
+	fi
 done
 
 go tool mygo build -platform "$(IFS=,; echo "${targets[*]}")"

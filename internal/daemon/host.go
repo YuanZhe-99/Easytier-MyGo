@@ -61,6 +61,8 @@ type Options struct {
 	// OnBackground persists background mode with the OS (helper: start at
 	// boot or not). Nil means nothing to do.
 	OnBackground func(on bool) error
+	// OnSelfUpdate replaces the helper from a signed bundle (helper only).
+	OnSelfUpdate func(from string) error
 	// Worker overrides cadences (tests); zero fields take defaults.
 	Worker supervisor.Config
 	Logf   func(string, ...any)

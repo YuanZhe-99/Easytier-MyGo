@@ -102,6 +102,7 @@ func run(args []string) error {
 		}
 		opts.Authorizer, opts.SocketGroup = authz, gid
 		opts.OnBackground = helper.SetBackground
+		opts.OnSelfUpdate = func(from string) error { return helper.SelfUpdate(from, version.Version) }
 		lns, err := sdnotify.Listeners()
 		if err != nil {
 			return fmt.Errorf("socket activation: %w", err)

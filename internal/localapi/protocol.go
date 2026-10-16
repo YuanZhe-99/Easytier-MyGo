@@ -75,6 +75,7 @@ const (
 	RequestCoreRemove    RequestType = "cores.remove"
 	RequestCoreAdd       RequestType = "cores.add" // custom build: Name, Text = directory (user daemon only)
 	RequestShutdown      RequestType = "shutdown"
+	RequestHelperUpdate  RequestType = "helper.update" // Text = app directory with a signed bundle
 )
 
 // ErrorCode classifies a failed request for clients that react to it.

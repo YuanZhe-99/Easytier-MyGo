@@ -216,3 +216,33 @@ func (a *App) uninstallHelper(purge bool) {
 		})
 	}()
 }
+
+// updateHelper brings the helper to this app's version: silently from a
+// signed bundle, else it asks the user (banner) to approve a reinstall.
+func (a *App) updateHelper(c *localapi.Client) {
+	_, err := c.Do(a.ctx, localapi.Request{Type: localapi.RequestHelperUpdate, Text: bundleDir()})
+	a.update(func() {
+		a.helperOutdated = err != nil
+		if err == nil {
+			a.setToast(L.ToastHelperUpdated(), false)
+		}
+	})
+}
+
+// reinstallHelper updates the helper with an administrator prompt.
+func (a *App) reinstallHelper() {
+	a.update(func() { a.busy["mode"] = true })
+	go func() {
+		err := runPrivileged("install", "--from", bundleDir())
+		a.update(func() {
+			delete(a.busy, "mode")
+			if err != nil {
+				a.setToast(err.Error(), true)
+				return
+			}
+			a.helperOutdated = false
+			a.setToast(L.ToastHelperUpdated(), false)
+		})
+		a.reconnect()
+	}()
+}

@@ -1,6 +1,6 @@
 # 打包
 
-`go tool mygo build` 生成各平台产物：Linux 上是 `.tar.gz`（附 `install.sh`，按用户安装）和 `.deb`；Windows 上是 `.exe` 与 NSIS 安装包；macOS 上是 `.app` 与 `.dmg`（需要 macOS 主机）。
+`scripts/build.sh [goos/goarch …]` 获取内核，把 daemon 与控制 CLI 构建进平台资源目录，在设置了 `EASYTIER_MYGO_SIGNING_KEY` 时为构建包签名，运行 `go tool mygo build`，并去掉 `.deb` 中 MyGo 默认的 WebKitGTK 依赖。`go tool mygo build` 生成各平台产物：Linux 上是 `.tar.gz`（附 `install.sh`，按用户安装）和 `.deb`；Windows 上是 `.exe` 与 NSIS 安装包；macOS 上是 `.app` 与 `.dmg`（需要 macOS 主机）。
 
 ## 附带的二进制
 

@@ -155,6 +155,7 @@ var writeRequests = map[RequestType]bool{
 	RequestCoreInstall:   true,
 	RequestCoreRemove:    true,
 	RequestCoreAdd:       true,
+	RequestHelperUpdate:  true,
 	RequestReleases:      true, // reaches the network on the daemon's behalf
 	RequestShutdown:      true,
 }

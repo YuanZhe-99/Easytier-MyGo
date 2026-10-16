@@ -38,6 +38,9 @@ jobs:
       - name: Build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Signs the bundles (internal/bundlesig); unset, the builds are
+          # unsigned and the helper updates need administrator approval.
+          EASYTIER_MYGO_SIGNING_KEY: ${{ secrets.EASYTIER_MYGO_SIGNING_KEY }}
         run: scripts/build.sh ${{ matrix.targets }}
 
       - name: Collect the downloads

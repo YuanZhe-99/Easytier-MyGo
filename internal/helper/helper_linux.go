@@ -9,8 +9,11 @@ import (
 	"os/user"
 	"path/filepath"
 	"strings"
+	"time"
 
+	"github.com/YuanZhe-99/Easytier-MyGo/internal/bundlesig"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/fsutil"
+	"github.com/YuanZhe-99/Easytier-MyGo/internal/version"
 )
 
 const unitDir = "/etc/systemd/system"
@@ -145,4 +148,33 @@ func copyRootOwned(src, dst string) error {
 		return err
 	}
 	return os.Chown(dst, 0, 0)
+}
+
+// SelfUpdate replaces the helper's binaries with a signed bundle from an
+// app directory (no administrator prompt): the bundle's manifest must
+// verify against the embedded release key, every file must match it, and
+// the version must not be older than the running one. The helper restarts
+// afterwards; running networks reconnect.
+func SelfUpdate(from, running string) error {
+	key, err := bundlesig.PublicKey()
+	if err != nil {
+		return err
+	}
+	m, err := bundlesig.Verify(from, key)
+	if err != nil {
+		return err
+	}
+	if version.Older(m.Version, running) {
+		return fmt.Errorf("bundle %s is older than the helper %s", m.Version, running)
+	}
+	for name := range m.Files {
+		if err := copyRootOwned(filepath.Join(from, name), filepath.Join(BinDir, name)); err != nil {
+			return err
+		}
+	}
+	go func() {
+		time.Sleep(time.Second)
+		_ = exec.Command("systemctl", "--no-block", "restart", Unit+".service").Run()
+	}()
+	return nil
 }

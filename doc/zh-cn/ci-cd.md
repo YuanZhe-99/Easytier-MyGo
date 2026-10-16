@@ -8,7 +8,7 @@
 | `upstream.yml` | 每周、手动 | `go run ./tools/deps check -strict`；MyGo 或 EasyTier 有新版时开 issue。 |
 | `dependabot.yml` | 每周 | Action 与 Go 模块更新。 |
 
-发布工作流（tag `v*`）随打包一起加入；见 [packaging.md](packaging.md)。
+`release.yml`（tag `v*` 或手动触发）按平台运行 `scripts/build.sh`：Linux 与 Windows 在 Ubuntu 上构建（安装包用 NSIS），macOS 在 macOS runner 上构建。推送 tag 时先确认它与 `internal/version` 一致，再连同 `SHA256SUMS.txt` 发布下载。密钥 `EASYTIER_MYGO_SIGNING_KEY`（由 `go run ./tools/sign keygen` 生成）用于给构建包签名；私钥只保存在 secret 和维护者的离线副本中。
 
 ## 上游升级流程
 

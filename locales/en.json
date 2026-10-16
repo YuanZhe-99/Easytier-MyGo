@@ -40,6 +40,7 @@
   "ActionSaveApply": "Save and apply",
   "ActionShow": "Show",
   "ActionUninstallHelper": "Remove helper",
+  "ActionUpdateHelper": "Update helper",
   "ActionUseCore": "Use",
   "ActionUseMode": "Use this mode",
   "BannerConnecting": "Connecting to the background service…",
@@ -52,6 +53,7 @@
     }
   },
   "BannerHelperMissing": "The privileged helper is not installed. Choose a run mode in Settings.",
+  "BannerHelperOutdated": "The privileged helper is older than this app. Updating it needs administrator approval once.",
   "BannerStale": "No updates for a few seconds; the values below may be out of date.",
   "ChartGap": "{time}: no measurement",
   "@ChartGap": {
@@ -393,6 +395,7 @@
   "ToastDeleted": "Network deleted.",
   "ToastExported": "Diagnostics saved.",
   "ToastHelperRemoved": "Privileged helper removed.",
+  "ToastHelperUpdated": "Privileged helper updated.",
   "ToastNotConnected": "Not connected to the background service.",
   "ToastSaved": "Saved.",
   "TrafficDownload": "Download",

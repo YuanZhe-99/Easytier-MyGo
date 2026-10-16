@@ -23,3 +23,9 @@ func TestManifestMatches(t *testing.T) {
 		t.Fatalf("mygo.json version %q, internal/version %q", m.Version, Version)
 	}
 }
+
+func TestOlder(t *testing.T) {
+	if !Older("0.1.0", "0.1.1") || Older("0.2.0", "0.1.9") || Older("0.1.0", "0.1.0") || !Older("v0.9.0", "0.10.0") {
+		t.Fatal("version ordering")
+	}
+}

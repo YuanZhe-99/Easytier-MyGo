@@ -36,7 +36,11 @@ The helper runs cores as root/SYSTEM, so:
   user-writable file;
 - custom core binaries require administrator authorization each time;
 - the helper binary lives in a root-owned location; it replaces itself only with a build carrying
-  a valid release signature.
+  a valid release signature: release builds write `bundle.json` (SHA-256 of `easytier-mygo-svc`,
+  the core, the CLI and `upx`) and `bundle.sig` (ed25519, `internal/bundlesig`). The helper checks
+  the signature against the embedded public key (`internal/bundlesig/release.pub`), every hash, and
+  that the version is not older, then copies the files and restarts. Unsigned (development) builds
+  fall back to one administrator prompt.
 
 ## Isolation from other EasyTier installations
 

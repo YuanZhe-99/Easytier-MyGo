@@ -296,6 +296,16 @@ func (msgs Messages) ActionUninstallHelper() string {
 	return Catalog.Format(msgs.locale, "ActionUninstallHelper", nil)
 }
 
+// ActionUpdateHelper says "Update helper"
+// in the language the app shows.
+func ActionUpdateHelper() string { return In(i18n.Locale()).ActionUpdateHelper() }
+
+// ActionUpdateHelper says "Update helper"
+// in the language of msgs.
+func (msgs Messages) ActionUpdateHelper() string {
+	return Catalog.Format(msgs.locale, "ActionUpdateHelper", nil)
+}
+
 // ActionUseCore says "Use"
 // in the language the app shows.
 func ActionUseCore() string { return In(i18n.Locale()).ActionUseCore() }
@@ -344,6 +354,16 @@ func BannerHelperMissing() string { return In(i18n.Locale()).BannerHelperMissing
 // in the language of msgs.
 func (msgs Messages) BannerHelperMissing() string {
 	return Catalog.Format(msgs.locale, "BannerHelperMissing", nil)
+}
+
+// BannerHelperOutdated says "The privileged helper is older than this app. Updating it needs administrator approval once."
+// in the language the app shows.
+func BannerHelperOutdated() string { return In(i18n.Locale()).BannerHelperOutdated() }
+
+// BannerHelperOutdated says "The privileged helper is older than this app. Updating it needs administrator approval once."
+// in the language of msgs.
+func (msgs Messages) BannerHelperOutdated() string {
+	return Catalog.Format(msgs.locale, "BannerHelperOutdated", nil)
 }
 
 // BannerStale says "No updates for a few seconds; the values below may be out of date."
@@ -2408,6 +2428,16 @@ func ToastHelperRemoved() string { return In(i18n.Locale()).ToastHelperRemoved()
 // in the language of msgs.
 func (msgs Messages) ToastHelperRemoved() string {
 	return Catalog.Format(msgs.locale, "ToastHelperRemoved", nil)
+}
+
+// ToastHelperUpdated says "Privileged helper updated."
+// in the language the app shows.
+func ToastHelperUpdated() string { return In(i18n.Locale()).ToastHelperUpdated() }
+
+// ToastHelperUpdated says "Privileged helper updated."
+// in the language of msgs.
+func (msgs Messages) ToastHelperUpdated() string {
+	return Catalog.Format(msgs.locale, "ToastHelperUpdated", nil)
 }
 
 // ToastNotConnected says "Not connected to the background service."

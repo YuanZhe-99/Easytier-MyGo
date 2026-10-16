@@ -11,5 +11,8 @@ func Uninstall(bool) error { return ErrUnsupported }
 // SetBackground is not implemented on this platform yet.
 func SetBackground(bool) error { return ErrUnsupported }
 
+// SelfUpdate is not implemented on this platform yet.
+func SelfUpdate(string, string) error { return ErrUnsupported }
+
 // Inspect reports no helper on this platform.
 func Inspect() Status { return Status{} }

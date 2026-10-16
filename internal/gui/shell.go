@@ -139,7 +139,17 @@ func (a *App) banner(c *ui.Context) {
 	k := tok(c)
 	a.mu.Lock()
 	connected, connErr, stale, mode := a.connected, a.connErr, a.stale(), a.prefs.Mode
+	outdated, busy := a.helperOutdated, a.busy["mode"]
 	a.mu.Unlock()
+	if outdated && connected {
+		ui.Row(c).FillWidth().Padding(10, 16).Gap(8).AlignItems(ui.Center).Background(k.warn.Alpha(0.14)).Children(func() {
+			dot(c, k.warn, 8)
+			ui.Text(c, L.BannerHelperOutdated()).FontSize(sizeSmall).Grow(1)
+			if ui.Button(c, L.ActionUpdateHelper()).Disabled(busy).Clicked() {
+				a.reinstallHelper()
+			}
+		})
+	}
 	var msg string
 	switch {
 	case !connected && mode == ModeHelper && connErr == errHelperMissing.Error():

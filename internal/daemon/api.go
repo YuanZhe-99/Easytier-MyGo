@@ -213,6 +213,14 @@ func (d *Daemon) Handle(ctx context.Context, req localapi.Request, access locala
 			return failOf(err)
 		}
 		return localapi.Response{OK: true, Cores: d.coreList()}
+	case localapi.RequestHelperUpdate:
+		if d.opts.OnSelfUpdate == nil {
+			return localapi.Fail(localapi.CodeNeedsAdmin, "this daemon cannot update itself")
+		}
+		if err := d.opts.OnSelfUpdate(req.Text); err != nil {
+			return localapi.Fail(localapi.CodeNeedsAdmin, "%s", supervisor.ScrubDetail(err.Error()))
+		}
+		return localapi.Response{OK: true}
 	case localapi.RequestSessionWatch:
 		d.setWatch(req.Session, req.Watch)
 		return localapi.Response{OK: true}

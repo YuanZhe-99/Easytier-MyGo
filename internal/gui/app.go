@@ -20,6 +20,7 @@ import (
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/health"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/helper"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/localapi"
+	"github.com/YuanZhe-99/Easytier-MyGo/internal/version"
 )
 
 // trafficKeep is how many traffic points the GUI keeps per network
@@ -70,9 +71,12 @@ type App struct {
 	coresView coresState
 	// coreUpdate is a newer stable EasyTier found by the daily check.
 	coreUpdate string
-	quitting   bool
-	visible    bool
-	tray       *Tray
+	// helperOutdated: the helper is another version and could not update
+	// itself from a signed bundle; updating it needs approval.
+	helperOutdated bool
+	quitting       bool
+	visible        bool
+	tray           *Tray
 	// openAtLogin caches the login item (reading it needs the main thread).
 	openAtLogin bool
 
@@ -220,6 +224,9 @@ func (a *App) runSession(socket string) error {
 			a.settings = *settings.Settings
 		}
 	})
+	if socket == localapi.SystemSocketPath && info.Info.Version != version.Version {
+		go a.updateHelper(c)
+	}
 	ctx, cancel := context.WithCancel(a.ctx)
 	defer cancel()
 	go a.detailLoop(ctx, c)

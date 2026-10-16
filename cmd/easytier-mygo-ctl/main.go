@@ -156,6 +156,10 @@ func runCmd(ctx context.Context, c *localapi.Client, args []string) error {
 		}
 		_, err := do(localapi.Request{Type: t, Tag: args[1]})
 		return err
+	case "helper-update":
+		need(args, 2)
+		_, err := do(localapi.Request{Type: localapi.RequestHelperUpdate, Text: args[1]})
+		return err
 	case "add-core":
 		need(args, 3)
 		_, err := do(localapi.Request{Type: localapi.RequestCoreAdd, Name: args[1], Text: args[2]})

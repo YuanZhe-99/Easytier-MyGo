@@ -9,7 +9,11 @@ so a push there is checked only by the local gate.
 | `upstream.yml` | weekly, manual | `go run ./tools/deps check -strict`; opens an issue when MyGo or EasyTier has a newer release. |
 | `dependabot.yml` | weekly | Action and Go module updates. |
 
-The release workflow (tag `v*`) is added with packaging; see [packaging.md](packaging.md).
+`release.yml` (tag `v*`, or manual) runs `scripts/build.sh` per platform: Linux and Windows on
+Ubuntu (NSIS for the installers), macOS on a macOS runner. A tag publishes the downloads with
+`SHA256SUMS.txt` after checking that it matches `internal/version`. The secret
+`EASYTIER_MYGO_SIGNING_KEY` (from `go run ./tools/sign keygen`) signs the bundles; keep the
+private key only there and in the maintainer's offline copy.
 
 ## Upstream update procedure
 
