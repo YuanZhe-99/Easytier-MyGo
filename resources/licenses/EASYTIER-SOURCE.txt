@@ -1,0 +1,10 @@
+EasyTier (easytier-core, easytier-cli) is distributed with this application
+under the GNU Lesser General Public License v3.0 (EASYTIER-LICENSE).
+
+Source code of the bundled version: https://github.com/EasyTier/EasyTier
+(the exact tag is recorded in third_party/easytier.json of this
+application's source: https://github.com/YuanZhe-99/Easytier-MyGo).
+The release binaries were unpacked from UPX; they are otherwise unmodified.
+
+upx (bin/upx) is distributed under the GNU GPL v2 or later with the UPX
+exception (bin/upx-COPYING); source: https://github.com/upx/upx

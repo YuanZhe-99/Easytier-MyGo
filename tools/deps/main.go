@@ -217,6 +217,12 @@ func fetch(args []string) error {
 			runner = upxBin
 		} else if found, err := exec.LookPath("upx"); err == nil {
 			runner = found
+		} else if tmp, err := os.MkdirTemp("", "upx-host-*"); err == nil {
+			// Cross-building: fetch the upx that runs on this machine.
+			defer os.RemoveAll(tmp)
+			if host, err := fetchUPX(third_party.Platform(runtime.GOOS, runtime.GOARCH), tmp); err == nil {
+				runner = host
+			}
 		}
 	}
 	if runner == "none" {

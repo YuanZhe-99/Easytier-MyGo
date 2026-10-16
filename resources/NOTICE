@@ -1,7 +1,7 @@
 Temporary icons
 ===============
 
-resources/icon.png (composed onto a blue gradient tile) and resources/tray/template*.png
+resources/icon.png (composed onto a blue gradient tile) and internal/gui/assets/tray.png
 use artwork from EasyTier-iOS:
 
   https://github.com/EasyTier/EasyTier-iOS

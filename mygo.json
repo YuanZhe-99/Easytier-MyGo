@@ -7,5 +7,17 @@
   "i18n": {
     "dir": "locales",
     "source": "en"
+  },
+  "description": "Native desktop client for EasyTier",
+  "linux": {
+    "maintainer": "yuanzhe",
+    "comment": "EasyTier networks on your desktop",
+    "categories": [
+      "Network"
+    ],
+    "depends": [
+      "libayatana-appindicator3-1"
+    ],
+    "command": "easytier-mygo"
   }
 }
