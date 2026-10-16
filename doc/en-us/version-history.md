@@ -3,6 +3,14 @@
 The project restarted from 0.1.0 on 2026-10-16. The earlier, inherited history (versions up to
 0.10.80) is preserved under the git tag `archive/v0.10.80` and is not continued.
 
+## 0.1.1 (2026-10-16)
+
+- Windows: installing the privileged helper from the GUI failed when the app was installed under
+  a path with a space (the default `…\Programs\EasyTier MyGo`): the administrator command split
+  the bundle path. Arguments are now quoted for the Windows command line.
+- The welcome page shows why a run-mode choice failed instead of staying silent.
+- MyGo v0.5.5 / EasyTier v2.6.4 (checked, unchanged).
+
 ## 0.1.0 — First release of the rework (2026-10-16)
 
 - Reset baseline: inherited tests, measurement scripts, acceptance documents and the ACL editor

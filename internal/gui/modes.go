@@ -47,7 +47,7 @@ func (a *App) chooseMode(to runChoice) {
 	if to == from && !unset {
 		return
 	}
-	a.update(func() { a.busy["mode"] = true })
+	a.update(func() { a.busy["mode"], a.toast = true, "" })
 	go func() {
 		err := a.switchMode(from, to, unset)
 		a.update(func() {
@@ -244,12 +244,15 @@ func runPrivileged(args ...string) error {
 		script := fmt.Sprintf("do shell script %q with administrator privileges", strings.Join(quoted, " "))
 		cmd = exec.Command("osascript", "-e", script)
 	case "windows":
-		list := []string{"'helper'"}
+		// Start-Process joins an -ArgumentList array with bare spaces, which
+		// splits paths such as "…\EasyTier MyGo\bin": pass one string that
+		// is already quoted for the Windows command line.
+		line := []string{"helper"}
 		for _, a := range args {
-			list = append(list, "'"+strings.ReplaceAll(a, "'", "''")+"'")
+			line = append(line, windowsArg(a))
 		}
-		ps := fmt.Sprintf("$p = Start-Process -FilePath '%s' -ArgumentList %s -Verb RunAs -WindowStyle Hidden -Wait -PassThru; exit $p.ExitCode",
-			strings.ReplaceAll(svc, "'", "''"), strings.Join(list, ","))
+		ps := fmt.Sprintf("$p = Start-Process -FilePath '%s' -ArgumentList '%s' -Verb RunAs -WindowStyle Hidden -Wait -PassThru; exit $p.ExitCode",
+			strings.ReplaceAll(svc, "'", "''"), strings.ReplaceAll(strings.Join(line, " "), "'", "''"))
 		cmd = exec.Command("powershell", "-NoProfile", "-NonInteractive", "-Command", ps)
 		hideWindow(cmd)
 	default:
@@ -274,6 +277,34 @@ func runPrivileged(args ...string) error {
 		return errors.New(msg)
 	}
 	return nil
+}
+
+// windowsArg quotes one argument for a Windows command line so that
+// CommandLineToArgvW (and Go's os.Args) reads it back unchanged.
+func windowsArg(s string) string {
+	if s != "" && !strings.ContainsAny(s, " \t\n\v\"") {
+		return s
+	}
+	var b strings.Builder
+	b.WriteByte('"')
+	slashes := 0
+	for i := 0; i < len(s); i++ {
+		switch s[i] {
+		case '\\':
+			slashes++
+		case '"':
+			// Double the backslashes before a quote, then escape the quote.
+			b.WriteString(strings.Repeat(`\`, slashes+1))
+			slashes = 0
+		default:
+			slashes = 0
+		}
+		b.WriteByte(s[i])
+	}
+	// Backslashes before the closing quote are doubled too.
+	b.WriteString(strings.Repeat(`\`, slashes))
+	b.WriteByte('"')
+	return b.String()
 }
 
 // shellQuote quotes a word for /bin/sh.

@@ -435,7 +435,14 @@ func (a *App) welcomeView(c *ui.Context) {
 	t := c.Theme()
 	a.mu.Lock()
 	busy := a.busy["mode"]
+	// The welcome page has no toast area: a failed choice stays here until
+	// the next attempt.
+	failure := ""
+	if a.toastErr {
+		failure = a.toast
+	}
 	a.mu.Unlock()
+	k := tok(c)
 	ui.Scroll(c.Key("welcome")).Fill().Background(t.Background).Padding(40).Gap(20).AlignItems(ui.Center).Children(func() {
 		ui.Column(c).MaxWidth(860).Gap(16).Children(func() {
 			if appIcon != nil {
@@ -444,6 +451,9 @@ func (a *App) welcomeView(c *ui.Context) {
 			ui.Text(c, L.WelcomeTitle()).FontSize(28).Bold()
 			ui.Text(c, L.WelcomeBody()).TextColor(t.TextMuted)
 			a.modeCards(c, choiceUser, busy)
+			if failure != "" && !busy {
+				ui.Text(c, failure).FontSize(sizeSmall).TextColor(k.bad)
+			}
 			ui.Text(c, L.WelcomeLater()).FontSize(sizeSmall).TextColor(t.TextMuted)
 		})
 	})

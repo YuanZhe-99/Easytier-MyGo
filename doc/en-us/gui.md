@@ -13,7 +13,8 @@ screenshots (`SCREENSHOT_DIR`).
   count, uptime) and Peers | Routes | Events; while stopped, the configuration summary and Edit.
 - **Configuration:** Form | TOML tabs; Save and Save & Apply are separate.
 - **Settings:** General, Run mode, Cores, Advanced, About.
-- **First run:** choose a run mode → install the helper if needed → create or import a network.
+- **First run:** choose a run mode → install the helper if needed → create or import a network. A
+  failed choice (a cancelled prompt, a failed install) is shown on the welcome page under the cards.
 - Every page scrolls.
 
 ## Wording rules
