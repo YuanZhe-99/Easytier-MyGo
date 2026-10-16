@@ -83,7 +83,7 @@ func (a *App) sidebar(c *ui.Context) {
 func (a *App) sidebarNetwork(c *ui.Context, n localapi.NetworkStatus, selected, stale bool) {
 	t := c.Theme()
 	k := tok(c)
-	row := ui.ButtonBase(c.Key("net-" + n.ID)).Padding(8, 10).Radius(8).FillWidth().Label(n.Name)
+	row := ui.ButtonBase(c.Key("net-"+n.ID)).Padding(8, 10).Radius(8).FillWidth().Label(n.Name)
 	if selected {
 		row.Background(t.Accent.Alpha(0.14))
 	}

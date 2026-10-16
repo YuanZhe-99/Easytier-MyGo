@@ -32,7 +32,7 @@ type configEditor struct {
 
 	// Form fields.
 	name, netName, secret, ipv4, hostname string
-	dhcp, noTun, showSecret                bool
+	dhcp, noTun, showSecret               bool
 	peers, listeners, proxies, exits      string
 	mtu, devName                          string
 	flags                                 map[string]bool
@@ -333,7 +333,9 @@ func (a *App) formView(c *ui.Context, e *configEditor) {
 			})
 		})
 		hint(L.FieldSecretHint())
-		ui.Field(c, L.FieldHostname(), func() { ui.TextInput(c.Key("f-host"), &e.hostname).Placeholder(L.FieldHostnamePlaceholder()).FillWidth() })
+		ui.Field(c, L.FieldHostname(), func() {
+			ui.TextInput(c.Key("f-host"), &e.hostname).Placeholder(L.FieldHostnamePlaceholder()).FillWidth()
+		})
 		ui.Row(c).Gap(10).AlignItems(ui.Center).Children(func() {
 			ui.Switch(c.Key("f-dhcp"), &e.dhcp).Label(L.FieldDHCP())
 			ui.Text(c, L.FieldDHCP())
@@ -387,7 +389,7 @@ func (a *App) formView(c *ui.Context, e *configEditor) {
 		for _, key := range advancedFlags {
 			on := e.flags[key]
 			label, h := flagLabel(key)
-			ui.Row(c.Key("flag-"+key)).Gap(10).AlignItems(ui.Center).Children(func() {
+			ui.Row(c.Key("flag-" + key)).Gap(10).AlignItems(ui.Center).Children(func() {
 				ui.Switch(c, &on).Label(label)
 				ui.Column(c).Grow(1).Gap(2).Children(func() {
 					ui.Text(c, label)
@@ -487,7 +489,9 @@ func (a *App) createDialogView(c *ui.Context) {
 		ui.Column(c).Width(460).Padding(24).Gap(12).Background(t.Background).Radius(cardRadius).Children(func() {
 			ui.Text(c, L.CreateTitle()).FontSize(sizeTitle).Bold()
 			ui.Text(c, L.CreateBody()).FontSize(sizeSmall).TextColor(t.TextMuted)
-			ui.Field(c, L.FieldDisplayName(), func() { ui.TextInput(c.Key("c-name"), &d.name).Placeholder(L.CreateNamePlaceholder()).FillWidth().AutoFocus() })
+			ui.Field(c, L.FieldDisplayName(), func() {
+				ui.TextInput(c.Key("c-name"), &d.name).Placeholder(L.CreateNamePlaceholder()).FillWidth().AutoFocus()
+			})
 			ui.Field(c, L.FieldNetworkName(), func() { ui.TextInput(c.Key("c-net"), &d.netName).FillWidth() })
 			ui.Field(c, L.FieldNetworkSecret(), func() { ui.TextInput(c.Key("c-secret"), &d.secret).Password().FillWidth() })
 			ui.Field(c, L.CreatePeer(), func() {

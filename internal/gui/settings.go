@@ -250,7 +250,7 @@ func (a *App) coreSettings(c *ui.Context) {
 		})
 		ui.Text(c, L.SettingsCoresHint()).FontSize(sizeSmall).TextColor(t.TextMuted)
 		for _, core := range cs.cores {
-			ui.Row(c.Key("core-"+core.Tag)).Gap(10).AlignItems(ui.Center).Children(func() {
+			ui.Row(c.Key("core-" + core.Tag)).Gap(10).AlignItems(ui.Center).Children(func() {
 				name := core.Tag
 				if core.Source == "bundled" {
 					name = L.CoreBundled()
@@ -297,7 +297,7 @@ func (a *App) coreSettings(c *ui.Context) {
 			ui.Text(c, L.CoresNone()).FontSize(sizeSmall).TextColor(t.TextMuted)
 		}
 		for _, r := range cs.releases {
-			ui.Row(c.Key("rel-"+r.Tag)).Gap(10).AlignItems(ui.Center).Children(func() {
+			ui.Row(c.Key("rel-" + r.Tag)).Gap(10).AlignItems(ui.Center).Children(func() {
 				ui.Text(c, r.Tag).Bold()
 				ui.Text(c, r.Published.Format("2006-01-02")).FontSize(sizeSmall).TextColor(t.TextMuted)
 				if r.Prerelease {
