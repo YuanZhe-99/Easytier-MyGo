@@ -9,6 +9,7 @@
 //	easytier-mygo-ctl events | info
 //	easytier-mygo-ctl watch [ID...]          attach a session and print frames
 //	easytier-mygo-ctl background on|off      helper only
+//	easytier-mygo-ctl cores | releases [--pre] | install-core TAG | remove-core TAG | use-core TAG
 //
 // Without -socket it uses the privileged helper's socket when it exists,
 // else the per-user socket.
@@ -127,9 +128,57 @@ func runCmd(ctx context.Context, c *localapi.Client, args []string) error {
 		}
 		_, err = do(localapi.Request{Type: localapi.RequestConfigSave, Network: args[1], Text: string(text), Expected: cur.Config.Revision})
 		return err
+	case "cores":
+		r, err := do(localapi.Request{Type: localapi.RequestCores})
+		if err != nil {
+			return err
+		}
+		for _, c := range r.Cores {
+			mark := " "
+			if c.Selected {
+				mark = "*"
+			}
+			fmt.Printf("%s %-12s %-9s tested=%v pre=%v\n", mark, c.Tag, c.Source, c.Tested, c.Pre)
+		}
+	case "releases":
+		r, err := do(localapi.Request{Type: localapi.RequestReleases, Pre: len(args) > 1 && args[1] == "--pre"})
+		if err != nil {
+			return err
+		}
+		for _, rel := range r.Releases {
+			fmt.Printf("%-10s %s pre=%v installed=%v tested=%v %.1f MB\n", rel.Tag, rel.Published.Format("2006-01-02"), rel.Prerelease, rel.Installed, rel.Tested, float64(rel.Size)/1e6)
+		}
+	case "install-core", "remove-core":
+		need(args, 2)
+		t := localapi.RequestCoreInstall
+		if args[0] == "remove-core" {
+			t = localapi.RequestCoreRemove
+		}
+		_, err := do(localapi.Request{Type: t, Tag: args[1]})
+		return err
+	case "add-core":
+		need(args, 3)
+		_, err := do(localapi.Request{Type: localapi.RequestCoreAdd, Name: args[1], Text: args[2]})
+		return err
+	case "use-core":
+		need(args, 2)
+		cur, err := do(localapi.Request{Type: localapi.RequestSettingsGet})
+		if err != nil {
+			return err
+		}
+		s := *cur.Settings
+		s.Core = args[1]
+		_, err = do(localapi.Request{Type: localapi.RequestSettingsSet, Settings: &s})
+		return err
 	case "background":
 		need(args, 2)
-		_, err := do(localapi.Request{Type: localapi.RequestSettingsSet, Settings: &localapi.Settings{Background: args[1] == "on"}})
+		cur, err := do(localapi.Request{Type: localapi.RequestSettingsGet})
+		if err != nil {
+			return err
+		}
+		s := *cur.Settings
+		s.Background = args[1] == "on"
+		_, err = do(localapi.Request{Type: localapi.RequestSettingsSet, Settings: &s})
 		return err
 	case "watch":
 		return c.Attach(ctx, args[1:], func(p *localapi.Push) error {

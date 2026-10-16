@@ -62,7 +62,7 @@ func (n NatType) String() string {
 type STUNInfo struct {
 	UDPNATType     NatType  `json:"udp_nat_type"`
 	TCPNATType     NatType  `json:"tcp_nat_type"`
-	LastUpdateTime uint64   `json:"last_update_time"`
+	LastUpdateTime Uint64   `json:"last_update_time"`
 	PublicIP       []string `json:"public_ip"`
 	MinPort        uint32   `json:"min_port"`
 	MaxPort        uint32   `json:"max_port"`
@@ -238,11 +238,11 @@ type PeerConn struct {
 
 // ConnStats are the raw tunnel counters of a peer connection.
 type ConnStats struct {
-	RxBytes   uint64 `json:"rx_bytes"`
-	TxBytes   uint64 `json:"tx_bytes"`
-	RxPackets uint64 `json:"rx_packets"`
-	TxPackets uint64 `json:"tx_packets"`
-	LatencyUS uint32 `json:"latency_us"`
+	RxBytes   Uint64 `json:"rx_bytes"`
+	TxBytes   Uint64 `json:"tx_bytes"`
+	RxPackets Uint64 `json:"rx_packets"`
+	TxPackets Uint64 `json:"tx_packets"`
+	LatencyUS Uint64 `json:"latency_us"`
 }
 
 // TunnelInfo describes a peer connection's tunnel endpoints.

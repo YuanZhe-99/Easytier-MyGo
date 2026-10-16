@@ -1,0 +1,78 @@
+[
+  {
+    "route": {
+      "peer_id": 1090207129,
+      "ipv4_addr": {
+        "address": {
+          "addr": 184156162
+        },
+        "network_length": 24
+      },
+      "next_hop_peer_id": 1090207129,
+      "cost": 1,
+      "path_latency": 1,
+      "hostname": "spike-b",
+      "stun_info": {
+        "udp_nat_type": "Symmetric",
+        "tcp_nat_type": "Symmetric"
+      },
+      "inst_id": "32442603-d0af-467a-8639-42260d35ef5e",
+      "version": "2.7.0-8b7f1f01",
+      "feature_flag": {
+        "kcp_input": true,
+        "support_conn_list_sync": true,
+        "quic_input": true
+      },
+      "next_hop_peer_id_latency_first": 1090207129,
+      "cost_latency_first": 1,
+      "path_latency_latency_first": 1
+    },
+    "peer": {
+      "peer_id": 1090207129,
+      "conns": [
+        {
+          "conn_id": "56debc14-9cf0-4788-9425-2370936b2e4b",
+          "my_peer_id": 3659558965,
+          "peer_id": 1090207129,
+          "features": [
+            "liveness-echo-v1"
+          ],
+          "tunnel": {
+            "tunnel_type": "tcp",
+            "local_addr": {
+              "url": "tcp://0.0.0.0:21110"
+            },
+            "remote_addr": {
+              "url": "tcp://192.0.2.10:43167"
+            },
+            "resolved_remote_addr": {
+              "url": "tcp://192.0.2.10:43167"
+            }
+          },
+          "stats": {
+            "rx_bytes": "2508",
+            "tx_bytes": "2768",
+            "rx_packets": "21",
+            "tx_packets": "21",
+            "latency_us": "886"
+          },
+          "network_name": "etm-spike"
+        }
+      ],
+      "default_conn_id": {
+        "part1": 1457437716,
+        "part2": 2632992648,
+        "part3": 2485461872,
+        "part4": 2473274955
+      },
+      "directly_connected_conns": [
+        {
+          "part1": 1457437716,
+          "part2": 2632992648,
+          "part3": 2485461872,
+          "part4": 2473274955
+        }
+      ]
+    }
+  }
+]

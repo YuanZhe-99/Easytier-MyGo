@@ -35,6 +35,10 @@ Daemon 按运行方式（[run-modes.md](run-modes.md)）运行在两种权限环
 
 会话正在显示该网络（或其内核尚不健康）时每秒检查一次，否则每 10 s 一次；一次 `node` 与一次 `-v peer` 查询同时供健康判定与流量使用。
 
+## 内核
+
+Daemon 运行设置中所选的内核：内置内核（默认）、按请求下载的官方版本，或自定义构建。`internal/cores` 从 GitHub API 读取发布列表（按 ETag 缓存），只在请求时下载，校验官方公布的 SHA-256，并用内置的 `upx` 解压 UPX 压缩的可执行文件。每个内核及其配套 CLI 位于 `<state>/cores/<tag>/`。切换内核会让运行中的网络在新内核上重启。`third_party/easytier.json` → `tested` 中的版本标为已测试。特权助手自行下载官方内核；给助手添加自定义构建只能通过 `easytier-mygo-svc helper add-core`，并需要管理员批准。
+
 ## 本地 API
 
 - 传输：Unix 域 socket（Windows 命名管道在计划中）；按行 JSON，带 `version` 字段。每个连接一个请求，会话（`session.attach`）除外：它保持连接并接收推送（网络状态、新的流量点、新事件），最多每 500 ms 一次。错误带代码（`not-found`、`conflict`、`invalid-config`、`needs-helper` 等）。

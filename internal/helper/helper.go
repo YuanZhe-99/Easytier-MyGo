@@ -29,8 +29,12 @@ const (
 	IdleExit = "60s"
 )
 
-// Binaries are the files the helper needs, copied from the app bundle.
-var Binaries = []string{"easytier-mygo-svc", "easytier-core", "easytier-cli"}
+// Binaries are the files the helper needs, copied from the app bundle;
+// Optional ones are copied when present (upx unpacks downloaded cores).
+var (
+	Binaries = []string{"easytier-mygo-svc", "easytier-core", "easytier-cli"}
+	Optional = []string{"upx", "upx-COPYING"}
+)
 
 // ErrUnsupported reports a platform without a helper backend yet.
 var ErrUnsupported = errors.New("the privileged helper is not available on this platform yet")

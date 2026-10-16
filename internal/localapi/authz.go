@@ -152,6 +152,10 @@ var writeRequests = map[RequestType]bool{
 	RequestSettingsSet:   true,
 	RequestSessionAttach: true, // a session can stop networks when it ends
 	RequestSessionWatch:  true,
+	RequestCoreInstall:   true,
+	RequestCoreRemove:    true,
+	RequestCoreAdd:       true,
+	RequestReleases:      true, // reaches the network on the daemon's behalf
 	RequestShutdown:      true,
 }
 

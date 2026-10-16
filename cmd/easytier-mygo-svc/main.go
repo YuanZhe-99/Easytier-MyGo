@@ -18,11 +18,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"os/signal"
 	"path/filepath"
 	"syscall"
 	"time"
 
+	"github.com/YuanZhe-99/Easytier-MyGo/internal/cores"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/daemon"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/health"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/helper"
@@ -81,6 +83,7 @@ func run(args []string) error {
 		Logf:        log.Printf,
 	}
 	opts.Policy.RecoveryEnabled = true
+
 	switch *host {
 	case "user":
 		opts.Host = localapi.HostUser
@@ -108,6 +111,11 @@ func run(args []string) error {
 		}
 	default:
 		return fmt.Errorf("unknown host %q", *host)
+	}
+	opts.Cores = &cores.Manager{
+		Dir:        filepath.Join(opts.StateDir, "cores"),
+		BundledDir: bundledDir(opts.CoreBin),
+		UPX:        upxBinary(),
 	}
 	if *lifeline >= 0 {
 		opts.Lifeline = os.NewFile(uintptr(*lifeline), "lifeline")
@@ -153,4 +161,25 @@ func userStateDir() string {
 	}
 	home, _ := os.UserHomeDir()
 	return filepath.Join(home, ".local", "state", "easytier-mygo")
+}
+
+// bundledDir is the directory of the bundled core ("" when the core comes
+// from PATH).
+func bundledDir(coreBin string) string {
+	if !filepath.IsAbs(coreBin) {
+		return ""
+	}
+	return filepath.Dir(coreBin)
+}
+
+// upxBinary is the bundled upx next to this binary, else one from PATH.
+func upxBinary() string {
+	p := companion("", "upx")
+	if filepath.IsAbs(p) {
+		return p
+	}
+	if found, err := exec.LookPath("upx"); err == nil {
+		return found
+	}
+	return ""
 }

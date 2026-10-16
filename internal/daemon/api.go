@@ -3,13 +3,16 @@ package daemon
 import (
 	"context"
 	"errors"
+	"slices"
 	"strings"
 
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/configdoc"
+	"github.com/YuanZhe-99/Easytier-MyGo/internal/cores"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/fsutil"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/localapi"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/profiles"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/supervisor"
+	"github.com/YuanZhe-99/Easytier-MyGo/third_party"
 )
 
 // Handle answers one request (localapi.Handler).
@@ -118,7 +121,18 @@ func (d *Daemon) Handle(ctx context.Context, req localapi.Request, access locala
 		if req.Settings.Background && d.opts.Host != localapi.HostHelper {
 			return localapi.Fail(localapi.CodeNeedsHelper, "background mode needs the privileged helper")
 		}
-		if d.opts.OnBackground != nil {
+		if tag := req.Settings.Core; tag != "" && tag != cores.BundledTag {
+			if d.opts.Cores == nil {
+				return localapi.Fail("", "core management is not available")
+			}
+			if _, ok := d.opts.Cores.Find(tag); !ok {
+				return localapi.Fail(localapi.CodeNotFound, "core %q is not installed", tag)
+			}
+		}
+		d.mu.Lock()
+		old := d.settings
+		d.mu.Unlock()
+		if d.opts.OnBackground != nil && req.Settings.Background != old.Background {
 			if err := d.opts.OnBackground(req.Settings.Background); err != nil {
 				return failOf(err)
 			}
@@ -130,8 +144,75 @@ func (d *Daemon) Handle(ctx context.Context, req localapi.Request, access locala
 		if err := fsutil.WriteJSON(d.settingsPath(), s); err != nil {
 			return failOf(err)
 		}
+		if s.Core != old.Core {
+			d.switchCore(ctx)
+		}
 		d.reconcile()
 		return localapi.Response{OK: true, Settings: &s}
+	case localapi.RequestCores:
+		return localapi.Response{OK: true, Cores: d.coreList()}
+	case localapi.RequestReleases:
+		if d.opts.Cores == nil {
+			return localapi.Fail("", "core management is not available")
+		}
+		rels, err := d.opts.Cores.Releases(ctx, req.Pre)
+		if err != nil {
+			return failOf(err)
+		}
+		installed := map[string]bool{}
+		for _, c := range d.opts.Cores.List() {
+			installed[c.Tag] = true
+		}
+		man, _ := third_party.EasyTier()
+		var out []localapi.ReleaseInfo
+		for _, r := range rels {
+			out = append(out, localapi.ReleaseInfo{Tag: r.Tag, Prerelease: r.Prerelease, Published: r.Published,
+				Size: r.Size, Installed: installed[r.Tag], Tested: slices.Contains(man.Tested, r.Tag)})
+		}
+		return localapi.Response{OK: true, Releases: out}
+	case localapi.RequestCoreInstall:
+		if d.opts.Cores == nil {
+			return localapi.Fail("", "core management is not available")
+		}
+		rels, err := d.opts.Cores.Releases(ctx, true)
+		if err != nil {
+			return failOf(err)
+		}
+		i := slices.IndexFunc(rels, func(r cores.Release) bool { return r.Tag == req.Tag })
+		if i < 0 {
+			return localapi.Fail(localapi.CodeNotFound, "no release %q for this platform", req.Tag)
+		}
+		if _, err := d.opts.Cores.Install(ctx, rels[i]); err != nil {
+			return failOf(err)
+		}
+		return localapi.Response{OK: true, Cores: d.coreList()}
+	case localapi.RequestCoreAdd:
+		if d.opts.Cores == nil {
+			return localapi.Fail("", "core management is not available")
+		}
+		if d.opts.Host == localapi.HostHelper {
+			// Root must not take a binary from a user's directory without
+			// an administrator's approval: `easytier-mygo-svc helper add-core`.
+			return localapi.Fail(localapi.CodeNeedsAdmin, "adding a custom core to the helper needs administrator approval")
+		}
+		if _, err := d.opts.Cores.AddCustom(req.Name, req.Text); err != nil {
+			return failOf(err)
+		}
+		return localapi.Response{OK: true, Cores: d.coreList()}
+	case localapi.RequestCoreRemove:
+		if d.opts.Cores == nil {
+			return localapi.Fail("", "core management is not available")
+		}
+		d.mu.Lock()
+		selected := d.settings.Core
+		d.mu.Unlock()
+		if req.Tag == selected {
+			return localapi.Fail(localapi.CodeBusy, "the selected core cannot be removed")
+		}
+		if err := d.opts.Cores.Remove(req.Tag); err != nil {
+			return failOf(err)
+		}
+		return localapi.Response{OK: true, Cores: d.coreList()}
 	case localapi.RequestSessionWatch:
 		d.setWatch(req.Session, req.Watch)
 		return localapi.Response{OK: true}
@@ -140,6 +221,42 @@ func (d *Daemon) Handle(ctx context.Context, req localapi.Request, access locala
 		return localapi.Response{OK: true}
 	}
 	return localapi.Fail("", "unknown request %q", req.Type)
+}
+
+// coreList reports the installed cores and which one is selected.
+func (d *Daemon) coreList() []localapi.CoreInfo {
+	if d.opts.Cores == nil {
+		return []localapi.CoreInfo{{Tag: cores.BundledTag, Source: string(cores.SourceBundled), Tested: true, Selected: true}}
+	}
+	d.mu.Lock()
+	sel := d.settings.Core
+	d.mu.Unlock()
+	if sel == "" {
+		sel = cores.BundledTag
+	}
+	var out []localapi.CoreInfo
+	for _, c := range d.opts.Cores.List() {
+		out = append(out, localapi.CoreInfo{Tag: c.Tag, Source: string(c.Source), Tested: c.Tested, Pre: c.Pre, Selected: c.Tag == sel})
+	}
+	return out
+}
+
+// switchCore moves every network to the selected core; running ones
+// restart on it.
+func (d *Daemon) switchCore(ctx context.Context) {
+	core, cli := d.binaries()
+	d.mu.Lock()
+	var ws []*supervisor.Worker
+	for _, e := range d.workers {
+		ws = append(ws, e.w)
+	}
+	d.mu.Unlock()
+	for _, w := range ws {
+		if err := w.SetBinaries(ctx, core, cli); err != nil {
+			d.opts.Logf("switch core: %v", err)
+		}
+	}
+	d.notify()
 }
 
 // applyIntent makes one network follow its stored intent now.

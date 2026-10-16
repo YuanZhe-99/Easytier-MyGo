@@ -106,9 +106,11 @@ type candidate struct {
 }
 
 type command struct {
-	kind   string // "connect", "disconnect", "apply", "retry"
+	kind   string // "connect", "disconnect", "apply", "retry", "binaries"
 	rev    revision
 	prev   revision
+	core   string
+	cli    string
 	result chan error
 }
 
@@ -262,6 +264,12 @@ func (w *Worker) Apply(ctx context.Context, path, rev, prevPath, prevRev string)
 	return w.send(ctx, command{kind: "apply", rev: revision{path, rev}, prev: revision{prevPath, prevRev}})
 }
 
+// SetBinaries switches the core and CLI (another EasyTier version). A
+// running network restarts with its current revision on the new core.
+func (w *Worker) SetBinaries(ctx context.Context, core, cli string) error {
+	return w.send(ctx, command{kind: "binaries", core: core, cli: cli})
+}
+
 // GrantRetry re-authorizes automatic recovery after the budget ran out.
 func (w *Worker) GrantRetry(ctx context.Context) error {
 	return w.send(ctx, command{kind: "retry"})
@@ -333,6 +341,23 @@ func (w *Worker) handle(ctx context.Context, cmd command) error {
 			return err
 		}
 		return w.start(cmd.rev, cmd.prev)
+	case "binaries":
+		if cmd.core == w.cfg.CoreBin && cmd.cli == w.cfg.CLIBin {
+			return nil
+		}
+		w.cfg.CoreBin, w.cfg.CLIBin = cmd.core, cmd.cli
+		w.cli.Bin = cmd.cli
+		alive, _ := w.proc.Alive()
+		_ = w.proc.Stop(10 * time.Second)
+		w.proc = newCoreProcess(cmd.core, filepath.Join(w.cfg.Dir, "core.log"))
+		if w.run && alive && w.current.Path != "" {
+			if err := w.preflight(ctx, w.current.Path); err != nil {
+				w.setError(err.Error())
+				return err
+			}
+			return w.start(w.current, revision{})
+		}
+		return nil
 	case "retry":
 		w.engine.GrantRetry(w.core)
 		w.engine.GrantRetry(w.inst)
@@ -450,10 +475,12 @@ func (w *Worker) check(ctx context.Context) {
 		var err error
 		node, err = w.cli.Node(qctx)
 		if err == nil {
-			pairs, err = w.cli.PeersVerbose(qctx)
-			if err != nil {
+			var perr error
+			if pairs, perr = w.cli.PeersVerbose(qctx); perr != nil {
+				// The core answered; only the peer list is unreadable, which
+				// is a collector problem and never a core fault.
 				pairs = nil
-				w.cfg.Logf("network %s: peer query: %v", w.cfg.ID, err)
+				w.cfg.Logf("network %s: peer query: %v", w.cfg.ID, perr)
 			}
 		}
 		cancel()
@@ -558,7 +585,7 @@ func (w *Worker) sampleTraffic(now time.Time, answered bool, pairs []coreadapter
 				continue
 			}
 			sample.Conns = append(sample.Conns, telemetry.ConnSample{ConnID: c.ConnID, PeerID: c.PeerID,
-				RxBytes: c.Stats.RxBytes, TxBytes: c.Stats.TxBytes, RxPackets: c.Stats.RxPackets, TxPackets: c.Stats.TxPackets})
+				RxBytes: uint64(c.Stats.RxBytes), TxBytes: uint64(c.Stats.TxBytes), RxPackets: uint64(c.Stats.RxPackets), TxPackets: uint64(c.Stats.TxPackets)})
 		}
 	}
 	if pt, ok := w.track.Observe(sample); ok {
@@ -688,7 +715,7 @@ func detailOf(node *coreadapter.NodeInfo, pairs []coreadapter.PeerRoutePair, now
 			}
 			open++
 			ci := localapi.ConnInfo{Tunnel: c.Tunnel.TunnelType, LatencyMS: float64(c.Stats.LatencyUS) / 1000,
-				LossRate: c.LossRate, RxBytes: c.Stats.RxBytes, TxBytes: c.Stats.TxBytes}
+				LossRate: c.LossRate, RxBytes: uint64(c.Stats.RxBytes), TxBytes: uint64(c.Stats.TxBytes)}
 			if c.Tunnel.LocalAddr != nil {
 				ci.Local = c.Tunnel.LocalAddr.URL
 			}
@@ -696,8 +723,8 @@ func detailOf(node *coreadapter.NodeInfo, pairs []coreadapter.PeerRoutePair, now
 				ci.Remote = c.Tunnel.RemoteAddr.URL
 			}
 			pi.Conns = append(pi.Conns, ci)
-			pi.RxBytes += c.Stats.RxBytes
-			pi.TxBytes += c.Stats.TxBytes
+			pi.RxBytes += uint64(c.Stats.RxBytes)
+			pi.TxBytes += uint64(c.Stats.TxBytes)
 			lat += ci.LatencyMS
 			loss += c.LossRate
 			if pi.Tunnel == "" {

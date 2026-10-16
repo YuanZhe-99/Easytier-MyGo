@@ -69,6 +69,11 @@ const (
 	RequestSettingsSet   RequestType = "settings.set"
 	RequestSessionAttach RequestType = "session.attach" // streaming; see package doc
 	RequestSessionWatch  RequestType = "session.watch"  // which networks a session displays
+	RequestCores         RequestType = "cores"          // installed cores
+	RequestReleases      RequestType = "cores.releases" // official releases (Pre: include pre-releases)
+	RequestCoreInstall   RequestType = "cores.install"  // download and verify Tag
+	RequestCoreRemove    RequestType = "cores.remove"
+	RequestCoreAdd       RequestType = "cores.add" // custom build: Name, Text = directory (user daemon only)
 	RequestShutdown      RequestType = "shutdown"
 )
 
@@ -82,6 +87,7 @@ const (
 	CodeNeedsHelper   ErrorCode = "needs-helper"   // a TUN network without privileges
 	CodeForbidden     ErrorCode = "forbidden"
 	CodeBusy          ErrorCode = "busy"
+	CodeNeedsAdmin    ErrorCode = "needs-admin" // the helper needs administrator approval (pkexec)
 )
 
 // Request is one command.
@@ -95,6 +101,8 @@ type Request struct {
 	Since    uint64      `json:"since,omitempty"`    // traffic sequence
 	Session  string      `json:"session,omitempty"`
 	Watch    []string    `json:"watch,omitempty"` // network IDs on screen
+	Tag      string      `json:"tag,omitempty"`   // core release tag
+	Pre      bool        `json:"pre,omitempty"`   // include pre-releases
 	Settings *Settings   `json:"settings,omitempty"`
 }
 
@@ -111,7 +119,28 @@ type Response struct {
 	Traffic  []TrafficPoint  `json:"traffic,omitempty"`
 	Events   []health.Event  `json:"events,omitempty"`
 	Settings *Settings       `json:"settings,omitempty"`
+	Cores    []CoreInfo      `json:"cores,omitempty"`
+	Releases []ReleaseInfo   `json:"releases,omitempty"`
 	Push     *Push           `json:"push,omitempty"`
+}
+
+// CoreInfo is an installed EasyTier core.
+type CoreInfo struct {
+	Tag      string `json:"tag"`    // release tag, "bundled", or a custom name
+	Source   string `json:"source"` // bundled, official, custom
+	Tested   bool   `json:"tested"`
+	Pre      bool   `json:"pre,omitempty"`
+	Selected bool   `json:"selected,omitempty"`
+}
+
+// ReleaseInfo is an official EasyTier release available for download.
+type ReleaseInfo struct {
+	Tag        string    `json:"tag"`
+	Prerelease bool      `json:"prerelease"`
+	Published  time.Time `json:"published"`
+	Size       int64     `json:"size"`
+	Installed  bool      `json:"installed"`
+	Tested     bool      `json:"tested"`
 }
 
 // Host names where a daemon runs.
@@ -141,6 +170,8 @@ type Settings struct {
 	// Background keeps networks running without a GUI session (helper
 	// only). Off means Follow GUI.
 	Background bool `json:"background"`
+	// Core selects the EasyTier core by tag ("" or "bundled": the bundled one).
+	Core string `json:"core,omitempty"`
 }
 
 // State is the plain-language summary a client shows for a network.
@@ -284,7 +315,7 @@ type Client struct {
 
 // NewClient returns a client for path.
 func NewClient(path string) *Client {
-	return &Client{SocketPath: path, Timeout: 5 * time.Second, LongTimeout: 60 * time.Second}
+	return &Client{SocketPath: path, Timeout: 15 * time.Second, LongTimeout: 10 * time.Minute}
 }
 
 // Do sends one request and returns the response.
@@ -293,7 +324,7 @@ func NewClient(path string) *Client {
 func (c *Client) Do(ctx context.Context, req Request) (*Response, error) {
 	timeout := c.Timeout
 	switch req.Type {
-	case RequestApply, RequestConnect, RequestDisconnect, RequestNetworkDelete, RequestShutdown:
+	case RequestApply, RequestConnect, RequestDisconnect, RequestNetworkDelete, RequestShutdown, RequestCoreInstall, RequestSettingsSet:
 		timeout = c.LongTimeout
 	}
 	ctx, cancel := context.WithTimeout(ctx, timeout)

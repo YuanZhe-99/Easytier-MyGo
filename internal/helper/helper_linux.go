@@ -34,6 +34,13 @@ func Install(o InstallOptions) error {
 			return fmt.Errorf("install %s: %w", name, err)
 		}
 	}
+	for _, name := range Optional {
+		if src := filepath.Join(o.From, name); fileExists(src) {
+			if err := copyRootOwned(src, filepath.Join(BinDir, name)); err != nil {
+				return fmt.Errorf("install %s: %w", name, err)
+			}
+		}
+	}
 	if _, err := user.LookupGroup(Group); err != nil {
 		if out, err := exec.Command("groupadd", "--system", Group).CombinedOutput(); err != nil {
 			return fmt.Errorf("groupadd: %v: %s", err, strings.TrimSpace(string(out)))
@@ -116,6 +123,11 @@ func systemctl(args ...string) error {
 		return fmt.Errorf("systemctl %s: %v: %s", strings.Join(args, " "), err, strings.TrimSpace(string(out)))
 	}
 	return nil
+}
+
+func fileExists(p string) bool {
+	_, err := os.Stat(p)
+	return err == nil
 }
 
 // copyRootOwned copies an executable to dst as root:root 0755, atomically.

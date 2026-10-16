@@ -43,6 +43,17 @@ the confirmation window (30 s), the worker returns to the revision that was runn
 Checks run every second while a session displays the network (or while its core is not healthy)
 and every 10 s otherwise; one `node` and one `-v peer` query feed both health and traffic.
 
+## Cores
+
+The daemon runs the core selected in its settings: the bundled one (default), an official release
+it downloaded on request, or a custom build. `internal/cores` reads the release list from the
+GitHub API (cached with its ETag), downloads only on request, verifies the published SHA-256, and
+unpacks UPX-packed executables with the bundled `upx`. Each core lives in `<state>/cores/<tag>/`
+with its matching CLI. Switching cores restarts running networks on the new core. Versions in
+`third_party/easytier.json` → `tested` are labeled tested. The privileged helper downloads official
+cores itself; a custom build for the helper is added only through
+`easytier-mygo-svc helper add-core` with administrator approval.
+
 ## Local API
 
 - Transport: a Unix domain socket (named pipe on Windows planned); newline-delimited JSON with a

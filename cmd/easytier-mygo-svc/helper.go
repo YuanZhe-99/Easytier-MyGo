@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strconv"
 
+	"github.com/YuanZhe-99/Easytier-MyGo/internal/cores"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/fsutil"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/helper"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/localapi"
@@ -77,6 +78,25 @@ func helperCmd(args []string) error {
 		return helper.Uninstall(*purge)
 	case "status":
 		return json.NewEncoder(os.Stdout).Encode(helper.Inspect())
+	case "add-core":
+		fs := flag.NewFlagSet("helper add-core", flag.ExitOnError)
+		name := fs.String("name", "", "name of the custom core")
+		from := fs.String("from", "", "directory with easytier-core and easytier-cli")
+		fs.Parse(args[1:])
+		if os.Geteuid() != 0 {
+			return errors.New("adding a core to the helper needs root")
+		}
+		m := cores.Manager{Dir: filepath.Join(helper.StateDir, "cores"), UPX: filepath.Join(helper.BinDir, "upx")}
+		c, err := m.AddCustom(*name, *from)
+		if err != nil {
+			return err
+		}
+		for _, f := range []string{"easytier-core", "easytier-cli"} {
+			if err := os.Chown(filepath.Join(m.Dir, c.Tag, f), 0, 0); err != nil {
+				return err
+			}
+		}
+		return nil
 	}
 	usage()
 	return nil

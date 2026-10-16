@@ -16,6 +16,7 @@
 | `internal/supervisor` | 每网络 worker | `Worker`, `Config`, `Preflight` |
 | `internal/daemon` | 宿主、运行方式判断、API | `Run`, `Options`, `Daemon.reconcile` |
 | `internal/helper` | 特权助手安装 | `Install`, `Uninstall`, `Inspect` |
+| `internal/cores` | EasyTier 内核管理 | `Manager.Releases`, `Manager.Install`, `Binaries` |
 | `internal/fsutil` | 原子写入 | `WriteFileAtomic`, `WriteJSON` |
 | `internal/sdnotify` | systemd 通知、socket 激活 | `FromEnv`, `Listeners` |
 | `internal/version` | 产品版本 | `Version` |

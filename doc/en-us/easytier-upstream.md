@@ -37,6 +37,14 @@ version; re-check them when the bundled version moves.
 - `easytier-core --check-config -c FILE` parses a config without starting a network; it does not
   check ports, TUN or permissions.
 
+## Changes seen in v2.7.0 (pre-release)
+
+Verified 2026-10-16 with `v2.7.0-8b7f1f01`: 64-bit counters (`rx_bytes`, `latency_us`, …) are
+quoted strings, NAT types are names (`"Symmetric"`), and default-valued fields are omitted. The
+adapter accepts both forms (`coreadapter.Uint64`, `NatType.UnmarshalJSON`); fixtures for both live
+in `internal/coreadapter/testdata`. Networks connected and peered on v2.7.0 through the core
+manager.
+
 ## Verified quirks
 
 - Two local cores do not handshake over loopback: the connector binds source addresses to

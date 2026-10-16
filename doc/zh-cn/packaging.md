@@ -4,8 +4,8 @@
 
 ## 附带的二进制
 
-`resources/<goos>-<goarch>/` 下的文件随应用一起分发，运行时通过 `mygo.App.Path(mygo.PathResources)` 找到。`go run ./tools/deps fetch -platform <goos>-<goarch>` 下载固定的 EasyTier 压缩包、校验 SHA-256，并把内核与 CLI（去掉 UPX）解压到 `resources/<goos>-<goarch>/bin`。这些目录是构建输入，不提交到仓库。
+`resources/<goos>-<goarch>/` 下的文件随应用一起分发，运行时通过 `mygo.App.Path(mygo.PathResources)` 找到。`go run ./tools/deps fetch -platform <goos>-<goarch>` 下载固定的 EasyTier 压缩包、校验 SHA-256，并把内核与 CLI（去掉 UPX）解压到 `resources/<goos>-<goarch>/bin`，同时放入固定版本的 `upx`（`third_party/upx.json`；仅 Linux 与 Windows），供内核管理处理下载的内核。这些目录是构建输入，不提交到仓库。
 
 ## 许可证
 
-EasyTier MyGo 采用 GPL-3.0。内置的 EasyTier 二进制为 LGPL-3.0：每个分发包都附带其许可证文本和 `third_party/easytier.json` 中记录的源码地址。临时图标来自 EasyTier-iOS（GPL-3.0-or-later）；见 `resources/NOTICE`。
+EasyTier MyGo 采用 GPL-3.0。内置的 EasyTier 二进制为 LGPL-3.0：每个分发包都附带其许可证文本和 `third_party/easytier.json` 中记录的源码地址。临时图标来自 EasyTier-iOS（GPL-3.0-or-later）；见 `resources/NOTICE`。内置的 `upx` 为 GPL-2.0-or-later 并带 UPX 例外条款，其许可证以 `upx-COPYING` 随附。

@@ -18,6 +18,7 @@ effects and notes where non-trivial).
 | `internal/supervisor` | Per-network worker | `Worker`, `Config`, `Preflight` |
 | `internal/daemon` | Host, run-mode decisions, API | `Run`, `Options`, `Daemon.reconcile` |
 | `internal/helper` | Privileged helper installation | `Install`, `Uninstall`, `Inspect` |
+| `internal/cores` | EasyTier core manager | `Manager.Releases`, `Manager.Install`, `Binaries` |
 | `internal/fsutil` | Atomic writes | `WriteFileAtomic`, `WriteJSON` |
 | `internal/sdnotify` | systemd notifications, socket activation | `FromEnv`, `Listeners` |
 | `internal/version` | Product version | `Version` |

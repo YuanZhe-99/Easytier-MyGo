@@ -25,6 +25,7 @@ Verified on the development machine (2026-10-16, EasyTier v2.6.4, isolated ports
 | Helper with TUN | Two TUN networks (`etm0`, `etm1`) run as root, peer, ping |
 | Follow GUI | Session end stops cores and removes the devices; 60 s idle exit; socket reactivation |
 | Background mode | Service enabled at boot; networks run without a session; off restores Follow GUI (no reboot tested) |
+| Core manager (user daemon) | Download v2.7.0 (SHA-256 verified), switch running networks to it and back, remove it |
 
 ## macOS and Windows
 

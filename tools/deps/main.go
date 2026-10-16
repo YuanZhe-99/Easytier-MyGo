@@ -10,10 +10,6 @@
 package main
 
 import (
-	"archive/zip"
-	"bytes"
-	"crypto/sha256"
-	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -22,12 +18,12 @@ import (
 	"net/http"
 	"os"
 	"os/exec"
-	"path"
 	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
 
+	"github.com/YuanZhe-99/Easytier-MyGo/internal/cores"
 	"github.com/YuanZhe-99/Easytier-MyGo/third_party"
 )
 
@@ -174,7 +170,7 @@ func update(args []string) error {
 		return err
 	}
 	fmt.Printf("EasyTier pinned to %s (tested: %s)\n", rel.TagName, strings.Join(m.Tested, ", "))
-	return nil
+	return updateUPX()
 }
 
 // fetch downloads the bundled archive for one platform, verifies it and
@@ -184,7 +180,7 @@ func fetch(args []string) error {
 	fs := flag.NewFlagSet("fetch", flag.ExitOnError)
 	platform := fs.String("platform", third_party.Platform(runtime.GOOS, runtime.GOARCH), "goos-goarch")
 	out := fs.String("out", "resources", "resources directory")
-	upx := fs.String("upx", "", "upx binary used to unpack the release's UPX-packed executables (default: upx from PATH; \"none\" keeps them packed)")
+	upx := fs.String("upx", "", "upx used to unpack the core (default: the fetched one when it runs here, else PATH; \"none\" keeps it packed)")
 	fs.Parse(args)
 
 	m, err := third_party.EasyTier()
@@ -199,120 +195,41 @@ func fetch(args []string) error {
 	if err != nil {
 		return err
 	}
-	if got := sha256Hex(data); got != a.SHA256 {
+	if got := cores.SHA256(data); got != a.SHA256 {
 		return fmt.Errorf("%s: SHA-256 %s, manifest says %s", a.Name, got, a.SHA256)
 	}
 	dest := filepath.Join(*out, *platform, "bin")
 	if err := os.RemoveAll(dest); err != nil {
 		return err
 	}
-	if err := unpack(data, a.Dir, dest); err != nil {
+	if err := cores.Unpack(data, a.Dir, dest); err != nil {
 		return err
 	}
-	if err := unpackUPX(dest, *upx); err != nil {
+	upxBin, err := fetchUPX(*platform, dest)
+	if err != nil {
+		return err
+	}
+	// Unpack the core with an upx that runs here: the one just fetched
+	// when the target is this machine, else one from PATH.
+	runner := *upx
+	if runner == "" {
+		if *platform == third_party.Platform(runtime.GOOS, runtime.GOARCH) && upxBin != "" {
+			runner = upxBin
+		} else if found, err := exec.LookPath("upx"); err == nil {
+			runner = found
+		}
+	}
+	if runner == "none" {
+		runner = ""
+	}
+	if runner == "" {
+		fmt.Fprintln(os.Stderr, "deps: warning: no upx to run here; the core stays UPX-packed (slow to start)")
+	}
+	if err := cores.UnpackUPX(dest, runner); err != nil {
 		return err
 	}
 	fmt.Printf("EasyTier %s for %s → %s\n", m.Bundled, *platform, dest)
 	return nil
-}
-
-// unpackUPX decompresses the UPX-packed executables in dir. EasyTier's
-// release binaries are UPX-packed, which costs ~250 ms of CPU on every
-// start (measured with v2.6.4); unpacked, an easytier-cli query takes ~3 ms.
-// Side effects: rewrites the executables in place.
-// Notes: without upx the files stay packed and a warning is printed.
-func unpackUPX(dir, upx string) error {
-	if upx == "none" {
-		return nil
-	}
-	if upx == "" {
-		found, err := exec.LookPath("upx")
-		if err != nil {
-			fmt.Fprintln(os.Stderr, "deps: warning: upx not found; binaries stay UPX-packed (slow to start)")
-			return nil
-		}
-		upx = found
-	}
-	entries, err := os.ReadDir(dir)
-	if err != nil {
-		return err
-	}
-	for _, e := range entries {
-		p := filepath.Join(dir, e.Name())
-		data, err := os.ReadFile(p)
-		if err != nil {
-			return err
-		}
-		if !bytes.Contains(data[:min(len(data), 4096)], []byte("UPX!")) {
-			continue
-		}
-		c := exec.Command(upx, "-d", "-q", p)
-		c.Stderr = os.Stderr
-		if err := c.Run(); err != nil {
-			return fmt.Errorf("upx -d %s: %w", e.Name(), err)
-		}
-	}
-	return nil
-}
-
-// unpack extracts the files under dir/ in a zip archive into dest, keeping
-// their permission bits (the archives store 0755 for the binaries).
-// Notes: the web console binaries are skipped; this app does not use them.
-func unpack(data []byte, dir, dest string) error {
-	zr, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
-	if err != nil {
-		return err
-	}
-	if err := os.MkdirAll(dest, 0o755); err != nil {
-		return err
-	}
-	n := 0
-	for _, f := range zr.File {
-		rel, ok := strings.CutPrefix(f.Name, dir+"/")
-		if !ok || rel == "" || f.FileInfo().IsDir() || strings.Contains(rel, "/") {
-			continue
-		}
-		if strings.HasPrefix(rel, "easytier-web") {
-			continue
-		}
-		if rel != path.Clean(rel) || strings.HasPrefix(rel, ".") {
-			return fmt.Errorf("unexpected archive entry %q", f.Name)
-		}
-		mode := f.Mode().Perm()
-		if mode == 0 {
-			mode = 0o644
-		}
-		if err := extract(f, filepath.Join(dest, rel), mode); err != nil {
-			return err
-		}
-		n++
-	}
-	if n == 0 {
-		return fmt.Errorf("archive has no files under %s/", dir)
-	}
-	return nil
-}
-
-func extract(f *zip.File, target string, mode os.FileMode) error {
-	r, err := f.Open()
-	if err != nil {
-		return err
-	}
-	defer r.Close()
-	w, err := os.OpenFile(target, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, mode)
-	if err != nil {
-		return err
-	}
-	if _, err := io.Copy(w, r); err != nil {
-		w.Close()
-		return err
-	}
-	return w.Close()
-}
-
-func sha256Hex(data []byte) string {
-	sum := sha256.Sum256(data)
-	return hex.EncodeToString(sum[:])
 }
 
 // mygoVersions returns the pinned and the latest MyGo versions.
@@ -392,9 +309,12 @@ func releaseSums(r release) (map[string]string, error) {
 
 // githubRelease reads /releases/<which> of EasyTier ("latest" is the
 // newest stable release; pre-releases are never "latest").
-func githubRelease(which string) (release, error) {
+func githubRelease(which string) (release, error) { return githubReleaseOf("EasyTier/EasyTier", which) }
+
+// githubReleaseOf reads /releases/<which> of a GitHub repository.
+func githubReleaseOf(repo, which string) (release, error) {
 	var r release
-	req, err := http.NewRequest("GET", "https://api.github.com/repos/EasyTier/EasyTier/releases/"+which, nil)
+	req, err := http.NewRequest("GET", "https://api.github.com/repos/"+repo+"/releases/"+which, nil)
 	if err != nil {
 		return r, err
 	}
@@ -408,7 +328,7 @@ func githubRelease(which string) (release, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return r, fmt.Errorf("GitHub releases/%s: %s", which, resp.Status)
+		return r, fmt.Errorf("GitHub %s releases/%s: %s", repo, which, resp.Status)
 	}
 	return r, json.NewDecoder(resp.Body).Decode(&r)
 }

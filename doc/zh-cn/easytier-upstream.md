@@ -21,6 +21,10 @@
 - `service status` 忽略 `-o json`，输出 `Service is running`、`Service is stopped` 或 `Service is not installed`。
 - `easytier-core --check-config -c FILE` 只解析配置、不启动网络；不检查端口、TUN 或权限。
 
+## v2.7.0（预发布）中的变化
+
+2026-10-16 用 `v2.7.0-8b7f1f01` 验证：64 位计数器（`rx_bytes`、`latency_us` 等）是带引号的字符串，NAT 类型是名称（`"Symmetric"`），默认值字段会被省略。适配器两种形式都接受（`coreadapter.Uint64`、`NatType.UnmarshalJSON`）；两个版本的夹具都在 `internal/coreadapter/testdata`。通过内核管理切换到 v2.7.0 后网络可以连接并互连。
+
 ## 已验证的怪癖
 
 - 两个本地内核无法经回环握手：连接器会把源地址绑定到网卡，因此应拨本机网卡地址（`tcp://<iface-ip>:<port>`）。

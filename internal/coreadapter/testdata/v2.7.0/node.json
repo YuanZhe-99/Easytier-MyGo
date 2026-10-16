@@ -1,0 +1,48 @@
+{
+  "peer_id": 3659558965,
+  "ipv4_addr": "10.250.0.1/24",
+  "hostname": "spike-a",
+  "stun_info": {
+    "udp_nat_type": "Symmetric",
+    "tcp_nat_type": "Symmetric",
+    "last_update_time": "1792167882",
+    "public_ip": [
+      "203.0.113.10"
+    ],
+    "min_port": 21918,
+    "max_port": 30949
+  },
+  "inst_id": "5d101507-e73c-4bfb-ad05-aea9dfaf68a7",
+  "listeners": [
+    "ring://5d101507-e73c-4bfb-ad05-aea9dfaf68a7",
+    "tcp://0.0.0.0:21110",
+    "tcp://[::]:21110"
+  ],
+  "config": "network_secret = \"redacted\"",
+  "version": "2.7.0-8b7f1f01",
+  "feature_flag": {
+    "kcp_input": true,
+    "support_conn_list_sync": true,
+    "quic_input": true
+  },
+  "ip_list": {
+    "public_ipv4": {
+      "addr": 3405803786
+    },
+    "interface_ipv4s": [
+      {
+        "addr": 2886860801
+      },
+      {
+        "addr": 2887551782
+      }
+    ],
+    "interface_ipv6s": [
+      {
+        "part1": 4252635484,
+        "part2": 2715811840,
+        "part4": 137461838
+      }
+    ]
+  }
+}

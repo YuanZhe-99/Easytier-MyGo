@@ -9,21 +9,33 @@ import (
 
 // fixture reads real easytier-cli output captured from the bundled core
 // (testdata; re-capture when the bundled EasyTier version moves).
-func fixture(t *testing.T, name string) []byte {
+func fixture(t *testing.T, name string) []byte { return fixtureIn(t, "", name) }
+
+func fixtureIn(t *testing.T, dir, name string) []byte {
 	t.Helper()
-	data, err := os.ReadFile(filepath.Join("testdata", name))
+	data, err := os.ReadFile(filepath.Join("testdata", dir, name))
 	if err != nil {
 		t.Fatal(err)
 	}
 	return data
 }
 
+// TestDecodeRealOutput runs against the bundled version's output and the
+// newest one seen (v2.7.0 prints counters as strings and NAT types as
+// names).
 func TestDecodeRealOutput(t *testing.T) {
+	for name, dir := range map[string]string{"bundled": "", "v2.7.0": "v2.7.0"} {
+		t.Run(name, func(t *testing.T) { decodeVersion(t, dir) })
+	}
+}
+
+func decodeVersion(t *testing.T, dir string) {
+	fixture := func(t *testing.T, name string) []byte { return fixtureIn(t, dir, name) }
 	node, err := decodeNode(fixture(t, "node.json"))
 	if err != nil {
 		t.Fatal(err)
 	}
-	if node.IPv4Addr == "" || node.Hostname == "" || node.Version == "" {
+	if node.IPv4Addr == "" || node.Hostname == "" || node.Version == "" || node.STUNInfo.UDPNATType == NatUnknown {
 		t.Fatalf("node missing fields: %+v", node)
 	}
 

@@ -21,6 +21,7 @@ import (
 	"time"
 
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/configdoc"
+	"github.com/YuanZhe-99/Easytier-MyGo/internal/cores"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/fsutil"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/health"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/localapi"
@@ -41,8 +42,12 @@ type Options struct {
 	Authorizer localapi.Authorizer
 	// SocketGroup chowns a created socket to the helper's group (0: none).
 	SocketGroup int
-	CoreBin     string
-	CLIBin      string
+	// CoreBin/CLIBin are the fallback binaries when no core manager is set
+	// or the selected core is missing.
+	CoreBin string
+	CLIBin  string
+	// Cores manages selectable EasyTier cores (nil: only CoreBin/CLIBin).
+	Cores *cores.Manager
 	// RPCPortBase is the first port tried for cores' management portals.
 	RPCPortBase int
 	// Privileged reports whether cores may create TUN devices.
@@ -178,7 +183,7 @@ func (d *Daemon) settingsPath() string { return filepath.Join(d.opts.StateDir, "
 func (d *Daemon) addWorker(id string) {
 	cfg := d.opts.Worker
 	cfg.ID = id
-	cfg.CoreBin, cfg.CLIBin = d.opts.CoreBin, d.opts.CLIBin
+	cfg.CoreBin, cfg.CLIBin = d.binaries()
 	cfg.Dir = filepath.Join(d.opts.StateDir, "run", id)
 	cfg.Policy = d.opts.Policy
 	cfg.Logf = d.opts.Logf
@@ -200,6 +205,19 @@ func (d *Daemon) addWorker(id string) {
 	d.mu.Unlock()
 	d.wg.Add(1)
 	go func() { defer d.wg.Done(); w.Run(wctx) }()
+}
+
+// binaries returns the selected core's executables.
+func (d *Daemon) binaries() (core, cli string) {
+	if d.opts.Cores != nil {
+		d.mu.Lock()
+		tag := d.settings.Core
+		d.mu.Unlock()
+		if c, ok := d.opts.Cores.Find(tag); ok {
+			return cores.Binaries(c.Dir)
+		}
+	}
+	return d.opts.CoreBin, d.opts.CLIBin
 }
 
 // allocPortLocked picks the lowest free management port from the base.
