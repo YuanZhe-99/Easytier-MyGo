@@ -1,6 +1,6 @@
 # GUI
 
-界面是桌面 VPN 客户端，而不是工程控制台。界面正在重新设计；本文档规定新界面遵循的规则。
+界面是桌面 VPN 客户端，而不是工程控制台（`internal/gui`）。本文档规定它遵循的规则；`internal/gui/gui_test.go` 会渲染所有页面并可输出截图（`SCREENSHOT_DIR`）。
 
 ## 结构
 

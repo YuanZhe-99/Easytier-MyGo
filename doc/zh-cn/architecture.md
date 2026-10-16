@@ -26,7 +26,7 @@ Daemon 按运行方式（[run-modes.md](run-modes.md)）运行在两种权限环
 | `internal/helper` | 安装、卸载与检查特权助手（Linux：systemd）。 |
 | `internal/sdnotify` | systemd 通知与 socket 激活。 |
 | `internal/fsutil` | 原子文件写入与 JSON 文档。 |
-| `internal/app` | GUI（正在重建；目前只是占位窗口）。 |
+| `internal/gui` | GUI：连接 daemon、会话、视图、托盘。 |
 | `internal/version` | 唯一的产品版本。 |
 | `third_party` | 内嵌的 EasyTier 发布清单。 |
 | `tools/deps` | 维护上游固定版本、下载内置内核。 |

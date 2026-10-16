@@ -1,7 +1,8 @@
 # GUI
 
-The interface is a desktop VPN client, not an engineering console. It is being redesigned; this
-document states the rules the new interface follows.
+The interface is a desktop VPN client, not an engineering console (`internal/gui`). This document
+states the rules it follows; `internal/gui/gui_test.go` renders every page and can write
+screenshots (`SCREENSHOT_DIR`).
 
 ## Structure
 

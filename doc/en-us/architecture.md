@@ -29,7 +29,7 @@ paths and lifetime differ.
 | `internal/helper` | Installing, removing and inspecting the privileged helper (Linux: systemd). |
 | `internal/sdnotify` | systemd notifications and socket activation. |
 | `internal/fsutil` | Atomic file writes and JSON documents. |
-| `internal/app` | The GUI (being rebuilt; a placeholder window for now). |
+| `internal/gui` | The GUI: daemon connection, session, views, tray. |
 | `internal/version` | The single product version. |
 | `third_party` | The embedded EasyTier release manifest. |
 | `tools/deps` | Upstream pin maintenance and bundled-core download. |
