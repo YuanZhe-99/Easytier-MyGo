@@ -38,10 +38,12 @@ The helper runs cores as root/SYSTEM, so:
 - custom core binaries require administrator authorization each time;
 - the helper binary lives in a root-owned location; it replaces itself only with a build carrying
   a valid release signature: release builds write `bundle.json` (SHA-256 of `easytier-mygo-svc`,
-  the core, the CLI and `upx`) and `bundle.sig` (ed25519, `internal/bundlesig`). The helper checks
-  the signature against the embedded public key (`internal/bundlesig/release.pub`), every hash, and
-  that the version is not older, then copies the files and restarts. Unsigned (development) builds
-  fall back to one administrator prompt.
+  the core, the CLI and `upx`) and `bundle.sig` (ed25519, `internal/bundlesig`). The helper reads
+  each file once, checks the signature against the embedded public key
+  (`internal/bundlesig/release.pub`), every hash, and that the version is not older, then writes
+  exactly the bytes it verified and restarts. It never reads the user-writable app folder again,
+  so a file swapped there after the check is not installed. Unsigned (development) builds fall
+  back to one administrator prompt.
 
 ## Isolation from other EasyTier installations
 
@@ -55,5 +57,5 @@ Linux: the user daemon (`easytier-mygo-svc run --host user --lifeline-fd N`), th
 (`run --host helper`, socket-activated) and `easytier-mygo-svc helper install|uninstall|status`
 are implemented; the GUI flow comes with the new interface. `helper install` must run as root
 (the GUI uses pkexec) and records the user from `PKEXEC_UID`/`SUDO_UID` as operator. Helper
-self-update by signature and the macOS/Windows backends are not implemented yet.
+self-update by signature and the macOS/Windows backends are implemented too;
 [platform-notes.md](platform-notes.md) records what was verified.

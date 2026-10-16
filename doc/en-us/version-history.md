@@ -3,6 +3,14 @@
 The project restarted from 0.1.0 on 2026-10-16. The earlier, inherited history (versions up to
 0.10.80) is preserved under the git tag `archive/v0.10.80` and is not continued.
 
+## Unreleased
+
+- Security: the privileged helper's signed self-update checked the bundle in the user-writable
+  app folder and then read every file there again to copy it, so a program running as the same
+  user could swap in its own binary between the two reads and have it installed and run as
+  root/SYSTEM. The helper now reads each file once and installs exactly the bytes it verified
+  (Windows, macOS, Linux).
+
 ## 0.1.3 (2026-10-16)
 
 - macOS: closing the window into the tray also hides the Dock icon; a switch in Settings → General

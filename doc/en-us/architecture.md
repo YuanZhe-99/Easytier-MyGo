@@ -27,6 +27,7 @@ paths and lifetime differ.
 | `internal/supervisor` | One worker per network: core process, checks, bounded recovery, apply with rollback, traffic. |
 | `internal/daemon` | The host: workers, run-mode decisions, sessions, API handlers. |
 | `internal/helper` | Installing, removing and inspecting the privileged helper (Linux: systemd). |
+| `internal/bundlesig` | Signing and verifying the app bundle the helper updates itself from; verified files are returned as bytes, never re-read. |
 | `internal/sdnotify` | systemd notifications and socket activation. |
 | `internal/fsutil` | Atomic file writes and JSON documents. |
 | `internal/gui` | The GUI: daemon connection, session, views, tray. |

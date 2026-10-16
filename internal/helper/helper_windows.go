@@ -13,9 +13,7 @@ import (
 	"golang.org/x/sys/windows/svc"
 	"golang.org/x/sys/windows/svc/mgr"
 
-	"github.com/YuanZhe-99/Easytier-MyGo/internal/bundlesig"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/fsutil"
-	"github.com/YuanZhe-99/Easytier-MyGo/internal/version"
 )
 
 // ServiceName is the Windows service of the helper.
@@ -172,27 +170,15 @@ func Inspect() Status {
 // SelfUpdate replaces the binaries from a signed bundle. A running
 // executable cannot be overwritten on Windows, so the old one is renamed
 // aside first; the helper then exits and the service manager restarts it.
+// Notes: installs the bytes that were verified, read once from the
+// user-writable app directory (installBundle).
 func SelfUpdate(from, running string) error {
-	key, err := bundlesig.PublicKey()
+	b, err := verifiedBundle(from, running)
 	if err != nil {
 		return err
 	}
-	m, err := bundlesig.Verify(from, key)
-	if err != nil {
+	if err := installBundle(BinDir, b); err != nil {
 		return err
-	}
-	if version.Older(m.Version, running) {
-		return fmt.Errorf("bundle %s is older than the helper %s", m.Version, running)
-	}
-	for name := range m.Files {
-		dst := filepath.Join(BinDir, name)
-		old := dst + ".old"
-		_ = os.Remove(old)
-		_ = os.Rename(dst, old)
-		if err := copyRootOwned(filepath.Join(from, name), dst); err != nil {
-			_ = os.Rename(old, dst)
-			return err
-		}
 	}
 	go func() {
 		time.Sleep(time.Second)

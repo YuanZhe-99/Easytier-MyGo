@@ -33,3 +33,27 @@ func TestSignVerify(t *testing.T) {
 		t.Fatal("verified a swapped file")
 	}
 }
+
+// TestReadKeepsVerifiedBytes: Read returns the contents it hashed, so a file
+// swapped on disk afterwards does not change what the caller installs.
+func TestReadKeepsVerifiedBytes(t *testing.T) {
+	pub, priv, _ := ed25519.GenerateKey(nil)
+	dir := t.TempDir()
+	if err := os.WriteFile(filepath.Join(dir, "easytier-mygo-svc"), []byte("signed"), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	if err := Sign(dir, "0.1.0", priv); err != nil {
+		t.Fatal(err)
+	}
+	b, err := Read(dir, pub)
+	if err != nil {
+		t.Fatal(err)
+	}
+	os.WriteFile(filepath.Join(dir, "easytier-mygo-svc"), []byte("evil"), 0o755)
+	if got := string(b.Data["easytier-mygo-svc"]); got != "signed" {
+		t.Fatalf("data = %q, want the verified contents", got)
+	}
+	if names := b.Names(); len(names) != 1 || names[0] != "easytier-mygo-svc" {
+		t.Fatalf("names = %v", names)
+	}
+}

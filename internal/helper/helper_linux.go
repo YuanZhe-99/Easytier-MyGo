@@ -10,9 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/YuanZhe-99/Easytier-MyGo/internal/bundlesig"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/fsutil"
-	"github.com/YuanZhe-99/Easytier-MyGo/internal/version"
 )
 
 const unitDir = "/etc/systemd/system"
@@ -132,22 +130,15 @@ func systemctl(args ...string) error {
 // verify against the embedded release key, every file must match it, and
 // the version must not be older than the running one. The helper restarts
 // afterwards; running networks reconnect.
+// Notes: installs the bytes that were verified, read once from the
+// user-writable app directory (installBundle).
 func SelfUpdate(from, running string) error {
-	key, err := bundlesig.PublicKey()
+	b, err := verifiedBundle(from, running)
 	if err != nil {
 		return err
 	}
-	m, err := bundlesig.Verify(from, key)
-	if err != nil {
+	if err := installBundle(BinDir, b); err != nil {
 		return err
-	}
-	if version.Older(m.Version, running) {
-		return fmt.Errorf("bundle %s is older than the helper %s", m.Version, running)
-	}
-	for name := range m.Files {
-		if err := copyRootOwned(filepath.Join(from, name), filepath.Join(BinDir, name)); err != nil {
-			return err
-		}
 	}
 	go func() {
 		time.Sleep(time.Second)

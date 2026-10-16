@@ -52,6 +52,7 @@ func PublicKey() (ed25519.PublicKey, error) {
 	return ed25519.PublicKey(b), nil
 }
 
+// fileHash returns the hex SHA-256 of the file at p (signing only).
 func fileHash(p string) (string, error) {
 	data, err := os.ReadFile(p)
 	if err != nil {
@@ -89,41 +90,79 @@ func Sign(dir, version string, key ed25519.PrivateKey) error {
 	return os.WriteFile(filepath.Join(dir, "bundle.sig"), []byte(sig+"\n"), 0o644)
 }
 
-// Verify checks dir's manifest signature with key and every listed file's
-// hash. Returns the manifest when everything matches.
-func Verify(dir string, key ed25519.PublicKey) (Manifest, error) {
-	var m Manifest
+// Bundle is a verified bundle: its manifest and the contents of every file
+// it lists, exactly the bytes that were hashed during verification.
+type Bundle struct {
+	Manifest
+	// Data maps each manifest file name to its verified contents.
+	Data map[string][]byte
+}
+
+// Names returns the bundle's file names, sorted.
+func (b Bundle) Names() []string {
+	names := make([]string, 0, len(b.Data))
+	for n := range b.Data {
+		names = append(names, n)
+	}
+	sort.Strings(names)
+	return names
+}
+
+// Read loads dir's bundle, checks the manifest signature with key and every
+// listed file's hash, and returns the verified contents.
+//
+// Inputs: dir, a possibly user-writable app directory; key, the release key.
+// Returns: the bundle when everything matches.
+// Notes: each file is read once and hashed in memory. Callers install
+// Bundle.Data and never read the files from dir again: whoever can write
+// dir could swap a file between the check and a second read.
+func Read(dir string, key ed25519.PublicKey) (Bundle, error) {
+	var b Bundle
 	data, err := os.ReadFile(filepath.Join(dir, "bundle.json"))
 	if err != nil {
-		return m, fmt.Errorf("unsigned bundle: %w", err)
+		return b, fmt.Errorf("unsigned bundle: %w", err)
 	}
 	sigText, err := os.ReadFile(filepath.Join(dir, "bundle.sig"))
 	if err != nil {
-		return m, fmt.Errorf("unsigned bundle: %w", err)
+		return b, fmt.Errorf("unsigned bundle: %w", err)
 	}
 	sig, err := base64.StdEncoding.DecodeString(strings.TrimSpace(string(sigText)))
 	if err != nil || !ed25519.Verify(key, data, sig) {
-		return m, errors.New("bundle signature does not verify")
+		return b, errors.New("bundle signature does not verify")
 	}
+	var m Manifest
 	if err := json.Unmarshal(data, &m); err != nil {
-		return m, err
+		return b, err
 	}
+	b.Manifest = m
 	names := make([]string, 0, len(m.Files))
 	for n := range m.Files {
 		names = append(names, n)
 	}
 	sort.Strings(names)
+	files := make(map[string][]byte, len(names))
 	for _, n := range names {
-		if strings.ContainsAny(n, `/\`) {
-			return m, fmt.Errorf("bad file name %q in manifest", n)
+		if n == "" || n == "." || n == ".." || strings.ContainsAny(n, `/\`) {
+			return b, fmt.Errorf("bad file name %q in manifest", n)
 		}
-		h, err := fileHash(filepath.Join(dir, n))
+		content, err := os.ReadFile(filepath.Join(dir, n))
 		if err != nil {
-			return m, err
+			return b, err
 		}
-		if h != m.Files[n] {
-			return m, fmt.Errorf("%s does not match the signed manifest", n)
+		sum := sha256.Sum256(content)
+		if hex.EncodeToString(sum[:]) != m.Files[n] {
+			return b, fmt.Errorf("%s does not match the signed manifest", n)
 		}
+		files[n] = content
 	}
-	return m, nil
+	b.Data = files
+	return b, nil
+}
+
+// Verify checks dir's manifest signature with key and every listed file's
+// hash. Returns the manifest when everything matches.
+// Notes: a check only; installing a bundle uses Read and its Data.
+func Verify(dir string, key ed25519.PublicKey) (Manifest, error) {
+	b, err := Read(dir, key)
+	return b.Manifest, err
 }

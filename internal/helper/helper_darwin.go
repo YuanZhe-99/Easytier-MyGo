@@ -9,10 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/YuanZhe-99/Easytier-MyGo/internal/bundlesig"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/fsutil"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/localapi"
-	"github.com/YuanZhe-99/Easytier-MyGo/internal/version"
 )
 
 // Label is the launchd job of the helper.
@@ -115,22 +113,15 @@ func Inspect() Status {
 }
 
 // SelfUpdate replaces the binaries from a signed bundle and restarts.
+// Notes: installs the bytes that were verified, read once from the
+// user-writable app directory (installBundle).
 func SelfUpdate(from, running string) error {
-	key, err := bundlesig.PublicKey()
+	b, err := verifiedBundle(from, running)
 	if err != nil {
 		return err
 	}
-	m, err := bundlesig.Verify(from, key)
-	if err != nil {
+	if err := installBundle(BinDir, b); err != nil {
 		return err
-	}
-	if version.Older(m.Version, running) {
-		return fmt.Errorf("bundle %s is older than the helper %s", m.Version, running)
-	}
-	for name := range m.Files {
-		if err := copyRootOwned(filepath.Join(from, name), filepath.Join(BinDir, name)); err != nil {
-			return err
-		}
 	}
 	go func() {
 		time.Sleep(time.Second)
