@@ -392,7 +392,7 @@ func DefaultPolicy() Policy {
 	return Policy{
 		FailThreshold:   3,
 		OKThreshold:     2,
-		GracePeriod:     45 * time.Second,
+		GracePeriod:     15 * time.Second,
 		BackoffBase:     5 * time.Second,
 		BackoffMax:      60 * time.Second,
 		Jitter:          0.2,

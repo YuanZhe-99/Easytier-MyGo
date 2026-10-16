@@ -46,7 +46,9 @@ device `easytier0`) are never assumed.
 
 ## Current implementation
 
-The inherited code still installs a root systemd system unit or a user unit through
-`easytier-mygo-svc install` in a terminal. The helper, the session binding and the GUI flow
-described above replace it; [platform-notes.md](platform-notes.md) records what is implemented
-and verified.
+Linux: the user daemon (`easytier-mygo-svc run --host user --lifeline-fd N`), the helper
+(`run --host helper`, socket-activated) and `easytier-mygo-svc helper install|uninstall|status`
+are implemented; the GUI flow comes with the new interface. `helper install` must run as root
+(the GUI uses pkexec) and records the user from `PKEXEC_UID`/`SUDO_UID` as operator. Helper
+self-update by signature and the macOS/Windows backends are not implemented yet.
+[platform-notes.md](platform-notes.md) records what was verified.

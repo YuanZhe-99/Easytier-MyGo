@@ -21,24 +21,35 @@ paths and lifetime differ.
 | `internal/health` | Side-effect-free health engine: verdicts, causes, bounded recovery decisions. |
 | `internal/configdoc` | Raw TOML documents: revisions, conflict-checked atomic saves, backups, lossless form projection. |
 | `internal/coreadapter` | Typed, bounded wrapper around `easytier-cli` output with error classification. |
-| `internal/telemetry` | Counter samples to rates; gaps and resets stay visible. |
-| `internal/localapi` | The versioned newline-delimited JSON protocol over a local socket, peer-credential authorization. |
-| `internal/daemon` | Process supervision, the check loop, the API handlers. |
-| `internal/platformservice` | Linux systemd unit generation and installation. |
-| `internal/sdnotify` | systemd readiness and watchdog notifications. |
-| `internal/app` | The GUI. |
+| `internal/telemetry` | Counter samples to rates and a sequenced ring of curve points; gaps and resets stay visible. |
+| `internal/localapi` | The versioned newline-delimited JSON protocol over a local socket, sessions, peer-credential authorization. |
+| `internal/profiles` | Network store: raw documents, metadata, run intent, frozen applied revisions. |
+| `internal/supervisor` | One worker per network: core process, checks, bounded recovery, apply with rollback, traffic. |
+| `internal/daemon` | The host: workers, run-mode decisions, sessions, API handlers. |
+| `internal/helper` | Installing, removing and inspecting the privileged helper (Linux: systemd). |
+| `internal/sdnotify` | systemd notifications and socket activation. |
+| `internal/fsutil` | Atomic file writes and JSON documents. |
+| `internal/app` | The GUI (being rebuilt; a placeholder window for now). |
 | `internal/version` | The single product version. |
 | `third_party` | The embedded EasyTier release manifest. |
 | `tools/deps` | Upstream pin maintenance and bundled-core download. |
 
-The daemon and GUI packages still carry the inherited single/manifest design; the rework replaces
-them (profiles, per-network supervisors, the privileged helper, the core manager). This document is
-updated as each part lands.
+A network runs when the user wants it connected **and** the run mode allows it: a GUI session is
+attached, or the helper is in background mode. Each running network has its own core with an
+explicit management port allocated from 25888 upwards. Applying a saved document first runs the
+core's `--check-config`, then restarts the core with a frozen copy; if the new revision fails within
+the confirmation window (30 s), the worker returns to the revision that was running.
+
+Checks run every second while a session displays the network (or while its core is not healthy)
+and every 10 s otherwise; one `node` and one `-v peer` query feed both health and traffic.
 
 ## Local API
 
-- Transport: a Unix domain socket (named pipe on Windows), one request per connection today;
-  newline-delimited JSON with a `version` field.
+- Transport: a Unix domain socket (named pipe on Windows planned); newline-delimited JSON with a
+  `version` field. One request per connection, except a session (`session.attach`), which keeps
+  its connection and receives pushed frames (network statuses, new traffic points, new events) at
+  most every 500 ms. Errors carry a code (`not-found`, `conflict`, `invalid-config`,
+  `needs-helper`, …).
 - `localapi.ProtocolVersion` is checked by both sides. Enums cross the socket as names. Changing a
   field's meaning requires a version bump.
 - Authorization comes from the operating system's peer credentials, never from the request body.

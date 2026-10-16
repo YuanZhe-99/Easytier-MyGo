@@ -27,13 +27,11 @@
 
 ## 里程碑
 
-### P1 运行时、特权助手与运行方式（Linux）
-1. 删除推迟功能的代码：TCP/DNS 探测（`internal/diagnostics`）、流量历史持久化（telemetry history*）、离线 profile CLI 子命令、manifest 运行时。
-2. 包：`internal/profiles`（原文+元数据+持久意图）、`internal/supervisor`（每网络 worker）、`internal/daemon`（宿主、API、授权）、`internal/platform/{linux,darwin,windows}`、`internal/cores`、`internal/helper`（install/uninstall/update/install-custom-core）。
-3. 动态多网络 API、RPC 端口自动分配、冲突检测、`session.attach`；ProtocolVersion → 2。
-4. 宿主：用户态子进程（免授权）；特权助手（socket 激活、空闲退出、operator/附属组授权、后台档开关、配置路径净化、带加固项的 socket/service 单元）。
-5. 性能设计落地；按测试策略写测试。
-- 验收：助手安装只弹一次；之后启动 GUI、随界面↔后台切换、安装/切换官方内核均不弹窗；随界面档 GUI 退出或被 kill 后停网、助手空闲退出；免授权档跑 no_tun；卸载干净；daemon 侧性能达标并记录。
+### P1 运行时与特权助手（Linux，剩余）
+已完成并实测：新 daemon/supervisor/localapi v2、三种运行方式、Linux 特权助手（socket 激活、空闲退出、后台方式）、TUN 网络、回滚、崩溃恢复（见 `doc/*/platform-notes.md`）。剩余：
+1. 内核管理 `internal/cores`：GitHub release 索引（缓存+ETag）、资产匹配、sha256 校验、解压保留权限位、UPX 解压（随包附带 upx）；用户目录与助手目录；API：列出/下载/删除/设为默认（助手侧由助手自己下载校验）；自定义二进制（助手档需 pkexec）。
+2. daemon 支持按所选内核启动；内核切换后的重启与“切回上一个内核”。
+3. 测试：cores 的索引夹具、资产匹配、sha256、解压。
 
 ### P2 GUI 重设计（Linux）
 - 按 `doc/*/gui.md`：侧边栏网络列表、网络页（头部卡片、流量行、实时图、信息块、节点|路由|事件）、配置（表单|TOML、保存/保存并应用）、设置（常规、运行方式档位卡与助手安装/卸载、内核管理、高级、关于）、首次向导、三态托盘（档位相关退出文案）、单实例、自启+隐藏启动、通知、四语 i18n、主题 token。

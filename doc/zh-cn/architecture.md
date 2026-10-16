@@ -18,21 +18,26 @@ Daemon 按运行方式（[run-modes.md](run-modes.md)）运行在两种权限环
 | `internal/health` | 无副作用的健康引擎：判定、归因、有限恢复决策。 |
 | `internal/configdoc` | 原文 TOML 文档：revision、带冲突检查的原子保存、备份、无损表单投影。 |
 | `internal/coreadapter` | 对 `easytier-cli` 输出的类型化、有界封装与错误分类。 |
-| `internal/telemetry` | 由计数器计算速率；缺口与重置保持可见。 |
-| `internal/localapi` | 经本地 socket 传输、带版本的按行 JSON 协议，按对端凭据授权。 |
-| `internal/daemon` | 进程监管、检查循环、API 处理。 |
-| `internal/platformservice` | Linux systemd 单元的生成与安装。 |
-| `internal/sdnotify` | systemd 就绪与看门狗通知。 |
-| `internal/app` | GUI。 |
+| `internal/telemetry` | 由计数器计算速率，并保存带序号的曲线环形缓冲；缺口与重置保持可见。 |
+| `internal/localapi` | 经本地 socket 传输、带版本的按行 JSON 协议，会话推送，按对端凭据授权。 |
+| `internal/profiles` | 网络存储：原文文档、元数据、运行意图、冻结的已应用 revision。 |
+| `internal/supervisor` | 每个网络一个 worker：内核进程、检查、有限恢复、带回滚的应用、流量。 |
+| `internal/daemon` | 宿主：worker、运行方式判断、会话、API 处理。 |
+| `internal/helper` | 安装、卸载与检查特权助手（Linux：systemd）。 |
+| `internal/sdnotify` | systemd 通知与 socket 激活。 |
+| `internal/fsutil` | 原子文件写入与 JSON 文档。 |
+| `internal/app` | GUI（正在重建；目前只是占位窗口）。 |
 | `internal/version` | 唯一的产品版本。 |
 | `third_party` | 内嵌的 EasyTier 发布清单。 |
 | `tools/deps` | 维护上游固定版本、下载内置内核。 |
 
-Daemon 与 GUI 包仍沿用继承来的单网络/manifest 设计；重构会替换它们（网络配置、每网络监管器、特权助手、内核管理）。各部分落地时同步更新本文档。
+网络在用户希望连接**并且**运行方式允许时才运行：有 GUI 会话连接，或助手处于后台方式。每个运行中的网络有自己的内核，管理端口从 25888 起显式分配。应用已保存的文档时先运行内核的 `--check-config`，再用冻结副本重启内核；如果新 revision 在确认窗口（30 s）内失败，worker 会回到之前运行的 revision。
+
+会话正在显示该网络（或其内核尚不健康）时每秒检查一次，否则每 10 s 一次；一次 `node` 与一次 `-v peer` 查询同时供健康判定与流量使用。
 
 ## 本地 API
 
-- 传输：Unix 域 socket（Windows 上为命名管道），目前每个连接一个请求；按行 JSON，带 `version` 字段。
+- 传输：Unix 域 socket（Windows 命名管道在计划中）；按行 JSON，带 `version` 字段。每个连接一个请求，会话（`session.attach`）除外：它保持连接并接收推送（网络状态、新的流量点、新事件），最多每 500 ms 一次。错误带代码（`not-found`、`conflict`、`invalid-config`、`needs-helper` 等）。
 - 双方都检查 `localapi.ProtocolVersion`。枚举以名称传输。改变字段含义必须升级版本。
 - 授权来自操作系统提供的对端凭据，绝不来自请求内容。只读与写入两级保护的是本应用的控制入口。
 - 内核自己的 `--rpc-portal`（回环 TCP）是另一个入口，本机用户都能访问；本应用不声称将其关闭。

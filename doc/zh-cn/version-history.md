@@ -8,3 +8,5 @@
 - 标识改为 `com.yuanzhe.easytiermygo`，模块改为 `github.com/YuanZhe-99/Easytier-MyGo`。
 - MyGo v0.5.5 / EasyTier v2.6.4（2026-10-16 检查）。
 - 获取 EasyTier 发布二进制时解除 UPX 压缩（每次 CLI 调用的 CPU 从约 250 ms 降到 3 ms）。
+- 新运行时：网络存储、带应用回滚的每网络监管器、带会话的本地 API v2、运行方式（免授权/随界面/后台）以及 Linux 特权助手。
+- 主动启动后的健康宽限期从 45 s 降到 15 s。

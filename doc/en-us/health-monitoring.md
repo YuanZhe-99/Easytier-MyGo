@@ -38,7 +38,7 @@ defaults):
 |---|---|---|
 | FailThreshold | 3 | Consecutive attributable failures before `failed`. |
 | OKThreshold | 2 | Consecutive healthy observations before a fault clears. |
-| GracePeriod | 45 s | After a deliberate start/apply/wake, failures show but no recovery is scheduled. |
+| GracePeriod | 15 s | After a deliberate start/apply/wake, failures show but no recovery is scheduled. |
 | BackoffBase / Max | 5 s / 60 s | Retry delay doubles per attempt, capped, ±20 % jitter. |
 | MaxAttempts / Window | 3 / 10 min | Sliding budget per component, counted across recovery episodes and daemon restarts. |
 | RecoveryEnabled | true | Monitor-only operation turns all automatic recovery off. |

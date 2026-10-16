@@ -31,7 +31,7 @@
 |---|---|---|
 | FailThreshold | 3 | 连续多少次可归因失败后判为 `failed`。 |
 | OKThreshold | 2 | 连续多少次健康观察后清除故障。 |
-| GracePeriod | 45 s | 主动启动/应用/唤醒后，失败仍会显示但不安排恢复。 |
+| GracePeriod | 15 s | 主动启动/应用/唤醒后，失败仍会显示但不安排恢复。 |
 | BackoffBase / Max | 5 s / 60 s | 每次重试延迟翻倍，有上限，±20 % 抖动。 |
 | MaxAttempts / Window | 3 / 10 min | 每组件的滑动预算，跨恢复轮次、跨 daemon 重启累计。 |
 | RecoveryEnabled | true | 只监控模式会关闭所有自动恢复。 |

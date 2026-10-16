@@ -614,7 +614,7 @@ func (w *Worker) publishWith(node *coreadapter.NodeInfo, pairs []coreadapter.Pee
 	}
 	if last, ok := w.ring.Last(); ok {
 		s.LastSeq = last.Seq
-		if !last.Gap {
+		if w.run && !last.Gap {
 			s.RxRate, s.TxRate = last.RxBytesPS, last.TxBytesPS
 		}
 	}

@@ -24,14 +24,15 @@ go run ./tools/checkdocs           # doc/en-us and doc/zh-cn mirror each other
 让 daemon 使用私有 socket、状态目录和显式端口运行，再让 GUI 指向它：
 
 ```bash
-B=resources/linux-amd64/bin
 go build -o build/easytier-mygo-svc ./cmd/easytier-mygo-svc
-build/easytier-mygo-svc \
-  --core-bin $B/easytier-core --cli-bin $B/easytier-cli \
-  --config "$PWD/.dev/dev-network.toml" --rpc 127.0.0.1:25888 \
-  --socket "$PWD/.dev/session/ctl.sock" --state-dir "$PWD/.dev/session/state" \
-  --config-dir "$PWD/.dev/session/networks"
-EASYTIER_MYGO_SOCKET="$PWD/.dev/session/ctl.sock" go tool mygo dev
+go build -o build/easytier-mygo-ctl ./cmd/easytier-mygo-ctl
+cp resources/linux-amd64/bin/easytier-* build/
+build/easytier-mygo-svc run --host user --rpc-base 25888 \
+  --socket "$PWD/.dev/session/ctl.sock" --state-dir "$PWD/.dev/session/state" &
+C="build/easytier-mygo-ctl -socket $PWD/.dev/session/ctl.sock"
+$C create "Dev" .dev/dev-network.toml
+$C connect <ID>
+$C watch <ID>      # networks run while a session is attached
 ```
 
 开发用网络配置需要显式且未占用的监听端口（`listeners = ["tcp://0.0.0.0:21110"]`），除非在测试特权路径，否则要设 `[flags] no_tun = true`。第二个本地内核必须拨本机网卡地址，而不是 `127.0.0.1`。

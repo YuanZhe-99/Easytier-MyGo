@@ -273,7 +273,7 @@ func (d *Daemon) reconcile() {
 		} else {
 			err = c.e.w.Disconnect(d.ctx)
 		}
-		if err != nil {
+		if err != nil && d.ctx.Err() == nil {
 			d.opts.Logf("network %s: %v", c.id, err)
 		}
 	}

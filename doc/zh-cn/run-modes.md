@@ -35,4 +35,4 @@ GUI 与助手保持一条长连接会话。会话关闭且当前为随界面方�
 
 ## 当前实现
 
-继承来的代码仍在终端中通过 `easytier-mygo-svc install` 安装 root 系统单元或用户单元。上述助手、会话绑定与 GUI 流程将替换它；实现与验证情况记录在 [platform-notes.md](platform-notes.md)。
+Linux：用户态 daemon（`easytier-mygo-svc run --host user --lifeline-fd N`）、助手（`run --host helper`，socket 激活）以及 `easytier-mygo-svc helper install|uninstall|status` 已实现；GUI 流程随新界面提供。`helper install` 必须以 root 运行（GUI 使用 pkexec），并把 `PKEXEC_UID`/`SUDO_UID` 对应的用户记为 operator。按签名自更新助手以及 macOS/Windows 后端尚未实现。验证情况记录在 [platform-notes.md](platform-notes.md)。

@@ -25,14 +25,15 @@ Run the daemon against a private socket, state directory and explicit ports, the
 it:
 
 ```bash
-B=resources/linux-amd64/bin
 go build -o build/easytier-mygo-svc ./cmd/easytier-mygo-svc
-build/easytier-mygo-svc \
-  --core-bin $B/easytier-core --cli-bin $B/easytier-cli \
-  --config "$PWD/.dev/dev-network.toml" --rpc 127.0.0.1:25888 \
-  --socket "$PWD/.dev/session/ctl.sock" --state-dir "$PWD/.dev/session/state" \
-  --config-dir "$PWD/.dev/session/networks"
-EASYTIER_MYGO_SOCKET="$PWD/.dev/session/ctl.sock" go tool mygo dev
+go build -o build/easytier-mygo-ctl ./cmd/easytier-mygo-ctl
+cp resources/linux-amd64/bin/easytier-* build/
+build/easytier-mygo-svc run --host user --rpc-base 25888 \
+  --socket "$PWD/.dev/session/ctl.sock" --state-dir "$PWD/.dev/session/state" &
+C="build/easytier-mygo-ctl -socket $PWD/.dev/session/ctl.sock"
+$C create "Dev" .dev/dev-network.toml
+$C connect <ID>
+$C watch <ID>      # networks run while a session is attached
 ```
 
 The dev network config needs explicit, unused listener ports (`listeners = ["tcp://0.0.0.0:21110"]`)
