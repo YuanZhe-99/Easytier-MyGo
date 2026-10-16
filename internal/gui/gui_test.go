@@ -40,9 +40,13 @@ func demoApp(t *testing.T) *App {
 	}
 	a.traffic["n1"] = pts
 	a.selected = "n1"
+	a.expanded["/nas/1"] = true
+	a.coreUpdate = "v2.7.1"
 	a.details["n1"] = &localapi.NetworkDetail{Peers: []localapi.PeerInfo{
 		{Hostname: "laptop", IPv4: "10.144.144.2/24", Local: true, NATType: "Symmetric"},
-		{Hostname: "nas", IPv4: "10.144.144.1/24", Direct: true, Cost: 1, LatencyMS: 3.4, Tunnel: "udp", NATType: "FullCone", Version: "2.6.4"},
+		{Hostname: "nas", IPv4: "10.144.144.1/24", Direct: true, Cost: 1, LatencyMS: 3.4, Tunnel: "udp", NATType: "FullCone", Version: "2.6.4",
+			Conns: []localapi.ConnInfo{{Tunnel: "udp", Local: "udp://192.0.2.10:11010", Remote: "udp://198.51.100.7:11010", LatencyMS: 3.4, RxBytes: 48 << 20, TxBytes: 9 << 20},
+				{Tunnel: "tcp", Local: "tcp://192.0.2.10:51234", Remote: "tcp://198.51.100.7:11010", LatencyMS: 5.1, LossRate: 0.03, RxBytes: 2 << 20, TxBytes: 1 << 20}}},
 		{Hostname: "phone", IPv4: "10.144.144.7/24", Direct: false, Cost: 2, LatencyMS: 128.6, LossRate: 0.04, NATType: "Symmetric", Version: "2.6.4"},
 		{Hostname: "vps-tokyo", IPv4: "10.144.144.9/24", Direct: true, Cost: 1, LatencyMS: 231, Tunnel: "tcp", NATType: "OpenInternet", Version: "2.7.0"},
 	}}
@@ -103,4 +107,15 @@ func TestViewsRender(t *testing.T) {
 		}
 	}
 	i18n.SetLocaleFunc(nil)
+}
+
+func TestNewerTag(t *testing.T) {
+	for _, tc := range []struct {
+		a, b string
+		want bool
+	}{{"v2.7.0", "v2.6.4", true}, {"v2.6.4", "v2.6.4", false}, {"v2.6.10", "v2.6.9", true}, {"v2.6.4", "v2.7.0", false}, {"v3.0.0-rc1", "v2.9.9", true}} {
+		if got := newerTag(tc.a, tc.b); got != tc.want {
+			t.Errorf("newerTag(%s, %s) = %v", tc.a, tc.b, got)
+		}
+	}
 }

@@ -277,6 +277,9 @@ func (a *App) editView(c *ui.Context) {
 	ui.Column(c).Grow(1).Fill().Padding(24).Gap(16).Children(func() {
 		ui.Row(c).Gap(12).AlignItems(ui.Center).Children(func() {
 			ui.Text(c, L.EditTitle(e.name)).FontSize(sizeTitle).Bold().Grow(1).Ellipsis("…").NoWrap()
+			if ui.Button(c, L.ActionDeleteNetwork()).Disabled(busy).Clicked() {
+				a.confirmDelete(e.id, e.name)
+			}
 			if ui.Button(c, L.ActionCancel()).Clicked() {
 				a.update(func() { a.page, a.editor = pageNetwork, nil })
 			}
@@ -572,4 +575,22 @@ func (a *App) submitCreate(name, text string) {
 			a.selected, a.page = r.Networks[len(r.Networks)-1].ID, pageNetwork
 		}
 	})
+}
+
+// confirmDelete asks before deleting a network and its configuration.
+func (a *App) confirmDelete(id, name string) {
+	a.mu.Lock()
+	w := a.window
+	a.mu.Unlock()
+	go func() {
+		res, err := mygo.Dialog.Message(mygo.MessageOptions{Parent: w, Type: mygo.MessageWarning,
+			Message: L.DeleteConfirmTitle(name), Detail: L.DeleteConfirmBody(),
+			Buttons: []string{L.ActionDeleteNetwork(), L.ActionCancel()}, DefaultButton: 1, CancelButton: 1})
+		if err != nil || res.Button != 0 {
+			return
+		}
+		a.do("save-"+id, localapi.Request{Type: localapi.RequestNetworkDelete, Network: id}, L.ToastDeleted(), func(*localapi.Response) {
+			a.page, a.editor, a.selected = pageNetwork, nil, ""
+		})
+	}()
 }

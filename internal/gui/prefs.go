@@ -3,6 +3,7 @@ package gui
 import (
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/fsutil"
 )
@@ -35,6 +36,10 @@ type Prefs struct {
 	CheckCoreUpdates bool `json:"check_core_updates"`
 	// Language is the chosen interface language ("" follows the system).
 	Language string `json:"language,omitempty"`
+	// LastCoreCheck and AnnouncedCore keep the daily update check quiet:
+	// at most one check a day, one notification per release.
+	LastCoreCheck time.Time `json:"last_core_check,omitzero"`
+	AnnouncedCore string    `json:"announced_core,omitempty"`
 	// ShowPrereleases lists pre-releases in the core manager.
 	ShowPrereleases bool `json:"show_prereleases,omitempty"`
 }

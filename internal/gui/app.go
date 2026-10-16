@@ -61,15 +61,18 @@ type App struct {
 	window5m  int // chart window: 0 1 min, 1 5 min, 2 15 min
 	chartSel  int
 	busy      map[string]bool
+	expanded  map[string]bool // peer rows showing their connections
 	toast     string
 	toastErr  bool
 	toastAt   time.Time
 	editor    *configEditor
 	createDlg *createDialog
 	coresView coresState
-	quitting  bool
-	visible   bool
-	tray      *Tray
+	// coreUpdate is a newer stable EasyTier found by the daily check.
+	coreUpdate string
+	quitting   bool
+	visible    bool
+	tray       *Tray
 	// openAtLogin caches the login item (reading it needs the main thread).
 	openAtLogin bool
 
@@ -96,7 +99,7 @@ func New() *App {
 	ctx, cancel := context.WithCancel(context.Background())
 	a := &App{
 		prefs: loadPrefs(), traffic: map[string][]localapi.TrafficPoint{}, details: map[string]*localapi.NetworkDetail{},
-		busy: map[string]bool{}, chartSel: -1, window5m: 1, ctx: ctx, cancel: cancel, wake: make(chan struct{}, 1),
+		busy: map[string]bool{}, expanded: map[string]bool{}, chartSel: -1, window5m: 1, ctx: ctx, cancel: cancel, wake: make(chan struct{}, 1),
 		visible: true,
 	}
 	if a.prefs.Mode == ModeUnset {
@@ -220,6 +223,7 @@ func (a *App) runSession(socket string) error {
 	ctx, cancel := context.WithCancel(a.ctx)
 	defer cancel()
 	go a.detailLoop(ctx, c)
+	a.maybeCheckCores(c)
 	return c.Attach(ctx, a.watchList(), func(p *localapi.Push) error {
 		a.update(func() { a.applyPush(p) })
 		if p.Session != "" {

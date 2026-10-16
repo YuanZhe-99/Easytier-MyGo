@@ -235,45 +235,58 @@ func (a *App) peerList(c *ui.Context, d *localapi.NetworkDetail) {
 			if i > 0 {
 				ui.Divider(c)
 			}
-			ui.Row(c.Key(fmt.Sprintf("peer-%d", i))).Padding(10, 12).Gap(12).AlignItems(ui.Center).Children(func() {
-				col, label := k.peer, "P"
-				switch {
-				case p.Local:
-					col, label = k.local, L.PeerThisDevice()
-				case p.Version == "" && p.IPv4 == "":
-					col = k.server
-				}
-				ui.Box(c).Width(36).Height(36).Radius(18).Background(col.Alpha(0.14)).Center().Children(func() {
-					initial := label
-					if !p.Local && p.Hostname != "" {
-						initial = string([]rune(p.Hostname)[:1])
+			key := fmt.Sprintf("%s/%s/%d", d.Status.ID, p.Hostname, i)
+			a.mu.Lock()
+			open := a.expanded[key]
+			a.mu.Unlock()
+			row := ui.ButtonBase(c.Key("peer-" + key)).FillWidth().Label(p.Hostname)
+			if row.Clicked() && !p.Local && len(p.Conns) > 0 {
+				a.update(func() { a.expanded[key] = !open })
+			}
+			row.Children(func() {
+				ui.Row(c).FillWidth().Padding(10, 12).Gap(12).AlignItems(ui.Center).Children(func() {
+					col, label := k.peer, "P"
+					switch {
+					case p.Local:
+						col, label = k.local, L.PeerThisDevice()
+					case p.Version == "" && p.IPv4 == "":
+						col = k.server
 					}
+					ui.Box(c).Width(36).Height(36).Radius(18).Background(col.Alpha(0.14)).Center().Children(func() {
+						initial := label
+						if !p.Local && p.Hostname != "" {
+							initial = string([]rune(p.Hostname)[:1])
+						}
+						if p.Local {
+							initial = "●"
+						}
+						ui.Text(c, initial).TextColor(col).Bold()
+					})
+					ui.Column(c).Grow(1).Gap(2).Children(func() {
+						name := p.Hostname
+						if p.Local {
+							name = p.Hostname + "  (" + L.PeerThisDevice() + ")"
+						}
+						ui.Text(c, name).Bold().Ellipsis("…").NoWrap()
+						ui.Text(c, joinDot(nonEmpty(shortIP(p.IPv4), p.Tunnel, natLabel(p.NATType)))).FontSize(sizeSmall).TextColor(t.TextMuted).NoWrap()
+					})
 					if p.Local {
-						initial = "●"
+						return
 					}
-					ui.Text(c, initial).TextColor(col).Bold()
-				})
-				ui.Column(c).Grow(1).Gap(2).Children(func() {
-					name := p.Hostname
-					if p.Local {
-						name = p.Hostname + "  (" + L.PeerThisDevice() + ")"
+					if p.Direct {
+						capsule(c, L.PeerDirect(), k.peer)
+					} else {
+						capsule(c, L.PeerRelay(p.Cost), k.relay)
 					}
-					ui.Text(c, name).Bold().Ellipsis("…").NoWrap()
-					ui.Text(c, joinDot(nonEmpty(shortIP(p.IPv4), p.Tunnel, natLabel(p.NATType)))).FontSize(sizeSmall).TextColor(t.TextMuted).NoWrap()
+					if p.LossRate >= 0.02 {
+						capsule(c, fmt.Sprintf("%.0f%%", p.LossRate*100), lossColor(k, p.LossRate))
+					}
+					ui.Text(c, formatLatency(p.LatencyMS)).TextColor(latencyColor(k, p.LatencyMS)).Bold().NoWrap().MinWidth(70).TextAlign(ui.End)
 				})
-				if p.Local {
-					return
-				}
-				if p.Direct {
-					capsule(c, L.PeerDirect(), k.peer)
-				} else {
-					capsule(c, L.PeerRelay(p.Cost), k.relay)
-				}
-				if p.LossRate >= 0.02 {
-					capsule(c, fmt.Sprintf("%.0f%%", p.LossRate*100), lossColor(k, p.LossRate))
-				}
-				ui.Text(c, formatLatency(p.LatencyMS)).TextColor(latencyColor(k, p.LatencyMS)).Bold().NoWrap().MinWidth(70).TextAlign(ui.End)
 			})
+			if open {
+				connDetails(c, p)
+			}
 		}
 	})
 }
@@ -286,4 +299,23 @@ func nonEmpty(xs ...string) []string {
 		}
 	}
 	return out
+}
+
+// connDetails lists a peer's tunnel connections (shown when its row is
+// expanded).
+func connDetails(c *ui.Context, p localapi.PeerInfo) {
+	t := c.Theme()
+	k := tok(c)
+	ui.Column(c).PaddingX(60).PaddingY(4).Gap(6).FillWidth().Children(func() {
+		ui.Text(c, L.PeerConnections(len(p.Conns))).FontSize(sizeSmall).Bold().TextColor(t.TextMuted)
+		for i, cn := range p.Conns {
+			ui.Row(c.Key(fmt.Sprint("conn-", i))).Gap(10).AlignItems(ui.Center).Children(func() {
+				capsule(c, cn.Tunnel, k.peer)
+				ui.Text(c, cn.Local+"  →  "+cn.Remote).FontSize(sizeSmall).Selectable().Grow(1).Ellipsis("…").NoWrap()
+				ui.Text(c, "↓ "+formatBytes(float64(cn.RxBytes))+"   ↑ "+formatBytes(float64(cn.TxBytes))).FontSize(sizeSmall).TextColor(t.TextMuted).NoWrap()
+				ui.Text(c, fmt.Sprintf("%.0f%%", cn.LossRate*100)).FontSize(sizeSmall).TextColor(lossColor(k, cn.LossRate)).NoWrap()
+				ui.Text(c, formatLatency(cn.LatencyMS)).FontSize(sizeSmall).TextColor(latencyColor(k, cn.LatencyMS)).NoWrap().MinWidth(64).TextAlign(ui.End)
+			})
+		}
+	})
 }

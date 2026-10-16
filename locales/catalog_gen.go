@@ -136,6 +136,16 @@ func (msgs Messages) ActionCreate() string {
 	return Catalog.Format(msgs.locale, "ActionCreate", nil)
 }
 
+// ActionDeleteNetwork says "Delete network"
+// in the language the app shows.
+func ActionDeleteNetwork() string { return In(i18n.Locale()).ActionDeleteNetwork() }
+
+// ActionDeleteNetwork says "Delete network"
+// in the language of msgs.
+func (msgs Messages) ActionDeleteNetwork() string {
+	return Catalog.Format(msgs.locale, "ActionDeleteNetwork", nil)
+}
+
 // ActionDisconnect says "Disconnect"
 // in the language the app shows.
 func ActionDisconnect() string { return In(i18n.Locale()).ActionDisconnect() }
@@ -176,6 +186,16 @@ func (msgs Messages) ActionEdit() string {
 	return Catalog.Format(msgs.locale, "ActionEdit", nil)
 }
 
+// ActionExportDiagnostics says "Export diagnostics…"
+// in the language the app shows.
+func ActionExportDiagnostics() string { return In(i18n.Locale()).ActionExportDiagnostics() }
+
+// ActionExportDiagnostics says "Export diagnostics…"
+// in the language of msgs.
+func (msgs Messages) ActionExportDiagnostics() string {
+	return Catalog.Format(msgs.locale, "ActionExportDiagnostics", nil)
+}
+
 // ActionHide says "Hide"
 // in the language the app shows.
 func ActionHide() string { return In(i18n.Locale()).ActionHide() }
@@ -194,6 +214,16 @@ func ActionImport() string { return In(i18n.Locale()).ActionImport() }
 // in the language of msgs.
 func (msgs Messages) ActionImport() string {
 	return Catalog.Format(msgs.locale, "ActionImport", nil)
+}
+
+// ActionOpenLogs says "Open log folder"
+// in the language the app shows.
+func ActionOpenLogs() string { return In(i18n.Locale()).ActionOpenLogs() }
+
+// ActionOpenLogs says "Open log folder"
+// in the language of msgs.
+func (msgs Messages) ActionOpenLogs() string {
+	return Catalog.Format(msgs.locale, "ActionOpenLogs", nil)
 }
 
 // ActionOpenRunMode says "Run mode settings"
@@ -488,6 +518,16 @@ func (msgs Messages) CoreUntested() string {
 	return Catalog.Format(msgs.locale, "CoreUntested", nil)
 }
 
+// CoreUpdateAvailable says "EasyTier {tag} is available. Download it in Settings → EasyTier core."
+// in the language the app shows.
+func CoreUpdateAvailable(tag string) string { return In(i18n.Locale()).CoreUpdateAvailable(tag) }
+
+// CoreUpdateAvailable says "EasyTier {tag} is available. Download it in Settings → EasyTier core."
+// in the language of msgs.
+func (msgs Messages) CoreUpdateAvailable(tag string) string {
+	return Catalog.Format(msgs.locale, "CoreUpdateAvailable", map[string]any{"tag": tag})
+}
+
 // CoresAvailable says "Official releases"
 // in the language the app shows.
 func CoresAvailable() string { return In(i18n.Locale()).CoresAvailable() }
@@ -576,6 +616,26 @@ func CreateTitle() string { return In(i18n.Locale()).CreateTitle() }
 // in the language of msgs.
 func (msgs Messages) CreateTitle() string {
 	return Catalog.Format(msgs.locale, "CreateTitle", nil)
+}
+
+// DeleteConfirmBody says "The network is disconnected and its configuration deleted. This cannot be undone."
+// in the language the app shows.
+func DeleteConfirmBody() string { return In(i18n.Locale()).DeleteConfirmBody() }
+
+// DeleteConfirmBody says "The network is disconnected and its configuration deleted. This cannot be undone."
+// in the language of msgs.
+func (msgs Messages) DeleteConfirmBody() string {
+	return Catalog.Format(msgs.locale, "DeleteConfirmBody", nil)
+}
+
+// DeleteConfirmTitle says "Delete “{name}”?"
+// in the language the app shows.
+func DeleteConfirmTitle(name string) string { return In(i18n.Locale()).DeleteConfirmTitle(name) }
+
+// DeleteConfirmTitle says "Delete “{name}”?"
+// in the language of msgs.
+func (msgs Messages) DeleteConfirmTitle(name string) string {
+	return Catalog.Format(msgs.locale, "DeleteConfirmTitle", map[string]any{"name": name})
 }
 
 // DetailAwaitingAddress says "Waiting for a virtual IP address from the network."
@@ -1710,6 +1770,16 @@ func (msgs Messages) NotifyConnected() string {
 	return Catalog.Format(msgs.locale, "NotifyConnected", nil)
 }
 
+// NotifyCoreUpdateTitle says "EasyTier update"
+// in the language the app shows.
+func NotifyCoreUpdateTitle() string { return In(i18n.Locale()).NotifyCoreUpdateTitle() }
+
+// NotifyCoreUpdateTitle says "EasyTier update"
+// in the language of msgs.
+func (msgs Messages) NotifyCoreUpdateTitle() string {
+	return Catalog.Format(msgs.locale, "NotifyCoreUpdateTitle", nil)
+}
+
 // NotifyFailed says "The network has a problem and is being restarted."
 // in the language the app shows.
 func NotifyFailed() string { return In(i18n.Locale()).NotifyFailed() }
@@ -1758,6 +1828,16 @@ func PageSettings() string { return In(i18n.Locale()).PageSettings() }
 // in the language of msgs.
 func (msgs Messages) PageSettings() string {
 	return Catalog.Format(msgs.locale, "PageSettings", nil)
+}
+
+// PeerConnections says "{count, plural, one {# connection} other {# connections}}"
+// in the language the app shows.
+func PeerConnections(count int) string { return In(i18n.Locale()).PeerConnections(count) }
+
+// PeerConnections says "{count, plural, one {# connection} other {# connections}}"
+// in the language of msgs.
+func (msgs Messages) PeerConnections(count int) string {
+	return Catalog.Format(msgs.locale, "PeerConnections", map[string]any{"count": count})
 }
 
 // PeerDirect says "Direct"
@@ -1888,6 +1968,46 @@ func SettingsAbout() string { return In(i18n.Locale()).SettingsAbout() }
 // in the language of msgs.
 func (msgs Messages) SettingsAbout() string {
 	return Catalog.Format(msgs.locale, "SettingsAbout", nil)
+}
+
+// SettingsAdvanced says "Advanced"
+// in the language the app shows.
+func SettingsAdvanced() string { return In(i18n.Locale()).SettingsAdvanced() }
+
+// SettingsAdvanced says "Advanced"
+// in the language of msgs.
+func (msgs Messages) SettingsAdvanced() string {
+	return Catalog.Format(msgs.locale, "SettingsAdvanced", nil)
+}
+
+// SettingsAdvancedHint says "The diagnostics file holds versions, states and recent activity; never configurations or secrets."
+// in the language the app shows.
+func SettingsAdvancedHint() string { return In(i18n.Locale()).SettingsAdvancedHint() }
+
+// SettingsAdvancedHint says "The diagnostics file holds versions, states and recent activity; never configurations or secrets."
+// in the language of msgs.
+func (msgs Messages) SettingsAdvancedHint() string {
+	return Catalog.Format(msgs.locale, "SettingsAdvancedHint", nil)
+}
+
+// SettingsCheckUpdates says "Check for new EasyTier releases daily"
+// in the language the app shows.
+func SettingsCheckUpdates() string { return In(i18n.Locale()).SettingsCheckUpdates() }
+
+// SettingsCheckUpdates says "Check for new EasyTier releases daily"
+// in the language of msgs.
+func (msgs Messages) SettingsCheckUpdates() string {
+	return Catalog.Format(msgs.locale, "SettingsCheckUpdates", nil)
+}
+
+// SettingsCheckUpdatesHint says "Only reads the release list from GitHub; nothing is downloaded automatically."
+// in the language the app shows.
+func SettingsCheckUpdatesHint() string { return In(i18n.Locale()).SettingsCheckUpdatesHint() }
+
+// SettingsCheckUpdatesHint says "Only reads the release list from GitHub; nothing is downloaded automatically."
+// in the language of msgs.
+func (msgs Messages) SettingsCheckUpdatesHint() string {
+	return Catalog.Format(msgs.locale, "SettingsCheckUpdatesHint", nil)
 }
 
 // SettingsCloseButton says "Close button"
@@ -2258,6 +2378,26 @@ func ToastCreated() string { return In(i18n.Locale()).ToastCreated() }
 // in the language of msgs.
 func (msgs Messages) ToastCreated() string {
 	return Catalog.Format(msgs.locale, "ToastCreated", nil)
+}
+
+// ToastDeleted says "Network deleted."
+// in the language the app shows.
+func ToastDeleted() string { return In(i18n.Locale()).ToastDeleted() }
+
+// ToastDeleted says "Network deleted."
+// in the language of msgs.
+func (msgs Messages) ToastDeleted() string {
+	return Catalog.Format(msgs.locale, "ToastDeleted", nil)
+}
+
+// ToastExported says "Diagnostics saved."
+// in the language the app shows.
+func ToastExported() string { return In(i18n.Locale()).ToastExported() }
+
+// ToastExported says "Diagnostics saved."
+// in the language of msgs.
+func (msgs Messages) ToastExported() string {
+	return Catalog.Format(msgs.locale, "ToastExported", nil)
 }
 
 // ToastHelperRemoved says "Privileged helper removed."

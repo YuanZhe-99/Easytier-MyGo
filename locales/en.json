@@ -17,6 +17,7 @@
   "ActionCheckReleases": "Check for releases",
   "ActionConnect": "Connect",
   "ActionCreate": "Create",
+  "ActionDeleteNetwork": "Delete network",
   "ActionDisconnect": "Disconnect",
   "ActionDismiss": "Dismiss",
   "ActionDownload": "Download ({size})",
@@ -28,8 +29,10 @@
     }
   },
   "ActionEdit": "Edit",
+  "ActionExportDiagnostics": "Export diagnostics…",
   "ActionHide": "Hide",
   "ActionImport": "Import file…",
+  "ActionOpenLogs": "Open log folder",
   "ActionOpenRunMode": "Run mode settings",
   "ActionRemove": "Remove",
   "ActionRetry": "Try again",
@@ -86,6 +89,14 @@
   "CorePrerelease": "Pre-release",
   "CoreTested": "Tested",
   "CoreUntested": "Untested",
+  "CoreUpdateAvailable": "EasyTier {tag} is available. Download it in Settings → EasyTier core.",
+  "@CoreUpdateAvailable": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
   "CoresAvailable": "Official releases",
   "CoresNone": "No releases for this platform.",
   "CoresShowPre": "Show pre-releases",
@@ -95,6 +106,15 @@
   "CreateNamePlaceholder": "Home",
   "CreatePeer": "First peer (optional)",
   "CreateTitle": "Add a network",
+  "DeleteConfirmBody": "The network is disconnected and its configuration deleted. This cannot be undone.",
+  "DeleteConfirmTitle": "Delete “{name}”?",
+  "@DeleteConfirmTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
   "DetailAwaitingAddress": "Waiting for a virtual IP address from the network.",
   "DetailCollector": "The connection status cannot be read right now. The network itself may still work.",
   "DetailFailed": "The network stopped working on this device. It is being restarted.",
@@ -295,11 +315,20 @@
   "NatUnknown": "Unknown",
   "NetworkNoneSelected": "Choose a network on the left.",
   "NotifyConnected": "Connected",
+  "NotifyCoreUpdateTitle": "EasyTier update",
   "NotifyFailed": "The network has a problem and is being restarted.",
   "NotifyStillRunningBody": "EasyTier MyGo keeps running in the tray. Quit it from the tray menu.",
   "NotifyStillRunningTitle": "Still running",
   "PageLogs": "Activity",
   "PageSettings": "Settings",
+  "PeerConnections": "{count, plural, one {# connection} other {# connections}}",
+  "@PeerConnections": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "PeerDirect": "Direct",
   "PeerRelay": "{hops, plural, one {Relay} other {Relay ×#}}",
   "@PeerRelay": {
@@ -320,6 +349,10 @@
   "ReasonTimeout": "EasyTier is not responding",
   "ReasonUnreachable": "EasyTier cannot be reached",
   "SettingsAbout": "About",
+  "SettingsAdvanced": "Advanced",
+  "SettingsAdvancedHint": "The diagnostics file holds versions, states and recent activity; never configurations or secrets.",
+  "SettingsCheckUpdates": "Check for new EasyTier releases daily",
+  "SettingsCheckUpdatesHint": "Only reads the release list from GitHub; nothing is downloaded automatically.",
   "SettingsCloseButton": "Close button",
   "SettingsCores": "EasyTier core",
   "SettingsCoresHint": "Choose the EasyTier version your networks run on. Untested versions may not work with this app.",
@@ -357,6 +390,8 @@
   "ToastApplied": "Applied. The network restarted with the new configuration.",
   "ToastCoreSwitched": "Core switched. Running networks restarted on it.",
   "ToastCreated": "Network added.",
+  "ToastDeleted": "Network deleted.",
+  "ToastExported": "Diagnostics saved.",
   "ToastHelperRemoved": "Privileged helper removed.",
   "ToastNotConnected": "Not connected to the background service.",
   "ToastSaved": "Saved.",

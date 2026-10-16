@@ -29,6 +29,7 @@ func (a *App) settingsView(c *ui.Context) {
 		a.generalSettings(c)
 		a.runModeSettings(c)
 		a.coreSettings(c)
+		a.advancedSettings(c)
 		a.aboutSettings(c)
 	})
 }
@@ -249,6 +250,27 @@ func (a *App) coreSettings(c *ui.Context) {
 			}
 		})
 		ui.Text(c, L.SettingsCoresHint()).FontSize(sizeSmall).TextColor(t.TextMuted)
+		a.mu.Lock()
+		upd := a.coreUpdate
+		auto := a.prefs.CheckCoreUpdates
+		a.mu.Unlock()
+		if upd != "" {
+			ui.Row(c).Gap(8).Padding(8, 12).Radius(8).Background(t.Accent.Alpha(0.1)).AlignItems(ui.Center).Children(func() {
+				ui.Text(c, L.CoreUpdateAvailable(upd)).FontSize(sizeSmall).Grow(1)
+				if ui.Button(c, L.ActionCheckReleases()).Disabled(busy || !connected).Clicked() {
+					a.loadCores(true)
+				}
+			})
+		}
+		settingRow(c, "core-auto", L.SettingsCheckUpdates(), L.SettingsCheckUpdatesHint(), func() {
+			if ui.Switch(c.Key("core-auto-sw"), &auto).Label(L.SettingsCheckUpdates()).Changed() {
+				a.mu.Lock()
+				p := a.prefs
+				a.mu.Unlock()
+				p.CheckCoreUpdates = auto
+				a.setPrefs(p)
+			}
+		})
 		for _, core := range cs.cores {
 			ui.Row(c.Key("core-" + core.Tag)).Gap(10).AlignItems(ui.Center).Children(func() {
 				name := core.Tag
@@ -359,6 +381,9 @@ func (a *App) loadCores(releases bool) {
 // coreRequest installs or removes a core, then refreshes the lists.
 func (a *App) coreRequest(req localapi.Request) {
 	a.do("cores", req, "", func(r *localapi.Response) {
+		if req.Type == localapi.RequestCoreInstall && req.Tag == a.coreUpdate {
+			a.coreUpdate = ""
+		}
 		a.coresView.cores = r.Cores
 		for i := range a.coresView.releases {
 			a.coresView.releases[i].Installed = slices.ContainsFunc(r.Cores, func(c localapi.CoreInfo) bool {
