@@ -74,7 +74,10 @@ esac
 cleanup() {
 	[ -n "${watcher:-}" ] && kill "$watcher" 2>/dev/null || true
 	if [ "$mode" = user ]; then
-		kill "${daemon:-}" 2>/dev/null || true
+		# Through the API first: on Windows a shell's kill may not reach
+		# the native process, which would keep the binaries locked.
+		"$ctl" -socket "$sock" shutdown 2>/dev/null || true
+		wait "${daemon:-}" 2>/dev/null || true
 	else
 		sudo_if_unix "$svc" helper uninstall --purge || true
 	fi

@@ -156,6 +156,9 @@ func runCmd(ctx context.Context, c *localapi.Client, args []string) error {
 		}
 		_, err := do(localapi.Request{Type: t, Tag: args[1]})
 		return err
+	case "shutdown":
+		_, err := do(localapi.Request{Type: localapi.RequestShutdown})
+		return err
 	case "helper-update":
 		need(args, 2)
 		_, err := do(localapi.Request{Type: localapi.RequestHelperUpdate, Text: args[1]})
