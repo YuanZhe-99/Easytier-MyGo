@@ -3,6 +3,7 @@ package gui
 import (
 	"os"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/fsutil"
@@ -26,6 +27,9 @@ type Prefs struct {
 	Theme string `json:"theme,omitempty"`
 	// CloseQuits makes the close button quit instead of hiding to the tray.
 	CloseQuits bool `json:"close_quits,omitempty"`
+	// HideDock hides the macOS Dock icon while the window is closed into
+	// the tray (minimizing keeps it); other systems ignore it.
+	HideDock bool `json:"hide_dock_on_close"`
 	// StartHidden starts in the tray when launched at login.
 	StartHidden bool `json:"start_hidden"`
 	// Notify shows desktop notifications on connection changes.
@@ -50,7 +54,7 @@ type Prefs struct {
 }
 
 func defaultPrefs() Prefs {
-	return Prefs{Theme: "system", StartHidden: true, Notify: true, CheckCoreUpdates: true, CheckAppUpdates: true}
+	return Prefs{Theme: "system", HideDock: true, StartHidden: true, Notify: true, CheckCoreUpdates: true, CheckAppUpdates: true}
 }
 
 // prefsPath is $XDG_CONFIG_HOME/easytier-mygo/gui.json.
@@ -82,4 +86,12 @@ func (a *App) StartHidden() bool {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	return a.prefs.StartHidden
+}
+
+// HidesDock reports whether the Dock icon goes away with the window: macOS
+// only, and only while the user wants it.
+func (a *App) HidesDock() bool {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	return runtime.GOOS == "darwin" && a.prefs.HideDock
 }

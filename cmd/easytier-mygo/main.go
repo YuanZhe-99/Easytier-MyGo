@@ -54,6 +54,9 @@ func main() {
 		})
 		a.SetWindow(w)
 		a.SetVisible(!hidden)
+		if hidden && a.HidesDock() {
+			mygo.App.Dock.Hide()
+		}
 		tray := a.NewTray()
 		a.SetTray(tray)
 		w.OnClose(a.HandleClose)

@@ -57,6 +57,8 @@ screenshots (`SCREENSHOT_DIR`).
   in Background service the networks keep running, with a separate "Disconnect all and quit".
 - The icon reflects connected / disconnected / error. Closing the window hides it to the tray and
   says so the first time; without a tray, closing quits.
+- macOS: closing into the tray also hides the Dock icon (Settings → General, on by default; also
+  when started hidden at login). Minimizing keeps it; showing the window brings it back.
 
 ## Languages
 

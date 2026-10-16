@@ -119,3 +119,27 @@ func TestNewerTag(t *testing.T) {
 		}
 	}
 }
+
+// TestHideDockDefaultsOn: a preferences file written before the Dock
+// setting existed hides the Dock icon on close; an explicit off is kept.
+func TestHideDockDefaultsOn(t *testing.T) {
+	for _, tc := range []struct {
+		file string
+		want bool
+	}{
+		{`{"mode":"helper","start_hidden":true}`, true},
+		{`{"mode":"helper","hide_dock_on_close":false}`, false},
+	} {
+		t.Setenv("HOME", t.TempDir())
+		t.Setenv("XDG_CONFIG_HOME", t.TempDir())
+		if err := os.MkdirAll(filepath.Dir(prefsPath()), 0o755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(prefsPath(), []byte(tc.file), 0o600); err != nil {
+			t.Fatal(err)
+		}
+		if got := loadPrefs().HideDock; got != tc.want {
+			t.Errorf("%s: HideDock = %v, want %v", tc.file, got, tc.want)
+		}
+	}
+}

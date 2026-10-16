@@ -19,6 +19,9 @@ The form edits a projection of the document (`configdoc.Values`). `configdoc.Cha
 the fields the user changed and `configdoc.ApplyValues` rewrites only their spans; every write
 re-parses its result. Structures the form cannot represent stay raw-text only.
 
+The form shows `instance_id`. When it is empty or missing, a fresh UUID is filled in and written
+by the next save; a button replaces it with a new one. New networks get one when created.
+
 ACL rules are edited in the TOML editor; the structured ACL editor returns in a later release.
 
 ## Save and apply

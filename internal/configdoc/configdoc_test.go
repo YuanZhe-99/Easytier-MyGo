@@ -112,3 +112,34 @@ func TestInstanceIDMustBeUUID(t *testing.T) {
 		}
 	}
 }
+
+// TestInstanceIDFormFill: the form fills an empty or missing instance_id
+// with a fresh UUID the core accepts, rewriting only that key.
+func TestInstanceIDFormFill(t *testing.T) {
+	for _, doc := range []string{sampleDoc, "instance_id = \"\"\n" + sampleDoc} {
+		base, err := Extract(doc)
+		if err != nil {
+			t.Fatal(err)
+		}
+		cur := base
+		id := NewUUID()
+		cur.InstanceID = &id
+		out, err := ApplyValues(doc, Changes(base, cur))
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := Parse(out); err != nil {
+			t.Fatalf("result does not parse: %v\n%s", err, out)
+		}
+		got, _ := Extract(out)
+		if got.InstanceID == nil || *got.InstanceID != id {
+			t.Fatalf("instance_id = %v, want %s", got.InstanceID, id)
+		}
+		if !strings.Contains(out, "# my network — comments must survive") || !strings.Contains(out, "unknown_future_key") {
+			t.Fatalf("unrelated content lost:\n%s", out)
+		}
+	}
+	if a, b := NewUUID(), NewUUID(); a == b || !IsUUID(a) {
+		t.Fatalf("NewUUID: %q %q", a, b)
+	}
+}

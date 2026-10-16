@@ -22,6 +22,7 @@ import (
 // List and block pointers distinguish "no change" from "remove all".
 type Values struct {
 	InstanceName  *string
+	InstanceID    *string
 	Hostname      *string
 	IPv4          *string
 	DHCP          *bool
@@ -835,6 +836,9 @@ func Extract(text string) (Values, error) {
 	if v.InstanceName, err = str("instance_name"); err != nil {
 		return Values{}, err
 	}
+	if v.InstanceID, err = str("instance_id"); err != nil {
+		return Values{}, err
+	}
 	if v.Hostname, err = str("hostname"); err != nil {
 		return Values{}, err
 	}
@@ -1093,6 +1097,9 @@ func Changes(base, current Values) Values {
 	if changedString(base.InstanceName, current.InstanceName) {
 		c.InstanceName = current.InstanceName
 	}
+	if changedString(base.InstanceID, current.InstanceID) {
+		c.InstanceID = current.InstanceID
+	}
 	if changedString(base.Hostname, current.Hostname) {
 		c.Hostname = current.Hostname
 	}
@@ -1321,6 +1328,9 @@ func ApplyValues(text string, v Values) (string, error) {
 	if v.InstanceName != nil {
 		step(func() (string, error) { return SetString(text, "instance_name", *v.InstanceName) })
 	}
+	if v.InstanceID != nil {
+		step(func() (string, error) { return SetString(text, "instance_id", *v.InstanceID) })
+	}
 	if v.Hostname != nil {
 		step(func() (string, error) { return SetString(text, "hostname", *v.Hostname) })
 	}
@@ -1428,7 +1438,7 @@ func ApplyValues(text string, v Values) (string, error) {
 
 // IsEmpty reports whether no field would be written.
 func (v Values) IsEmpty() bool {
-	return v.InstanceName == nil && v.Hostname == nil && v.IPv4 == nil &&
+	return v.InstanceName == nil && v.InstanceID == nil && v.Hostname == nil && v.IPv4 == nil &&
 		v.DHCP == nil && v.Listeners == nil && v.NetworkName == nil &&
 		v.NetworkSecret == nil && v.Peers == nil && len(v.Flags) == 0 &&
 		v.DevName == nil && v.MTU == nil && v.InstanceRecvBpsLimit == nil &&

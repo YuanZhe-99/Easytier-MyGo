@@ -11,7 +11,7 @@ effects and notes where non-trivial).
 | `cmd/easytier-mygo-svc` | Daemon entry point and helper subcommands | `run`, `helperCmd` |
 | `cmd/easytier-mygo-ctl` | Local API command-line client | `main` |
 | `internal/health` | Health engine | `Engine.Observe`, `Policy`, `DefaultPolicy` |
-| `internal/configdoc` | Raw config documents | `Store`, `Extract`, `Changes`, `ApplyValues` |
+| `internal/configdoc` | Raw config documents | `Store`, `Extract`, `Changes`, `ApplyValues`, `NewUUID` |
 | `internal/coreadapter` | `easytier-cli` wrapper | `CLI`, `KindOf`, `ErrorKind` |
 | `internal/telemetry` | Rates from counters, curve ring | `Tracker.Observe`, `Ring` |
 | `internal/localapi` | Local API protocol and server | `ProtocolVersion`, `Request`, `Client.Attach`, `Authorizer` |

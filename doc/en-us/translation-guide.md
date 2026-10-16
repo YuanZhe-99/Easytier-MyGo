@@ -38,6 +38,8 @@ and Latin words only where it helps readability.
 | bounded recovery | 有限恢复 |
 | save / apply | 保存 / 应用 |
 | tested / untested | 已测试 / 未测试 |
+| instance ID | 实例 ID |
+| Dock (macOS) | 程序坞 |
 
 ## 6. Review checklist
 

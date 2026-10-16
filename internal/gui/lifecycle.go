@@ -2,6 +2,7 @@ package gui
 
 import (
 	"context"
+	"runtime"
 	"time"
 
 	"github.com/egoist/mygo"
@@ -17,13 +18,16 @@ func (a *App) SetTray(t *Tray) {
 	a.mu.Unlock()
 }
 
-// Focus shows and raises the window.
+// Focus shows and raises the window, bringing the Dock icon back on macOS.
 func (a *App) Focus() {
 	a.mu.Lock()
 	w := a.window
 	a.mu.Unlock()
 	if w == nil {
 		return
+	}
+	if runtime.GOOS == "darwin" {
+		mygo.App.Dock.Show()
 	}
 	w.Show()
 	w.Focus()
@@ -55,6 +59,7 @@ func (a *App) Quit(disconnect bool) {
 
 // HandleClose decides what the close button does: hide into the tray, or
 // let the window close (and the app quit).
+// Side effects: hiding also hides the macOS Dock icon when HideDock is set.
 func (a *App) HandleClose(e *mygo.CloseEvent) {
 	a.mu.Lock()
 	quit := a.quitting || a.prefs.CloseQuits || a.tray == nil
@@ -69,6 +74,9 @@ func (a *App) HandleClose(e *mygo.CloseEvent) {
 	e.PreventDefault()
 	w.Hide()
 	a.SetVisible(false)
+	if a.HidesDock() {
+		mygo.App.Dock.Hide()
+	}
 	if first {
 		_ = savePrefs(p)
 		a.notify("tray-hint", L.NotifyStillRunningTitle(), L.NotifyStillRunningBody())

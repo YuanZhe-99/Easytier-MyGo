@@ -126,6 +126,16 @@ func (msgs Messages) ActionConnect() string {
 	return Catalog.Format(msgs.locale, "ActionConnect", nil)
 }
 
+// ActionNewInstanceID says "Generate new"
+// in the language the app shows.
+func ActionNewInstanceID() string { return In(i18n.Locale()).ActionNewInstanceID() }
+
+// ActionNewInstanceID says "Generate new"
+// in the language of msgs.
+func (msgs Messages) ActionNewInstanceID() string {
+	return Catalog.Format(msgs.locale, "ActionNewInstanceID", nil)
+}
+
 // ActionCreate says "Create"
 // in the language the app shows.
 func ActionCreate() string { return In(i18n.Locale()).ActionCreate() }
@@ -1260,6 +1270,26 @@ func (msgs Messages) FieldIPv4() string {
 	return Catalog.Format(msgs.locale, "FieldIPv4", nil)
 }
 
+// FieldInstanceID says "Instance ID"
+// in the language the app shows.
+func FieldInstanceID() string { return In(i18n.Locale()).FieldInstanceID() }
+
+// FieldInstanceID says "Instance ID"
+// in the language of msgs.
+func (msgs Messages) FieldInstanceID() string {
+	return Catalog.Format(msgs.locale, "FieldInstanceID", nil)
+}
+
+// FieldInstanceIDHint says "How EasyTier tells this device apart. A new one is filled in when it is empty."
+// in the language the app shows.
+func FieldInstanceIDHint() string { return In(i18n.Locale()).FieldInstanceIDHint() }
+
+// FieldInstanceIDHint says "How EasyTier tells this device apart. A new one is filled in when it is empty."
+// in the language of msgs.
+func (msgs Messages) FieldInstanceIDHint() string {
+	return Catalog.Format(msgs.locale, "FieldInstanceIDHint", nil)
+}
+
 // FieldListeners says "Listening addresses"
 // in the language the app shows.
 func FieldListeners() string { return In(i18n.Locale()).FieldListeners() }
@@ -2168,6 +2198,26 @@ func SettingsCloseButton() string { return In(i18n.Locale()).SettingsCloseButton
 // in the language of msgs.
 func (msgs Messages) SettingsCloseButton() string {
 	return Catalog.Format(msgs.locale, "SettingsCloseButton", nil)
+}
+
+// SettingsHideDock says "Hide the Dock icon when the window is closed"
+// in the language the app shows.
+func SettingsHideDock() string { return In(i18n.Locale()).SettingsHideDock() }
+
+// SettingsHideDock says "Hide the Dock icon when the window is closed"
+// in the language of msgs.
+func (msgs Messages) SettingsHideDock() string {
+	return Catalog.Format(msgs.locale, "SettingsHideDock", nil)
+}
+
+// SettingsHideDockHint says "Minimizing keeps the Dock icon."
+// in the language the app shows.
+func SettingsHideDockHint() string { return In(i18n.Locale()).SettingsHideDockHint() }
+
+// SettingsHideDockHint says "Minimizing keeps the Dock icon."
+// in the language of msgs.
+func (msgs Messages) SettingsHideDockHint() string {
+	return Catalog.Format(msgs.locale, "SettingsHideDockHint", nil)
 }
 
 // SettingsCores says "EasyTier core"

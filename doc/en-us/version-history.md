@@ -3,6 +3,14 @@
 The project restarted from 0.1.0 on 2026-10-16. The earlier, inherited history (versions up to
 0.10.80) is preserved under the git tag `archive/v0.10.80` and is not continued.
 
+## 0.1.3 (2026-10-16)
+
+- macOS: closing the window into the tray also hides the Dock icon; a switch in Settings → General
+  turns this off. Minimizing keeps the Dock icon.
+- The network form shows the instance ID: an empty or missing one is replaced by a fresh UUID,
+  and a button generates a new one. New networks get one when created.
+- MyGo v0.5.5 / EasyTier v2.6.4 (checked, unchanged).
+
 ## 0.1.2 (2026-10-16)
 
 - The app updates itself from GitHub: a daily check (can be turned off) and "Check for updates" in

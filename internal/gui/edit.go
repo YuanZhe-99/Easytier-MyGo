@@ -32,6 +32,7 @@ type configEditor struct {
 
 	// Form fields.
 	name, netName, secret, ipv4, hostname string
+	instanceID                            string
 	dhcp, noTun, showSecret               bool
 	peers, listeners, proxies, exits      string
 	mtu, devName                          string
@@ -137,6 +138,11 @@ func lines(p *[]string) string {
 // fromValues copies a projection into the form fields.
 func (e *configEditor) fromValues(v configdoc.Values) {
 	e.netName, e.secret, e.ipv4, e.hostname = str(v.NetworkName), str(v.NetworkSecret), str(v.IPv4), str(v.Hostname)
+	// An empty or missing instance_id gets a fresh UUID, shown in the form
+	// and written by the next save.
+	if e.instanceID = strings.TrimSpace(str(v.InstanceID)); e.instanceID == "" {
+		e.instanceID = configdoc.NewUUID()
+	}
 	e.dhcp = v.DHCP != nil && *v.DHCP
 	e.listeners, e.exits = lines(v.Listeners), lines(v.ExitNodes)
 	var peers []string
@@ -181,6 +187,10 @@ func (e *configEditor) formText() (string, error) {
 	set(&cur.NetworkName, e.netName)
 	set(&cur.NetworkSecret, e.secret)
 	set(&cur.Hostname, e.hostname)
+	if strings.TrimSpace(e.instanceID) == "" {
+		e.instanceID = configdoc.NewUUID()
+	}
+	set(&cur.InstanceID, strings.TrimSpace(e.instanceID))
 	dhcp := e.dhcp
 	cur.DHCP = &dhcp
 	if !e.dhcp {
@@ -339,6 +349,15 @@ func (a *App) formView(c *ui.Context, e *configEditor) {
 		ui.Field(c, L.FieldHostname(), func() {
 			ui.TextInput(c.Key("f-host"), &e.hostname).Placeholder(L.FieldHostnamePlaceholder()).FillWidth()
 		})
+		ui.Field(c, L.FieldInstanceID(), func() {
+			ui.Row(c).Gap(8).Children(func() {
+				ui.TextInput(c.Key("f-instance-id"), &e.instanceID).Grow(1)
+				if ui.Button(c.Key("f-instance-new"), L.ActionNewInstanceID()).Clicked() {
+					e.instanceID = configdoc.NewUUID()
+				}
+			})
+		})
+		hint(L.FieldInstanceIDHint())
 		ui.Row(c).Gap(10).AlignItems(ui.Center).Children(func() {
 			ui.Switch(c.Key("f-dhcp"), &e.dhcp).Label(L.FieldDHCP())
 			ui.Text(c, L.FieldDHCP())
@@ -529,7 +548,8 @@ func (a *App) createNetwork() {
 		a.update(func() { a.createDlg.err = L.CreateMissing() })
 		return
 	}
-	v := configdoc.Values{NetworkName: &d.netName, NetworkSecret: &d.secret, InstanceName: &d.name}
+	id := configdoc.NewUUID()
+	v := configdoc.Values{NetworkName: &d.netName, NetworkSecret: &d.secret, InstanceName: &d.name, InstanceID: &id}
 	if d.peer != "" {
 		v.Peers = &[]configdoc.Peer{{URI: strings.TrimSpace(d.peer)}}
 	}

@@ -3,6 +3,7 @@ package gui
 import (
 	_ "embed"
 	"fmt"
+	"runtime"
 	"slices"
 
 	"github.com/egoist/mygo"
@@ -125,6 +126,11 @@ func (a *App) generalSettings(c *ui.Context) {
 				changed = true
 			}
 		})
+		if runtime.GOOS == "darwin" && !p.CloseQuits {
+			settingRow(c, "dock", L.SettingsHideDock(), L.SettingsHideDockHint(), func() {
+				changed = ui.Switch(c.Key("dock-sw"), &p.HideDock).Label(L.SettingsHideDock()).Changed() || changed
+			})
+		}
 		settingRow(c, "notify", L.SettingsNotifications(), "", func() {
 			changed = ui.Switch(c.Key("notify-sw"), &p.Notify).Label(L.SettingsNotifications()).Changed() || changed
 		})

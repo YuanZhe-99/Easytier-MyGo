@@ -9,6 +9,7 @@
 package configdoc
 
 import (
+	"crypto/rand"
 	"crypto/sha256"
 	"encoding/hex"
 	"errors"
@@ -102,6 +103,20 @@ func Parse(text string) (Summary, error) {
 	}
 	return s, nil
 }
+
+// NewUUID returns a random (version 4) UUID in the hyphenated form the core
+// accepts for instance_id.
+func NewUUID() string {
+	var b [16]byte
+	_, _ = rand.Read(b[:]) // crypto/rand.Read never fails (Go 1.24+)
+	b[6] = b[6]&0x0f | 0x40
+	b[8] = b[8]&0x3f | 0x80
+	h := hex.EncodeToString(b[:])
+	return h[:8] + "-" + h[8:12] + "-" + h[12:16] + "-" + h[16:20] + "-" + h[20:]
+}
+
+// IsUUID reports whether s is a UUID the core accepts as instance_id.
+func IsUUID(s string) bool { return isUUID(s) }
 
 // isUUID reports whether s is a UUID in a form the core accepts: hyphenated,
 // 32 hex digits, braced or as a urn:uuid: URN.
