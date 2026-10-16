@@ -27,17 +27,12 @@
 
 ## 里程碑
 
-### P2 剩余（GUI 已实现并实机运行，见下）
-已完成：新 GUI（网络仪表盘+实时图、节点、表单/TOML 编辑、新建/导入、设置：常规/运行方式/内核管理/关于、首次向导、托盘三态与按档位退出、关窗隐藏、通知、四语、浅/深色）；`internal/gui/gui_test.go` 渲染全部页面（可输出截图）；本机实机：用户态模式连接、实时数据、托盘注册、kill -9 GUI 后 daemon 与内核随之退出。
+### P3 打包、签名与发布 CI（剩余）
+已完成：`scripts/build.sh`、`release.yml`（actionlint 通过）、许可证文件随包、`.deb` 去掉 WebKitGTK、交叉构建时用主机 upx 解压、签名构建包与助手自更新（`internal/bundlesig`，公钥已内嵌；私钥在维护者本机 `~/.local/share/easytier-mygo-release/release.key`）；本机构建 Linux 产物并用 install.sh 安装运行；Linux 上交叉构建 Windows exe。
+不做：`.deb` postinst 自动安装助手（GUI 一次授权即可安装，postinst 只增加风险）。
 剩余：
-1. 助手相关实机剩余：GUI 中的“后台服务”与切回“免授权”、`helper add-core`、从 GUI 安装/卸载助手（pkexec 流程）。（免授权→随界面切换、助手侧内核管理已实测。）
-
-### P3 打包、签名与发布 CI
-- `scripts/build.sh <platform>`：deps fetch → 构建 svc/ctl 进 resources → `go tool mygo build`。
-- `release.yml`（tag v*/dispatch）：Linux amd64/arm64 tar.gz+deb，Windows amd64/arm64 NSIS+zip（含 wintun 等 DLL），macOS arm64/amd64 dmg（未签名）；SHA256SUMS.txt；tag==版本；GPL/LGPL 文本与 EasyTier 源码地址。
-- svc 发布签名（ed25519，私钥在 GitHub secret，公钥内嵌）→ 助手凭签名自更新不弹窗；开发构建回退为认证。
-- .deb：依赖修正、.desktop/AppStream、postinst 安装并启用按需 socket，`SUDO_USER` 自动成为 operator。
-- 验收：本机构建并安装 Linux 产物；Linux 交叉构建 Windows 产物；actionlint。
+1. 实机：用签名构建重装助手一次（需密码），再验证无弹窗自更新；GUI 内“后台服务”、切回“免授权”、从 GUI 卸载/安装助手（pkexec 图形授权）。
+2. GitHub 远端建立后：把私钥设为 secret `EASYTIER_MYGO_SIGNING_KEY`，手动触发一次 release.yml 与 ci.yml 并检查产物（含 macOS dmg、Windows NSIS）。
 
 ### P4 macOS / Windows 后端（实现 + CI 编译/单测，标注未实机验证）
 - macOS：LaunchDaemon（`Sockets` 按需；后台 `RunAtLoad`/`KeepAlive`），管理员认证安装一次，`LOCAL_PEERCRED`。
