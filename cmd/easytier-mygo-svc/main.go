@@ -21,6 +21,7 @@ import (
 	"os/exec"
 	"os/signal"
 	"path/filepath"
+	"runtime"
 	"syscall"
 	"time"
 
@@ -143,6 +144,9 @@ func run(args []string) error {
 func companion(flagValue, name string) string {
 	if flagValue != "" {
 		return flagValue
+	}
+	if runtime.GOOS == "windows" {
+		name += ".exe"
 	}
 	if exe, err := os.Executable(); err == nil {
 		p := filepath.Join(filepath.Dir(exe), name)

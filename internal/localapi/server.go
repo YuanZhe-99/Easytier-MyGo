@@ -73,6 +73,12 @@ func ListenWith(o ListenOptions) (net.Listener, error) {
 	// A system socket lets its group traverse the directory; a per-user
 	// socket stays owner-only. DirMode widens it to others when they may
 	// read.
+	// A socket other users may reach needs a directory they can enter.
+	if mode&0o006 != 0 && o.Group == 0 && runtime.GOOS != "windows" {
+		if err := os.Chmod(dir, 0o755); err != nil {
+			return nil, fmt.Errorf("chmod socket directory: %w", err)
+		}
+	}
 	if o.Group != 0 && runtime.GOOS != "windows" {
 		if err := os.Chown(dir, -1, o.Group); err != nil {
 			return nil, fmt.Errorf("chown socket directory: %w", err)
