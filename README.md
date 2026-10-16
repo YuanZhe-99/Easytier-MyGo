@@ -4,10 +4,11 @@ A native desktop client for [EasyTier](https://github.com/EasyTier/EasyTier), bu
 [MyGo](https://github.com/egoist/mygo). A small daemon runs the EasyTier core, watches its health,
 and recovers local faults without ever overriding what you asked for.
 
-> **Status:** version 0.1.0 is being rebuilt and has not been released. Linux is the primary
-> platform; Windows and macOS backends are experimental. See [PLAN.md](PLAN.md).
+> **Status:** 0.1.0 is feature-complete on Linux and not yet released. The Windows and macOS
+> backends are implemented but not yet verified on real machines. See [PLAN.md](PLAN.md) and the
+> [platform notes](doc/en-us/platform-notes.md).
 
-## Highlights (0.1.0 goals)
+## Highlights
 
 - Several EasyTier networks side by side, each with live traffic, peers and routes.
 - Three run modes: **No privileges** (`no_tun` networks), **Follow GUI** (networks run while the app
@@ -25,11 +26,12 @@ Requirements: Go 1.27.2; on Linux a graphical desktop, `libayatana-appindicator3
 `upx` to unpack the bundled core.
 
 ```bash
-go run ./tools/deps fetch      # pinned EasyTier core, verified and unpacked into resources/
-go build -o build/easytier-mygo-svc ./cmd/easytier-mygo-svc
-go build -o build/easytier-mygo-ctl ./cmd/easytier-mygo-ctl
-go tool mygo build
+scripts/build.sh               # this platform: core, daemon, control CLI, then `mygo build`
+scripts/build.sh linux/amd64 windows/amd64
 ```
+
+Artifacts land in `build/<goos>-<goarch>/`: on Linux a `.tar.gz` (install with `install.sh`, no
+root) and a `.deb`.
 
 Development commands and the dev loop are in [doc/en-us/development.md](doc/en-us/development.md).
 
