@@ -156,12 +156,9 @@ go run ./tools/checkdocs
   gets a regression test. Do not write tests for wording, internal state details or to collect
   evidence.
 - **Never claim "verified" without an actual run;** record what was verified where.
-- **This machine runs a production EasyTier core as root** (RPC 15888, listeners 11010, device
-  `easytier0`). Never touch it and never rely on defaults: pass an explicit `--rpc` (25888, 25889,
-  …), write explicit `listeners` (21110, 21111, …) and use the `etm` TUN prefix in every dev config.
 - Local core-to-core connections must dial an interface address, not loopback.
-- Installing the privileged helper on this machine needs the user's password: ask first, and
-  uninstall it after testing unless told otherwise.
+- Installing the privileged helper needs administrator rights: ask the user first, and uninstall it
+  after testing unless told otherwise.
 
 ## Release, version, commit, tag, push
 
@@ -174,7 +171,7 @@ confirms pushing. When the user confirms:
 2. Bring MyGo and EasyTier to their latest versions and re-run verification.
 3. Commit, including the `doc/en-us/version-history.md` entry (and its mirror).
 4. Create an annotated tag `vX.Y.Z`.
-5. Push **the commit first**, then the tag, to `origin` and (once it exists) `github`.
+5. Push **the commit first**, then the tag, to `origin` and `github`.
 
 GitHub Actions release builds trigger on tag pushes to `github`. Signing keys live only in GitHub
 secrets.
@@ -193,7 +190,7 @@ model that did the work.
 ## Remotes and secrets
 
 - `origin` → `<local_gitea_address>` (private Gitea)
-- `github` → `git@github.com:YuanZhe-99/Easytier-MyGo.git` (to be added)
+- `github` → `git@github.com:YuanZhe-99/Easytier-MyGo.git`
 
 Determine the repository path from the runtime workspace; do not hardcode a machine-specific
 absolute path here.

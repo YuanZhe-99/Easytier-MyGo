@@ -13,7 +13,7 @@ EasyTier MyGo 是 [EasyTier](https://github.com/EasyTier/EasyTier) 的原生桌�
 | [gui.md](gui.md) | 界面结构、文案规则、图表、托盘、语言 |
 | [easytier-upstream.md](easytier-upstream.md) | EasyTier CLI 契约、发布资产与已验证的怪癖 |
 | [platform-notes.md](platform-notes.md) | 各平台的实现与验证情况 |
-| [development.md](development.md) | 环境、命令、开发循环、本机注意事项 |
+| [development.md](development.md) | 环境、命令、开发循环 |
 | [ci-cd.md](ci-cd.md) | 工作流、上游升级流程、发布 |
 | [packaging.md](packaging.md) | 发布产物、附带的二进制、许可证 |
 | [translation-guide.md](translation-guide.md) | 镜像规则与术语表 |

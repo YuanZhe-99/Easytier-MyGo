@@ -17,7 +17,7 @@ Windows and macOS backends are experimental and unverified on real machines.
 | [gui.md](gui.md) | Interface structure, wording rules, charts, tray, languages |
 | [easytier-upstream.md](easytier-upstream.md) | The EasyTier CLI contract, release assets and verified quirks |
 | [platform-notes.md](platform-notes.md) | What is implemented and verified on each platform |
-| [development.md](development.md) | Environment, commands, the dev loop, machine cautions |
+| [development.md](development.md) | Environment, commands, the dev loop |
 | [ci-cd.md](ci-cd.md) | Workflows, the upstream update procedure, releases |
 | [packaging.md](packaging.md) | Release artifacts, bundled binaries, licenses |
 | [translation-guide.md](translation-guide.md) | Mirror rules and the glossary |
