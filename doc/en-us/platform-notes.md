@@ -28,6 +28,7 @@ Verified on the development machine (2026-10-16, EasyTier v2.6.4, isolated ports
 | Core manager (user daemon) | Download v2.7.0 (SHA-256 verified), switch running networks to it and back, remove it |
 | Core manager (helper) | The helper downloads v2.7.0 itself; TUN networks run on it and back on the bundled core |
 | GUI (real desktop, XFCE) | Live data, chart, peers, tray registered; kill -9 or SIGTERM of the GUI stops its daemon and cores |
+| CPU, two `no_tun` networks, 120 s | Dashboard visible: GUI 3.5 %, daemon 1.3 %, cores 0.9 % (5.7 % of one core in total). Hidden in the tray: GUI 0.4 %, daemon 0.4 %, cores 0.6 % (1.4 %). GUI RSS 140–160 MB, daemon 18 MB |
 | GUI run-mode switch | No privileges → Follow GUI without a prompt; networks copied to the helper and connected; quitting the GUI stops them |
 
 ## macOS and Windows
