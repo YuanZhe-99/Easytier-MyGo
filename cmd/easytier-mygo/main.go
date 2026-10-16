@@ -1,5 +1,9 @@
-// easytier-mygo is the desktop GUI. The interface is being rebuilt (see
-// PLAN.md, P2); until then this window only states that.
+// easytier-mygo is the desktop GUI. It starts (or connects to) the daemon
+// of the chosen run mode and keeps a session attached while it runs; see
+// doc/en-us/gui.md and doc/en-us/run-modes.md.
+//
+// Closing the window hides it into the tray when the desktop has one;
+// quitting from the tray ends the session, which stops Follow GUI networks.
 package main
 
 import (
@@ -8,24 +12,56 @@ import (
 	"github.com/egoist/mygo"
 	"github.com/egoist/mygo/ui"
 
+	"github.com/YuanZhe-99/Easytier-MyGo/internal/gui"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/version"
+	L "github.com/YuanZhe-99/Easytier-MyGo/locales"
 )
 
 func main() {
 	mygo.App.SetName("EasyTier MyGo")
 	mygo.App.SetVersion(version.Version)
-	mygo.App.WhenReady(func() {
-		mygo.NewWindow(mygo.WindowOptions{
-			Title: "EasyTier MyGo", Width: 480, Height: 240,
-			Content: ui.View(func(c *ui.Context) {
-				ui.Column(c).Fill().Padding(24).Gap(8).Children(func() {
-					ui.Text(c, "EasyTier MyGo "+version.Version).Bold()
-					ui.Text(c, "The interface is being rebuilt. Use easytier-mygo-ctl meanwhile.")
-				})
-			}),
-		})
+	if !mygo.App.RequestSingleInstanceLock() {
+		return
+	}
+	a := gui.New()
+	gui.ApplyTheme(a.ThemePref())
+	mygo.App.OnSecondInstance(func([]string, string) { a.Focus() })
+	mygo.App.OnActivate(func(hasVisibleWindows bool) {
+		if !hasVisibleWindows {
+			a.Focus()
+		}
 	})
+	hidden := mygo.App.WasOpenedAtLogin() && a.StartHidden()
+
+	mygo.App.WhenReady(func() {
+		mygo.App.SetMenu(mygo.NewMenu([]*mygo.MenuItem{
+			{Role: mygo.RoleAppMenu},
+			{Role: mygo.RoleEditMenu},
+			{Role: mygo.RoleWindowMenu},
+		}))
+		w := mygo.NewWindow(mygo.WindowOptions{
+			Title:     "EasyTier MyGo",
+			Width:     1100,
+			Height:    720,
+			MinWidth:  880,
+			MinHeight: 580,
+			StateKey:  "main",
+			Hidden:    hidden,
+			Content:   ui.View(a.View),
+		})
+		a.SetWindow(w)
+		a.SetVisible(!hidden)
+		tray := a.NewTray()
+		a.SetTray(tray)
+		w.OnClose(a.HandleClose)
+		w.OnHide(func() { a.SetVisible(false) })
+		w.OnShow(func() { a.SetVisible(true) })
+		mygo.App.OnLocaleChanged(func(string) { tray.Refresh() })
+		a.Start()
+	})
+	_ = L.PageSettings // the catalogs register the app's languages
 	if err := mygo.App.Run(); err != nil {
 		log.Fatal(err)
 	}
+	a.Stop()
 }

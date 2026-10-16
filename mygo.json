@@ -3,5 +3,9 @@
   "identifier": "com.yuanzhe.easytiermygo",
   "version": "0.1.0",
   "main": "./cmd/easytier-mygo",
-  "out": "build"
+  "out": "build",
+  "i18n": {
+    "dir": "locales",
+    "source": "en"
+  }
 }

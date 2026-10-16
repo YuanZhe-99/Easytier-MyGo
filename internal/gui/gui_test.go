@@ -1,0 +1,106 @@
+package gui
+
+import (
+	"image/png"
+	"math"
+	"os"
+	"path/filepath"
+	"testing"
+	"time"
+
+	"github.com/egoist/mygo/i18n"
+	"github.com/egoist/mygo/ui"
+
+	"github.com/YuanZhe-99/Easytier-MyGo/internal/health"
+	"github.com/YuanZhe-99/Easytier-MyGo/internal/localapi"
+)
+
+// demoApp is an App with the state a connected daemon would push: one
+// connected network with traffic and peers, one stopped.
+func demoApp(t *testing.T) *App {
+	t.Setenv("XDG_CONFIG_HOME", t.TempDir())
+	a := New()
+	a.prefs.Mode = ModeHelper
+	a.page = pageNetwork
+	a.connected, a.lastPush = true, time.Now()
+	now := time.Now()
+	a.networks = []localapi.NetworkStatus{
+		{ID: "n1", Name: "Home", Run: true, State: localapi.StateConnected, Level: health.LevelHealthy,
+			NetworkName: "family-net", VirtualIPv4: "10.144.144.2/24", PeerCount: 3, NATType: "Symmetric",
+			CoreVersion: "2.6.4-8428a89d", StartedAt: now.Add(-95 * time.Minute), RxRate: 312 * 1024, TxRate: 48 * 1024},
+		{ID: "n2", Name: "Office lab", State: localapi.StateStopped, NetworkName: "lab", NoTUN: true},
+	}
+	var pts []localapi.TrafficPoint
+	for i := 0; i < 300; i++ {
+		ts := now.Add(time.Duration(i-299) * time.Second)
+		gapPt := i > 120 && i < 128
+		rx := 200*1024 + 150*1024*math.Sin(float64(i)/17) + float64(i%7)*9000
+		tx := 40*1024 + 25*1024*math.Cos(float64(i)/11)
+		pts = append(pts, localapi.TrafficPoint{Seq: uint64(i + 1), Time: ts, Rx: rx, Tx: tx, Gap: gapPt})
+	}
+	a.traffic["n1"] = pts
+	a.selected = "n1"
+	a.details["n1"] = &localapi.NetworkDetail{Peers: []localapi.PeerInfo{
+		{Hostname: "laptop", IPv4: "10.144.144.2/24", Local: true, NATType: "Symmetric"},
+		{Hostname: "nas", IPv4: "10.144.144.1/24", Direct: true, Cost: 1, LatencyMS: 3.4, Tunnel: "udp", NATType: "FullCone", Version: "2.6.4"},
+		{Hostname: "phone", IPv4: "10.144.144.7/24", Direct: false, Cost: 2, LatencyMS: 128.6, LossRate: 0.04, NATType: "Symmetric", Version: "2.6.4"},
+		{Hostname: "vps-tokyo", IPv4: "10.144.144.9/24", Direct: true, Cost: 1, LatencyMS: 231, Tunnel: "tcp", NATType: "OpenInternet", Version: "2.7.0"},
+	}}
+	a.events = []health.Event{
+		{Time: now.Add(-90 * time.Minute), Component: health.Component{Kind: health.KindInstance, ID: "n1"}, Kind: health.EventLevelChanged, To: health.LevelHealthy},
+		{Time: now.Add(-30 * time.Minute), Component: health.Component{Kind: health.KindCore, ID: "n1"}, Kind: health.EventLevelChanged, To: health.LevelFailed, Reason: "process-exited"},
+		{Time: now.Add(-29 * time.Minute), Component: health.Component{Kind: health.KindCore, ID: "n1"}, Kind: health.EventRecoveryFinished},
+	}
+	return a
+}
+
+// TestViewsRender renders every page in each language and theme; it fails
+// on a panic. With SCREENSHOT_DIR set it writes PNGs for review.
+func TestViewsRender(t *testing.T) {
+	dir := os.Getenv("SCREENSHOT_DIR")
+	pages := map[string]func(a *App){
+		"network":  func(a *App) {},
+		"stopped":  func(a *App) { a.selected = "n2" },
+		"settings": func(a *App) { a.page = pageSettings },
+		"logs":     func(a *App) { a.page = pageLogs },
+		"welcome":  func(a *App) { a.page, a.prefs.Mode = pageWelcome, ModeUnset },
+		"edit": func(a *App) {
+			a.page = pageEdit
+			a.editor = &configEditor{id: "n1", name: "Home"}
+			a.editor.load("instance_name = \"home\"\nhostname = \"laptop\"\ndhcp = true\nlisteners = [\"tcp://0.0.0.0:11010\"]\n\n[network_identity]\nnetwork_name = \"family-net\"\nnetwork_secret = \"s3cret\"\n\n[[peer]]\nuri = \"tcp://public.easytier.cn:11010\"\n\n[flags]\nno_tun = false\n", "rev1")
+		},
+		"create": func(a *App) { a.createDlg = &createDialog{name: "Office"} },
+	}
+	for _, lang := range []string{"en", "zh-Hans", "zh-Hant", "ja"} {
+		i18n.SetLocaleFunc(func() string { return lang })
+		for name, setup := range pages {
+			t.Log(lang, name)
+			for _, dark := range []bool{false, true} {
+				if dark && lang != "en" && name != "network" {
+					continue
+				}
+				a := demoApp(t)
+				setup(a)
+				tt := ui.NewTester(a.view, 1100, 720)
+				tt.SetDark(dark)
+				tt.Frame()
+				if dir == "" {
+					continue
+				}
+				suffix := ""
+				if dark {
+					suffix = "-dark"
+				}
+				f, err := os.Create(filepath.Join(dir, lang+"-"+name+suffix+".png"))
+				if err != nil {
+					t.Fatal(err)
+				}
+				if err := png.Encode(f, tt.Image()); err != nil {
+					t.Fatal(err)
+				}
+				f.Close()
+			}
+		}
+	}
+	i18n.SetLocaleFunc(nil)
+}

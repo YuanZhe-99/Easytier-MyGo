@@ -1,0 +1,382 @@
+{
+  "@@locale": "en",
+  "AboutEasyTierSource": "EasyTier source code",
+  "AboutLicense": "GPL-3.0. Bundles EasyTier (LGPL-3.0) and upx (GPL-2.0 or later).",
+  "AboutSource": "Source code",
+  "AboutVersions": "Bundled EasyTier {core}",
+  "@AboutVersions": {
+    "placeholders": {
+      "core": {
+        "type": "String"
+      }
+    }
+  },
+  "ActionAddNetwork": "Add network",
+  "ActionApplyNow": "Apply now",
+  "ActionCancel": "Cancel",
+  "ActionCheckReleases": "Check for releases",
+  "ActionConnect": "Connect",
+  "ActionCreate": "Create",
+  "ActionDisconnect": "Disconnect",
+  "ActionDismiss": "Dismiss",
+  "ActionDownload": "Download ({size})",
+  "@ActionDownload": {
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
+  },
+  "ActionEdit": "Edit",
+  "ActionHide": "Hide",
+  "ActionImport": "Import file…",
+  "ActionOpenRunMode": "Run mode settings",
+  "ActionRemove": "Remove",
+  "ActionRetry": "Try again",
+  "ActionSave": "Save",
+  "ActionSaveApply": "Save and apply",
+  "ActionShow": "Show",
+  "ActionUninstallHelper": "Remove helper",
+  "ActionUseCore": "Use",
+  "ActionUseMode": "Use this mode",
+  "BannerConnecting": "Connecting to the background service…",
+  "BannerDisconnected": "Not connected: {error}",
+  "@BannerDisconnected": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "BannerHelperMissing": "The privileged helper is not installed. Choose a run mode in Settings.",
+  "BannerStale": "No updates for a few seconds; the values below may be out of date.",
+  "ChartGap": "{time}: no measurement",
+  "@ChartGap": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "ChartHint": "Point at the chart to read a moment.",
+  "ChartLabel": "Traffic",
+  "ChartPoint": "{time}: ↓ {download}  ↑ {upload}",
+  "@ChartPoint": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      },
+      "download": {
+        "type": "String"
+      },
+      "upload": {
+        "type": "String"
+      }
+    }
+  },
+  "ChartWindow15m": "15 min",
+  "ChartWindow1m": "1 min",
+  "ChartWindow5m": "5 min",
+  "ChartWindowLabel": "Time span",
+  "CloseHide": "Hide to tray",
+  "CloseQuit": "Quit",
+  "CoreBundled": "Bundled",
+  "CoreInUse": "In use",
+  "CoreInstalled": "Installed",
+  "CorePrerelease": "Pre-release",
+  "CoreTested": "Tested",
+  "CoreUntested": "Untested",
+  "CoresAvailable": "Official releases",
+  "CoresNone": "No releases for this platform.",
+  "CoresShowPre": "Show pre-releases",
+  "CoresWorking": "Working…",
+  "CreateBody": "Enter the details your network's other members use, or import an EasyTier TOML file.",
+  "CreateMissing": "Enter a name and a network name.",
+  "CreateNamePlaceholder": "Home",
+  "CreatePeer": "First peer (optional)",
+  "CreateTitle": "Add a network",
+  "DetailAwaitingAddress": "Waiting for a virtual IP address from the network.",
+  "DetailCollector": "The connection status cannot be read right now. The network itself may still work.",
+  "DetailFailed": "The network stopped working on this device. It is being restarted.",
+  "DetailNoPeers": "Connected, but no other node is online yet.",
+  "DetailRecoveryExhausted": "Automatic restarts stopped after repeated failures.",
+  "DurationDays": "{days, plural, one {# day} other {# days}}",
+  "@DurationDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "DurationHours": "{hours} h {minutes} min",
+  "@DurationHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      },
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "DurationMinutes": "{minutes} min",
+  "@DurationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "DurationSeconds": "{seconds} s",
+  "@DurationSeconds": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "EditAdvancedHint": "Routing preferences, protocols and the virtual device.",
+  "EditBadMTU": "MTU must be a number.",
+  "EditConflict": "This configuration changed since you opened it. Close the editor and open it again.",
+  "EditFormUnavailable": "This configuration has parts the form cannot show; edit it as TOML.",
+  "EditSectionAdvanced": "Advanced",
+  "EditSectionBasic": "Network",
+  "EditSectionConnect": "Connections",
+  "EditSectionRouting": "Routing",
+  "EditTabForm": "Form",
+  "EditTabToml": "TOML",
+  "EditTitle": "Edit {name}",
+  "@EditTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "EditTomlHint": "Comments and options the form does not show are kept as written.",
+  "EditTomlLabel": "Network configuration (TOML)",
+  "EmptyBody": "Create a network or import an EasyTier configuration to get started.",
+  "EmptyTitle": "No networks yet",
+  "ErrorAuthCancelled": "Authorization was cancelled.",
+  "ErrorInvalidConfig": "The configuration was rejected: {detail}",
+  "@ErrorInvalidConfig": {
+    "placeholders": {
+      "detail": {
+        "type": "String"
+      }
+    }
+  },
+  "ErrorNeedsAdmin": "This needs administrator approval.",
+  "ErrorNeedsHelper": "This network creates a virtual network device, which needs the privileged helper. Choose Follow GUI or Background service in Settings, or turn on “No virtual device”.",
+  "ErrorNoPkexec": "pkexec is not available, so administrator approval cannot be requested.",
+  "EventConfigApplied": "New configuration is running",
+  "EventConfigRollback": "New configuration failed; returned to the previous one",
+  "EventConnected": "Connected",
+  "EventCoreHealthy": "EasyTier is running",
+  "EventDegraded": "Limited: {reason}",
+  "@EventDegraded": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "EventFailed": "Problem: {reason}",
+  "@EventFailed": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "EventRecoveryExhausted": "Automatic restarts stopped",
+  "EventRecoveryFinished": "Restarted",
+  "EventRecoveryScheduled": "Restart scheduled",
+  "EventRecoveryStarted": "Restarting (attempt {attempt})",
+  "@EventRecoveryStarted": {
+    "placeholders": {
+      "attempt": {
+        "type": "int"
+      }
+    }
+  },
+  "EventUnknown": "Status unknown: {reason}",
+  "@EventUnknown": {
+    "placeholders": {
+      "reason": {
+        "type": "String"
+      }
+    }
+  },
+  "EventsEmpty": "Nothing has happened yet.",
+  "FieldDHCP": "Get a virtual IP address automatically",
+  "FieldDevName": "Virtual device name",
+  "FieldDisplayName": "Name",
+  "FieldExitNodes": "Exit nodes",
+  "FieldExitNodesHint": "Virtual IPs of nodes that route your internet traffic, one per line.",
+  "FieldHostname": "Device name in the network",
+  "FieldHostnamePlaceholder": "This computer's name",
+  "FieldIPv4": "Virtual IPv4 address",
+  "FieldListeners": "Listening addresses",
+  "FieldListenersHint": "Where other nodes can reach this device, one per line. Leave empty to only connect out.",
+  "FieldMTU": "MTU",
+  "FieldNetworkName": "Network name",
+  "FieldNetworkSecret": "Network secret",
+  "FieldNoTun": "No virtual device",
+  "FieldNoTunHint": "Works without privileges. Other nodes can reach this device, but this device cannot open connections to them.",
+  "FieldPeers": "Peers",
+  "FieldPeersHint": "Addresses of nodes to connect to, one per line, such as a public server.",
+  "FieldProxies": "Subnets to share",
+  "FieldProxiesHint": "Local networks other nodes can reach through this device, one per line.",
+  "FieldSecretHint": "Everyone in the network uses the same name and secret.",
+  "FieldShowSecret": "Show",
+  "FlagDisableP2P": "Relay only",
+  "FlagDisableP2PHint": "Never connect directly to other nodes.",
+  "FlagEncryption": "Encryption",
+  "FlagEncryptionHint": "Encrypt traffic between nodes (all nodes must agree).",
+  "FlagExitNode": "Act as exit node",
+  "FlagExitNodeHint": "Let other nodes route internet traffic through this device.",
+  "FlagIPv6": "IPv6",
+  "FlagIPv6Hint": "Use IPv6 to reach other nodes.",
+  "FlagKCP": "KCP acceleration",
+  "FlagKCPHint": "Carry TCP over KCP for lossy links.",
+  "FlagLatencyFirst": "Prefer low latency",
+  "FlagLatencyFirstHint": "Choose routes by latency instead of hop count.",
+  "FlagLazyP2P": "Connect directly on demand",
+  "FlagLazyP2PHint": "Open direct connections only when traffic needs them.",
+  "FlagMagicDNS": "Magic DNS",
+  "FlagMagicDNSHint": "Resolve node names in the network.",
+  "FlagMultiThread": "Multiple threads",
+  "FlagMultiThreadHint": "Use several CPU threads for traffic.",
+  "FlagP2POnly": "Direct connections only",
+  "FlagP2POnlyHint": "Never relay traffic through other nodes.",
+  "FlagPrivate": "Private mode",
+  "FlagPrivateHint": "Do not relay traffic of other networks.",
+  "FlagQUIC": "QUIC acceleration",
+  "FlagQUICHint": "Carry TCP over QUIC.",
+  "HeaderNetworkName": "Network {name}",
+  "@HeaderNetworkName": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "HeaderNoTun": "No virtual device",
+  "HeaderPendingChanges": "Saved changes are not applied yet.",
+  "HelperInstalled": "Privileged helper {version} installed",
+  "@HelperInstalled": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "ImportTitle": "Import an EasyTier configuration",
+  "LanguageSystem": "System language",
+  "ModeBackgroundBody": "Networks run from startup, even when this window is closed or nobody is logged in.",
+  "ModeBackgroundNeed": "Administrator approval once.",
+  "ModeBackgroundTitle": "Background service",
+  "ModeCopyFailed": "Could not move your networks",
+  "ModeCurrent": "Current",
+  "ModeFollowBody": "Networks run while EasyTier MyGo is open (including in the tray) and stop when you quit.",
+  "ModeFollowNeed": "Administrator approval once; never again on start.",
+  "ModeFollowTitle": "Follow GUI",
+  "ModeSwitching": "Switching run mode…",
+  "ModeUserBody": "Networks without a virtual device run while the app is open. Nothing is installed.",
+  "ModeUserNeed": "No permissions needed.",
+  "ModeUserTitle": "No privileges",
+  "NatFullCone": "Full cone",
+  "NatNoPAT": "No port translation",
+  "NatOpen": "Open internet",
+  "NatPortRestricted": "Port restricted",
+  "NatRestricted": "Restricted",
+  "NatSymmetric": "Symmetric",
+  "NatUnknown": "Unknown",
+  "NetworkNoneSelected": "Choose a network on the left.",
+  "NotifyConnected": "Connected",
+  "NotifyFailed": "The network has a problem and is being restarted.",
+  "NotifyStillRunningBody": "EasyTier MyGo keeps running in the tray. Quit it from the tray menu.",
+  "NotifyStillRunningTitle": "Still running",
+  "PageLogs": "Activity",
+  "PageSettings": "Settings",
+  "PeerDirect": "Direct",
+  "PeerRelay": "{hops, plural, one {Relay} other {Relay ×#}}",
+  "@PeerRelay": {
+    "placeholders": {
+      "hops": {
+        "type": "int"
+      }
+    }
+  },
+  "PeerThisDevice": "This device",
+  "PeersLoading": "Loading nodes…",
+  "ReasonAwaitingAddress": "waiting for an address",
+  "ReasonCollector": "status unreadable",
+  "ReasonExited": "EasyTier stopped unexpectedly",
+  "ReasonNoPeers": "no other node online",
+  "ReasonStarting": "starting",
+  "ReasonStopped": "stopped",
+  "ReasonTimeout": "EasyTier is not responding",
+  "ReasonUnreachable": "EasyTier cannot be reached",
+  "SettingsAbout": "About",
+  "SettingsCloseButton": "Close button",
+  "SettingsCores": "EasyTier core",
+  "SettingsCoresHint": "Choose the EasyTier version your networks run on. Untested versions may not work with this app.",
+  "SettingsGeneral": "General",
+  "SettingsLanguage": "Language",
+  "SettingsLaunchAtLogin": "Open at login",
+  "SettingsLaunchAtLoginHint": "Starts EasyTier MyGo when you log in, so Follow GUI networks connect.",
+  "SettingsNotifications": "Notifications",
+  "SettingsRunMode": "Run mode",
+  "SettingsRunModeHint": "Creating a virtual network device needs administrator rights. They are asked for once, when the helper is installed.",
+  "SettingsStartHidden": "Start in the tray when opened at login",
+  "SettingsTheme": "Appearance",
+  "SidebarEmpty": "No networks",
+  "SidebarNetworks": "NETWORKS",
+  "StateConnected": "Connected",
+  "StateConnecting": "Connecting",
+  "StateDegraded": "Limited",
+  "StateFailed": "Problem",
+  "StateStarting": "Starting",
+  "StateStopped": "Disconnected",
+  "StateUnknown": "Unknown",
+  "StateWaitingPeers": "Waiting for peers",
+  "StoppedBackgroundNote": "Background service is on: connected networks keep running when this window is closed.",
+  "StoppedBody": "Disconnected. Connect to join the network.",
+  "StoppedWaiting": "Waiting to start…",
+  "TabEvents": "Activity",
+  "TabPeers": "Nodes",
+  "ThemeDark": "Dark",
+  "ThemeLight": "Light",
+  "ThemeSystem": "System",
+  "TileNatType": "NAT type",
+  "TilePeers": "Nodes online",
+  "TileUptime": "Connected for",
+  "TileVirtualIP": "Virtual IP",
+  "ToastApplied": "Applied. The network restarted with the new configuration.",
+  "ToastCoreSwitched": "Core switched. Running networks restarted on it.",
+  "ToastCreated": "Network added.",
+  "ToastHelperRemoved": "Privileged helper removed.",
+  "ToastNotConnected": "Not connected to the background service.",
+  "ToastSaved": "Saved.",
+  "TrafficDownload": "Download",
+  "TrafficUpload": "Upload",
+  "TrayConnected": "{count, plural, one {# network connected} other {# networks connected}}",
+  "@TrayConnected": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "TrayDisconnected": "Not connected",
+  "TrayNoneConnected": "No network connected",
+  "TrayQuit": "Quit and disconnect",
+  "TrayQuitDisconnect": "Disconnect all and quit",
+  "TrayQuitKeep": "Quit (networks keep running)",
+  "TrayShow": "Show EasyTier MyGo",
+  "WelcomeBody": "Choose how your networks run. You can change this later in Settings.",
+  "WelcomeLater": "Tip: start with No privileges if your networks do not need a virtual device.",
+  "WelcomeTitle": "Welcome to EasyTier MyGo"
+}
