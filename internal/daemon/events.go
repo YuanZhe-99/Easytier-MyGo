@@ -18,12 +18,12 @@ var scrubDetail = supervisor.ScrubDetail
 // event; the file rotates at a size cap so an unread timeline cannot grow
 // without bound. Details are already scrubbed by the engine's callers.
 type eventStore struct {
-	mu           sync.Mutex
-	path         string
-	ring         []health.Event
-	max          int
+	mu   sync.Mutex
+	path string
+	ring []health.Event
+	max  int
 	// seq counts appended events, so sessions can push only new ones.
-	seq uint64
+	seq          uint64
 	persistError string
 }
 

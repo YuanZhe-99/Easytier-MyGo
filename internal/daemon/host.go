@@ -53,6 +53,9 @@ type Options struct {
 	// is not in background mode for this long (0: never).
 	IdleExit time.Duration
 	Policy   health.Policy
+	// OnBackground persists background mode with the OS (helper: start at
+	// boot or not). Nil means nothing to do.
+	OnBackground func(on bool) error
 	// Worker overrides cadences (tests); zero fields take defaults.
 	Worker supervisor.Config
 	Logf   func(string, ...any)
@@ -305,12 +308,17 @@ func (d *Daemon) startWorker(id string, w *supervisor.Worker) error {
 var errNeedsHelper = errors.New("this network creates a virtual network device, which needs the privileged helper")
 
 func (d *Daemon) checkPrivilege(id string) error {
-	if d.opts.Privileged {
-		return nil
-	}
 	text, _, err := d.store.Config(id)
 	if err != nil {
 		return err
+	}
+	if d.opts.Host == localapi.HostHelper {
+		if err := checkHelperSafety(text); err != nil {
+			return &supervisor.ConfigError{Detail: err.Error()}
+		}
+	}
+	if d.opts.Privileged {
+		return nil
 	}
 	if sum, err := configdoc.Parse(text); err == nil && sum.NoTun {
 		return nil
@@ -328,7 +336,7 @@ func (d *Daemon) notify() {
 
 // idleWatch ends an on-demand helper nobody uses.
 func (d *Daemon) idleWatch() {
-	t := time.NewTicker(5 * time.Second)
+	t := time.NewTicker(min(5*time.Second, max(d.opts.IdleExit/4, 10*time.Millisecond)))
 	defer t.Stop()
 	for {
 		select {

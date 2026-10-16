@@ -118,6 +118,11 @@ func (d *Daemon) Handle(ctx context.Context, req localapi.Request, access locala
 		if req.Settings.Background && d.opts.Host != localapi.HostHelper {
 			return localapi.Fail(localapi.CodeNeedsHelper, "background mode needs the privileged helper")
 		}
+		if d.opts.OnBackground != nil {
+			if err := d.opts.OnBackground(req.Settings.Background); err != nil {
+				return failOf(err)
+			}
+		}
 		d.mu.Lock()
 		d.settings = *req.Settings
 		s := d.settings
@@ -179,6 +184,11 @@ func (d *Daemon) apply(ctx context.Context, id string) error {
 	}
 	if _, err := configdoc.Parse(text); err != nil {
 		return &supervisor.ConfigError{Detail: supervisor.ScrubDetail(err.Error())}
+	}
+	if d.opts.Host == localapi.HostHelper {
+		if err := checkHelperSafety(text); err != nil {
+			return &supervisor.ConfigError{Detail: err.Error()}
+		}
 	}
 	path, rev, err := d.store.Freeze(id)
 	if err != nil {

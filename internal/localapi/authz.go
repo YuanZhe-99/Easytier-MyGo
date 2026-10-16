@@ -140,19 +140,19 @@ func (t Access) Allows(req RequestType) bool { return t.allows(req) }
 // writeRequests are the requests that change state or expose secrets.
 // Everything not listed here is readable by an AccessRead peer.
 var writeRequests = map[RequestType]bool{
-	RequestConfigGet:      true, // returns the raw text, which holds the secret
-	RequestConfigSave:     true,
-	RequestNetworkCreate:  true,
-	RequestNetworkDelete:  true,
-	RequestNetworkRename:  true,
-	RequestConnect:        true,
-	RequestDisconnect:     true,
-	RequestApply:          true,
-	RequestRetry:          true,
-	RequestSettingsSet:    true,
-	RequestSessionAttach:  true, // a session can stop networks when it ends
-	RequestSessionWatch:   true,
-	RequestShutdown:       true,
+	RequestConfigGet:     true, // returns the raw text, which holds the secret
+	RequestConfigSave:    true,
+	RequestNetworkCreate: true,
+	RequestNetworkDelete: true,
+	RequestNetworkRename: true,
+	RequestConnect:       true,
+	RequestDisconnect:    true,
+	RequestApply:         true,
+	RequestRetry:         true,
+	RequestSettingsSet:   true,
+	RequestSessionAttach: true, // a session can stop networks when it ends
+	RequestSessionWatch:  true,
+	RequestShutdown:      true,
 }
 
 // ErrForbidden is returned when a request exceeds the connection's tier.

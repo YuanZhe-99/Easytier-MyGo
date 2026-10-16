@@ -4,6 +4,9 @@
 //
 //	easytier-mygo-svc run --host user    the no-privileges daemon (started by the GUI)
 //	easytier-mygo-svc run --host helper  the privileged helper (started by the OS)
+//	easytier-mygo-svc helper install     install the privileged helper (root, via pkexec)
+//	easytier-mygo-svc helper uninstall [--purge]
+//	easytier-mygo-svc helper status      JSON status, no privileges needed
 //	easytier-mygo-svc version
 //
 // See doc/en-us/run-modes.md.
@@ -22,6 +25,7 @@ import (
 
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/daemon"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/health"
+	"github.com/YuanZhe-99/Easytier-MyGo/internal/helper"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/localapi"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/sdnotify"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/version"
@@ -37,6 +41,10 @@ func main() {
 		if err := run(os.Args[2:]); err != nil {
 			log.Fatal(err)
 		}
+	case "helper":
+		if err := helperCmd(os.Args[2:]); err != nil {
+			log.Fatal(err)
+		}
 	case "version", "--version":
 		fmt.Println(version.Version)
 	default:
@@ -45,7 +53,7 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: easytier-mygo-svc run --host user|helper [flags] | version")
+	fmt.Fprintln(os.Stderr, "usage: easytier-mygo-svc run --host user|helper [flags] | helper install|uninstall [--purge]|status | version")
 	os.Exit(2)
 }
 
@@ -90,6 +98,7 @@ func run(args []string) error {
 			return err
 		}
 		opts.Authorizer, opts.SocketGroup = authz, gid
+		opts.OnBackground = helper.SetBackground
 		lns, err := sdnotify.Listeners()
 		if err != nil {
 			return fmt.Errorf("socket activation: %w", err)

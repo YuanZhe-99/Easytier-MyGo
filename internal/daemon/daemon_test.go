@@ -342,3 +342,42 @@ func killCore(t *testing.T, dir string) {
 		_ = syscall.Kill(p, syscall.SIGKILL)
 	}
 }
+
+// TestHelperRefusesFileOptions: a root-run core never takes file paths
+// from a user's document.
+func TestHelperRefusesFileOptions(t *testing.T) {
+	h := start(t, func(o *Options) { o.Host = localapi.HostHelper; o.Privileged = true })
+	id := h.create("credential_file = \"/etc/shadow\"\n" + noTUN)
+	_, err := h.client.Do(context.Background(), localapi.Request{Type: localapi.RequestConnect, Network: id})
+	if localapi.CodeOf(err) != localapi.CodeInvalidConfig {
+		t.Fatalf("connect with credential_file under the helper: %v", err)
+	}
+}
+
+// TestIdleHelperExits: an on-demand helper with no session and nothing
+// running exits; a session keeps it alive; background mode keeps it
+// running without one.
+func TestIdleHelperExits(t *testing.T) {
+	h := start(t, func(o *Options) {
+		o.Host, o.Privileged, o.IdleExit = localapi.HostHelper, true, 300*time.Millisecond
+		o.OnBackground = func(bool) error { return nil }
+	})
+	detach := h.attach()
+	time.Sleep(600 * time.Millisecond)
+	if _, err := h.client.Do(context.Background(), localapi.Request{Type: localapi.RequestInfo}); err != nil {
+		t.Fatalf("helper exited during a session: %v", err)
+	}
+	h.do(localapi.Request{Type: localapi.RequestSettingsSet, Settings: &localapi.Settings{Background: true}})
+	detach()
+	time.Sleep(600 * time.Millisecond)
+	if _, err := h.client.Do(context.Background(), localapi.Request{Type: localapi.RequestInfo}); err != nil {
+		t.Fatalf("background helper exited: %v", err)
+	}
+	h.do(localapi.Request{Type: localapi.RequestSettingsSet, Settings: &localapi.Settings{Background: false}})
+	select {
+	case err := <-h.done:
+		h.done <- err
+	case <-time.After(3 * time.Second):
+		t.Fatal("idle helper kept running")
+	}
+}
