@@ -31,7 +31,7 @@ screenshots (`SCREENSHOT_DIR`).
 - Latency: green below 100 ms, orange below 200 ms, red otherwise. Route tags: `p2p`, `relay N`.
 - Body text 14, titles 20–24, nothing below 12.
 - Design cues (colors, peer rows, status badge, timeline) follow
-  [EasyTier-iOS](https://github.com/EasyTier/EasyTier-iOS); its icon is borrowed temporarily
+  [EasyTier-iOS](https://github.com/EasyTier/EasyTier-iOS); the app icon uses its artwork
   (GPL-3.0-or-later, see `resources/NOTICE`).
 
 ## Traffic chart

@@ -8,4 +8,4 @@
 
 ## 许可证
 
-EasyTier MyGo 采用 GPL-3.0。内置的 EasyTier 二进制为 LGPL-3.0：每个分发包都附带其许可证文本和 `third_party/easytier.json` 中记录的源码地址。临时图标来自 EasyTier-iOS（GPL-3.0-or-later）；见 `resources/NOTICE`。内置的 `upx` 为 GPL-2.0-or-later 并带 UPX 例外条款，其许可证以 `upx-COPYING` 随附。
+EasyTier MyGo 采用 GPL-3.0。内置的 EasyTier 二进制为 LGPL-3.0：每个分发包都附带其许可证文本和 `third_party/easytier.json` 中记录的源码地址。图标来自 EasyTier-iOS（GPL-3.0-or-later）；见 `resources/NOTICE`。内置的 `upx` 为 GPL-2.0-or-later 并带 UPX 例外条款，其许可证以 `upx-COPYING` 随附。

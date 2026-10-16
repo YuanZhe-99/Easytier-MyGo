@@ -19,6 +19,6 @@ These directories are build inputs and are not committed.
 ## Licenses
 
 EasyTier MyGo is GPL-3.0. The bundled EasyTier binaries are LGPL-3.0: every distribution carries
-their license text and the source location recorded in `third_party/easytier.json`. The temporary
-icon comes from EasyTier-iOS (GPL-3.0-or-later); see `resources/NOTICE`. The bundled `upx` is
+their license text and the source location recorded in `third_party/easytier.json`. The icon
+comes from EasyTier-iOS (GPL-3.0-or-later); see `resources/NOTICE`. The bundled `upx` is
 GPL-2.0-or-later with the UPX exception; its license ships as `upx-COPYING`.

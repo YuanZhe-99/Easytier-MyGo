@@ -8,7 +8,7 @@
 - **D2** 标识 `com.yuanzhe.easytiermygo`，module `github.com/YuanZhe-99/Easytier-MyGo`。
 - **D3** 版本唯一来源 `internal/version`；release 检查 tag==版本。
 - **D4** Linux 发布 tar.gz + .deb（去 webkit 依赖、补 `libayatana-appindicator3-1`、带助手单元）；AppImage/RPM 以后再议。
-- **D5** 图标暂借 EasyTier-iOS（`resources/NOTICE`），首次公开发布前核实来源或替换。
+- **D5** 图标采用 EasyTier-iOS 图形的纯白版本（用户 2026-10-16 选定，`resources/NOTICE` 署名）。
 - **D6 采集**：EasyTier 发布二进制是 UPX 压缩的，解压后单次 CLI 调用 ~3 ms CPU（原 ~250 ms）。2026-10-16 实测：对运行中内核的真实查询约 4 ms CPU，1 s 刷新 <0.5% 单核 → 继续用 CLI，不做原生 RPC。
 - **D8** 重构期间固定 0.1.0；用户确认后打 v0.1.0；之后每里程碑 +0.0.1。
 - **D9 内核管理**：内置 core = 最新稳定版（已测试）；用户可自选官方正式版/预发布（开关）/自定义二进制，标“已测试/未测试”；从不自动下载；core 与 cli 同 release；未测试版本先 `--check-config`；启动失败可一键切回。助手档的官方内核由助手自行下载校验（不弹窗），自定义二进制每次需管理员认证。用户目录 `~/.local/share/easytier-mygo/cores/<tag>/`，助手目录 `/var/lib/easytier-mygo/cores/<tag>/`。发布二进制需 UPX 解压：Linux/Windows 随包附带官方 upx 二进制供内核管理解压下载的内核；无 upx 或解压失败时照常使用并降低刷新频率。

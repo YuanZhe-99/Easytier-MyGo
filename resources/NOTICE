@@ -1,5 +1,5 @@
-Temporary icons
-===============
+Icons
+=====
 
 resources/icon.png (composed onto a blue gradient tile) and internal/gui/assets/tray.png
 use artwork from EasyTier-iOS:
@@ -10,5 +10,4 @@ use artwork from EasyTier-iOS:
   Copyright (C) 2026 Chenx Dust and Yin Mo
   License: GNU General Public License v3.0 or later
 
-They are placeholders. Before the first public release, confirm the artwork's origin or replace it
-with original artwork.
+The maintainer chose this artwork for the app icon (2026-10-16).

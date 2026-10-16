@@ -49,8 +49,8 @@ download EasyTier cores. Networks you configure connect wherever their EasyTier 
 
 - **[EasyTier](https://github.com/EasyTier/EasyTier)** provides the networking core and CLI.
 - **[MyGo](https://github.com/egoist/mygo)** provides the native Go UI framework and tooling.
-- **[EasyTier-iOS](https://github.com/EasyTier/EasyTier-iOS)** inspired the interface design; its
-  icon is used temporarily (see [resources/NOTICE](resources/NOTICE)).
+- **[EasyTier-iOS](https://github.com/EasyTier/EasyTier-iOS)** inspired the interface design; the app
+  icon uses its artwork (see [resources/NOTICE](resources/NOTICE)).
 
 ## License
 

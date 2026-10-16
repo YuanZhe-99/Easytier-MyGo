@@ -22,7 +22,7 @@
 - 下载为蓝色，上传为橙色；速率按 1024 进制。
 - 延迟：低于 100 ms 绿色，低于 200 ms 橙色，否则红色。路由标签：`p2p`、`relay N`。
 - 正文 14，标题 20–24，最小 12。
-- 设计线索（颜色、节点行、状态徽标、时间线）参考 [EasyTier-iOS](https://github.com/EasyTier/EasyTier-iOS)；其图标暂时借用（GPL-3.0-or-later，见 `resources/NOTICE`）。
+- 设计线索（颜色、节点行、状态徽标、时间线）参考 [EasyTier-iOS](https://github.com/EasyTier/EasyTier-iOS)；应用图标使用其图形（GPL-3.0-or-later，见 `resources/NOTICE`）。
 
 ## 流量图
 
