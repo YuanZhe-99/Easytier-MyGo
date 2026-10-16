@@ -10,7 +10,7 @@ and recovers local faults without ever overriding what you asked for.
 
 ## Highlights
 
-- Several EasyTier networks side by side, each with live traffic, peers and routes.
+- Several EasyTier networks side by side, each with live traffic, nodes and shared subnets.
 - Three run modes: **No privileges** (`no_tun` networks), **Follow GUI** (networks run while the app
   runs) and **Background service** (networks run from boot). Administrator authorization happens
   once, when the privileged helper is installed — never when the app starts.
@@ -22,8 +22,7 @@ and recovers local faults without ever overriding what you asked for.
 
 ## Build
 
-Requirements: Go 1.27.2; on Linux a graphical desktop, `libayatana-appindicator3-1` for the tray and
-`upx` to unpack the bundled core.
+Requirements: Go 1.27.2; on Linux a graphical desktop and `libayatana-appindicator3-1` for the tray.
 
 ```bash
 scripts/build.sh               # this platform: core, daemon, control CLI, then `mygo build`
