@@ -10,6 +10,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"runtime"
 	"sync"
 	"time"
 )
@@ -72,7 +73,7 @@ func ListenWith(o ListenOptions) (net.Listener, error) {
 	// A system socket lets its group traverse the directory; a per-user
 	// socket stays owner-only. DirMode widens it to others when they may
 	// read.
-	if o.Group != 0 {
+	if o.Group != 0 && runtime.GOOS != "windows" {
 		if err := os.Chown(dir, -1, o.Group); err != nil {
 			return nil, fmt.Errorf("chown socket directory: %w", err)
 		}
@@ -99,13 +100,7 @@ func ListenWith(o ListenOptions) (net.Listener, error) {
 	if err != nil {
 		return nil, err
 	}
-	if o.Group != 0 {
-		if err := os.Chown(path, -1, o.Group); err != nil {
-			ln.Close()
-			return nil, fmt.Errorf("chown socket: %w", err)
-		}
-	}
-	if err := os.Chmod(path, mode); err != nil {
+	if err := secureSocket(path, mode, o.Group); err != nil {
 		ln.Close()
 		return nil, err
 	}

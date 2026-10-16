@@ -3,8 +3,8 @@
 | 平台 | 状态 |
 |---|---|
 | Linux（systemd） | 主平台。新 daemon、运行方式与助手已实现并验证（见下）；GUI 正在重建。 |
-| macOS | 可构建。助手（launchd）与运行方式尚未实现；未在真机上验证任何内容。 |
-| Windows | 可构建。助手（服务）与运行方式尚未实现；未在真机上验证任何内容。 |
+| macOS | 已实现，未经真机验证：用户态 daemon、LaunchDaemon 助手、经 `osascript` 的管理员授权、签名自更新。 |
+| Windows | 已实现，未经真机验证：用户态 daemon、服务助手、经 PowerShell 的 UAC、AF_UNIX 上按 SID 授权、内核的作业对象、签名自更新。 |
 
 ## Linux
 
@@ -34,7 +34,10 @@
 
 ## macOS 与 Windows
 
-计划中的助手后端：launchd 守护进程（经 `Sockets` 按需启动，后台方式用 `RunAtLoad`/`KeepAlive`）和 Windows 服务（手动启动加 operator DACL，后台方式为自动启动）。在真机验证之前，关于它们的一切都只是设计，不是结果。
+- **macOS：** 助手是 LaunchDaemon `com.yuanzhe.easytiermygo.helper`（`/Library/LaunchDaemons`，二进制在 `/Library/Application Support/EasyTier MyGo/bin`），始终加载（`RunAtLoad`/`KeepAlive`）：launchd 的 socket 激活需要 C API，因此“随界面”由 daemon 保证（除非开启后台方式，否则只有会话连接时才运行网络）。Socket 为 `/var/run/easytier-mygo/ctl.sock`；用 `LOCAL_PEERCRED` 识别调用者。由于 `osascript` 不带 `SUDO_UID`，operator 通过 `--operator` 传入。
+- **Windows：** 助手是自动启动的服务 `EasyTierMyGoHelper`（二进制在 `%ProgramFiles%\EasyTier MyGo\helper`，状态在 `%ProgramData%\EasyTier MyGo\state`，用 `icacls` 限制权限），失败时重启。本地 API 为 AF_UNIX socket；通过 `SIO_AF_UNIX_GETPEERPID` 与其令牌（用户 SID、Administrators 成员身份）识别调用者。用户态 daemon 监视 GUI 进程（`--parent-pid`），因为管道无法传给子进程；内核运行在关闭即终止的作业对象中。自更新会先把运行中的可执行文件改名移开，然后退出，由服务管理器重启。
+
+在真机验证之前，这些只是可编译并通过 vet 的设计，而不是结果。
 
 ## 本机注意
 

@@ -34,10 +34,9 @@
 1. 实机剩余：从 GUI 按钮卸载/安装助手（pkexec 图形授权，需要用户在屏幕前输入密码；命令行等价路径已用 sudo 实测）。（签名自更新、后台服务、各方向切换已实测。）
 2. GitHub 远端建立后：把私钥设为 secret `EASYTIER_MYGO_SIGNING_KEY`，手动触发一次 release.yml 与 ci.yml 并检查产物（含 macOS dmg、Windows NSIS）。
 
-### P4 macOS / Windows 后端（实现 + CI 编译/单测，标注未实机验证）
-- macOS：LaunchDaemon（`Sockets` 按需；后台 `RunAtLoad`/`KeepAlive`），管理员认证安装一次，`LOCAL_PEERCRED`。
-- Windows：服务（随界面手动启动+operator DACL；后台自动启动），命名管道+令牌授权，wintun DLL，UAC 安装一次。
-- GitHub 可用后在 runner 上做助手安装冒烟测试。
+### P4 macOS / Windows（已实现，未经真机验证）
+已完成：每平台 socket 路径；Windows 用户态 daemon 以 `--parent-pid` 绑定 GUI；Windows AF_UNIX 按 SID 授权；macOS LaunchDaemon 助手、Windows 服务助手（安装/卸载/状态/签名自更新）；Windows 内核作业对象；GUI 按平台提权（osascript / UAC）。全部可交叉编译并通过 vet。
+剩余：GitHub 可用后在 macOS/Windows runner 上做冒烟测试（安装助手、跑 no_tun 网络、卸载）；有真机后实测 TUN（macOS utun 需 root、Windows wintun）。
 
 ### P5 0.1.0 收尾
 - 升级到届时最新 MyGo/EasyTier 并复验；Linux 全量走查（三档、TUN/no_tun、自启、托盘、崩溃回收、助手签名自更新、内核切换与回退）；文档定稿；version-history 0.1.0；用户确认后打 tag 推送。

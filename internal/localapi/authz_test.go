@@ -26,6 +26,20 @@ func TestAuthorizer(t *testing.T) {
 			t.Errorf("%s: %v, want %v", tc.name, got, tc.want)
 		}
 	}
+	win := Authorizer{OwnerSID: "S-1-5-18", WriteSIDs: []string{"S-1-5-21-1-1000"}, AdminsWrite: true}
+	for _, tc := range []struct {
+		p    Peer
+		want Access
+	}{
+		{Peer{SID: "S-1-5-18", Known: true}, AccessWrite},
+		{Peer{SID: "S-1-5-21-1-1000", Known: true}, AccessWrite},
+		{Peer{SID: "S-1-5-21-1-1001", Admin: true, Known: true}, AccessWrite},
+		{Peer{SID: "S-1-5-21-1-1002", Known: true}, AccessDenied},
+	} {
+		if got := win.Access(tc.p); got != tc.want {
+			t.Errorf("windows %+v: %v, want %v", tc.p, got, tc.want)
+		}
+	}
 	if (AccessRead).Allows(RequestConfigGet) || !(AccessRead).Allows(RequestNetworks) {
 		t.Error("read tier must see status but never config text")
 	}

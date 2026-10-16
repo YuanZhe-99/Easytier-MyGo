@@ -49,6 +49,7 @@ func (p *coreProcess) Start(args []string) error {
 		logFile.Close()
 		return fmt.Errorf("start core: %w", err)
 	}
+	adoptProcess(cmd.Process)
 	p.cmd, p.exited, p.exitErr, p.stopping = cmd, false, nil, false
 	p.startedAt = time.Now()
 	waitCh := make(chan struct{})

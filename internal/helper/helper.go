@@ -11,17 +11,14 @@ import (
 	"errors"
 	"fmt"
 	"path/filepath"
+	"runtime"
 )
 
-// Layout of an installed helper. The binaries are root-owned copies, so a
-// user cannot swap what root executes.
+// Layout of an installed helper (BinDir and StateDir are per platform, in
+// paths_*.go). The binaries are administrator-owned copies, so a user
+// cannot swap what the helper executes.
 const (
-	// BinDir holds the helper's copies of easytier-mygo-svc, easytier-core
-	// and easytier-cli.
-	BinDir = "/usr/local/libexec/easytier-mygo"
-	// StateDir is the helper's state (networks, events, settings, cores).
-	StateDir = "/var/lib/easytier-mygo"
-	// Group may control the helper in addition to the operator.
+	// Group may control the helper in addition to the operator (Linux).
 	Group = "easytier-mygo"
 	// Unit is the systemd service; Unit+".socket" starts it on demand.
 	Unit = "easytier-mygo"
@@ -55,12 +52,19 @@ type Status struct {
 type InstallOptions struct {
 	// From is the directory holding the bundle's binaries.
 	From string
-	// Operator is the uid allowed to control the helper.
+	// Operator is the uid allowed to control the helper (Linux, macOS).
 	Operator uint32
+	// OperatorSID is the operator on Windows.
+	OperatorSID string
 }
 
 // svcPath is the installed daemon binary.
-func svcPath() string { return filepath.Join(BinDir, "easytier-mygo-svc") }
+func svcPath() string {
+	if runtime.GOOS == "windows" {
+		return filepath.Join(BinDir, "easytier-mygo-svc.exe")
+	}
+	return filepath.Join(BinDir, "easytier-mygo-svc")
+}
 
 // SocketUnit is the systemd socket unit text. The socket is world
 // connectable; the daemon authorizes each peer by its credentials

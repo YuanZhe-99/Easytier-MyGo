@@ -22,6 +22,8 @@ const helperGroup = "easytier-mygo"
 type helperConfig struct {
 	// Operator is the uid of the user who installed the helper.
 	Operator *uint32 `json:"operator,omitempty"`
+	// OperatorSID is the operator on Windows.
+	OperatorSID string `json:"operator_sid,omitempty"`
 }
 
 // helperAuthorizer grants write access to root, the operator and the
@@ -32,7 +34,11 @@ func helperAuthorizer(stateDir string) (localapi.Authorizer, int, error) {
 	if _, err := fsutil.ReadJSON(filepath.Join(stateDir, "helper.json"), &cfg); err != nil {
 		return localapi.Authorizer{}, 0, err
 	}
-	a := localapi.Authorizer{OwnerUID: 0}
+	// On Windows the helper runs as SYSTEM; callers are identified by SID.
+	a := localapi.Authorizer{OwnerUID: 0, OwnerSID: "S-1-5-18", AdminsWrite: true}
+	if cfg.OperatorSID != "" {
+		a.WriteSIDs = append(a.WriteSIDs, cfg.OperatorSID)
+	}
 	if cfg.Operator != nil {
 		a.WriteUIDs = append(a.WriteUIDs, *cfg.Operator)
 	}
@@ -57,10 +63,18 @@ func helperCmd(args []string) error {
 	case "install":
 		fs := flag.NewFlagSet("helper install", flag.ExitOnError)
 		from := fs.String("from", "", "directory with the bundle's binaries (default: this binary's directory)")
+		operator := fs.Int("operator", -1, "operator uid when not run through pkexec or sudo (macOS)")
+		operatorSID := fs.String("operator-sid", "", "operator SID (Windows)")
 		fs.Parse(args[1:])
-		op, err := invokingUID()
-		if err != nil {
-			return err
+		var op uint32
+		if *operatorSID == "" {
+			var err error
+			if op, err = invokingUID(); err != nil {
+				if *operator < 0 {
+					return err
+				}
+				op = uint32(*operator)
+			}
 		}
 		dir := *from
 		if dir == "" {
@@ -70,7 +84,7 @@ func helperCmd(args []string) error {
 			}
 			dir = filepath.Dir(exe)
 		}
-		return helper.Install(helper.InstallOptions{From: dir, Operator: op})
+		return helper.Install(helper.InstallOptions{From: dir, Operator: op, OperatorSID: *operatorSID})
 	case "uninstall":
 		fs := flag.NewFlagSet("helper uninstall", flag.ExitOnError)
 		purge := fs.Bool("purge", false, "also delete the helper's networks and state")

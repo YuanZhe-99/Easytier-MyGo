@@ -3,8 +3,8 @@
 | Platform | Status |
 |---|---|
 | Linux (systemd) | Primary platform. New daemon, run modes and helper implemented and verified (below); the GUI is being rebuilt. |
-| macOS | Builds. Helper (launchd) and run modes not implemented; nothing verified on a real machine. |
-| Windows | Builds. Helper (service) and run modes not implemented; nothing verified on a real machine. |
+| macOS | Implemented, not verified on a real machine: user daemon, LaunchDaemon helper, administrator prompt through `osascript`, signed self-update. |
+| Windows | Implemented, not verified on a real machine: user daemon, service helper, UAC through PowerShell, SID authorization over AF_UNIX, job object for cores, signed self-update. |
 
 ## Linux
 
@@ -35,10 +35,21 @@ Verified on the development machine (2026-10-16, EasyTier v2.6.4, isolated ports
 
 ## macOS and Windows
 
-Planned helper backends: a launchd daemon (on-demand through `Sockets`, `RunAtLoad`/`KeepAlive`
-for background) and a Windows service (demand start with an operator DACL, automatic start for
-background). Until they are verified on real machines, every statement about them is a design, not
-a result.
+- **macOS:** the helper is the LaunchDaemon `com.yuanzhe.easytiermygo.helper`
+  (`/Library/LaunchDaemons`, binaries in `/Library/Application Support/EasyTier MyGo/bin`), always
+  loaded (`RunAtLoad`/`KeepAlive`): launchd socket activation needs a C API, so Follow GUI is
+  enforced by the daemon (networks run only while a session is attached unless background mode is
+  on). Socket `/var/run/easytier-mygo/ctl.sock`; callers identified by `LOCAL_PEERCRED`. The
+  operator is passed with `--operator` because `osascript` carries no `SUDO_UID`.
+- **Windows:** the helper is the automatic service `EasyTierMyGoHelper` (binaries in
+  `%ProgramFiles%\EasyTier MyGo\helper`, state in `%ProgramData%\EasyTier MyGo\state`, restricted
+  with `icacls`), restarted on failure. The local API is an AF_UNIX socket; callers are identified
+  by `SIO_AF_UNIX_GETPEERPID` and their token (user SID, Administrators membership). The user daemon
+  watches the GUI's process (`--parent-pid`) because a pipe cannot be handed to a child; cores run
+  in a kill-on-close job object. A self-update renames the running executable aside and exits so
+  the service manager restarts it.
+
+Until verified on real machines, these are designs that compile and pass vet, not results.
 
 ## Machine caution
 

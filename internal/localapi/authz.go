@@ -47,6 +47,10 @@ type Peer struct {
 	// Groups are the peer's supplementary groups (Linux: from /proc, macOS:
 	// from LOCAL_PEERCRED); membership in any of them counts.
 	Groups []uint32
+	// SID and Admin identify the caller on Windows (its token's user and
+	// membership of Administrators); uids are unused there.
+	SID   string
+	Admin bool
 	// Known is false when the platform could not report an identity.
 	Known bool
 }
@@ -76,6 +80,11 @@ type Authorizer struct {
 	// Private marks a socket that only its owner can reach, so its
 	// connections are always writable and group lists are not consulted.
 	Private bool
+	// Windows: OwnerSID is the daemon's own user; WriteSIDs are granted
+	// write access (the operator); AdminsWrite grants it to Administrators.
+	OwnerSID    string
+	WriteSIDs   []string
+	AdminsWrite bool
 }
 
 // Access reports the tier for one peer, or AccessDenied. It never fails
@@ -83,6 +92,13 @@ type Authorizer struct {
 // is denied.
 func (a Authorizer) Access(p Peer) Access {
 	if !p.Known {
+		return AccessDenied
+	}
+	if p.SID != "" {
+		switch {
+		case p.SID == a.OwnerSID, slices.Contains(a.WriteSIDs, p.SID), a.AdminsWrite && p.Admin:
+			return AccessWrite
+		}
 		return AccessDenied
 	}
 	if p.UID == a.OwnerUID {

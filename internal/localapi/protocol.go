@@ -31,20 +31,15 @@ const ProtocolVersion = 2
 // SocketEnv overrides the socket path (tests, development).
 const SocketEnv = "EASYTIER_MYGO_SOCKET"
 
-// SystemSocketPath is the privileged helper's socket on Linux and macOS.
-const SystemSocketPath = "/run/easytier-mygo/ctl.sock"
-
 // UserSocketPath is the no-privileges daemon's per-user socket:
-// $EASYTIER_MYGO_SOCKET, else $XDG_RUNTIME_DIR/easytier-mygo/ctl.sock.
+// $EASYTIER_MYGO_SOCKET, else a per-user runtime directory
+// ($XDG_RUNTIME_DIR on Linux, the temporary directory on macOS,
+// %LOCALAPPDATA% on Windows) + easytier-mygo/ctl.sock.
 func UserSocketPath() string {
 	if p := os.Getenv(SocketEnv); p != "" {
 		return p
 	}
-	base := os.Getenv("XDG_RUNTIME_DIR")
-	if base == "" {
-		base = filepath.Join(os.TempDir(), fmt.Sprintf("easytier-mygo-%d", os.Getuid()))
-	}
-	return filepath.Join(base, "easytier-mygo", "ctl.sock")
+	return filepath.Join(userRuntimeDir(), "easytier-mygo", "ctl.sock")
 }
 
 // RequestType enumerates the daemon's commands.

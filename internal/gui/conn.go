@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"sync"
 	"time"
 
@@ -93,6 +94,11 @@ func (u *userDaemon) ensure(ctx context.Context, socket string) error {
 	}
 	cmd := exec.Command(bin, "run", "--host", "user", "--socket", socket, "--lifeline-fd", "3")
 	cmd.ExtraFiles = []*os.File{r}
+	if runtime.GOOS == "windows" {
+		// Windows cannot hand the pipe to a child: watch our process instead.
+		cmd = exec.Command(bin, "run", "--host", "user", "--socket", socket, "--parent-pid", strconv.Itoa(os.Getpid()))
+		hideWindow(cmd)
+	}
 	if log, err := openDaemonLog(); err == nil {
 		cmd.Stdout, cmd.Stderr = log, log
 	}

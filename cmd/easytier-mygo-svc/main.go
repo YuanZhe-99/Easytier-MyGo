@@ -70,6 +70,7 @@ func run(args []string) error {
 	cliBin := fs.String("cli-bin", "", "easytier-cli (default: next to this binary, else PATH)")
 	rpcBase := fs.Int("rpc-base", 25888, "first port for the cores' management portals")
 	lifeline := fs.Int("lifeline-fd", -1, "file descriptor whose EOF stops the daemon (user host)")
+	parent := fs.Int("parent-pid", 0, "stop when this process exits (user host on Windows)")
 	idle := fs.Duration("idle-exit", 0, "exit after this long without sessions or running networks (helper)")
 	fs.Parse(args)
 
@@ -89,11 +90,11 @@ func run(args []string) error {
 		opts.Host = localapi.HostUser
 		opts.StateDir = orDefault(*stateDir, userStateDir())
 		opts.SocketPath = orDefault(*socket, localapi.UserSocketPath())
-		opts.Authorizer = localapi.Authorizer{OwnerUID: uint32(os.Getuid()), Private: true}
+		opts.Authorizer = localapi.Authorizer{OwnerUID: uint32(os.Getuid()), Private: true, OwnerSID: localapi.CurrentSID()}
 		opts.Privileged = os.Geteuid() == 0
 	case "helper":
 		opts.Host = localapi.HostHelper
-		opts.StateDir = orDefault(*stateDir, "/var/lib/easytier-mygo")
+		opts.StateDir = orDefault(*stateDir, helper.StateDir)
 		opts.SocketPath = orDefault(*socket, localapi.SystemSocketPath)
 		opts.Privileged = os.Geteuid() == 0
 		authz, gid, err := helperAuthorizer(opts.StateDir)
@@ -118,10 +119,14 @@ func run(args []string) error {
 		BundledDir: bundledDir(opts.CoreBin),
 		UPX:        upxBinary(),
 	}
+	opts.ParentPID = *parent
 	if *lifeline >= 0 {
 		opts.Lifeline = os.NewFile(uintptr(*lifeline), "lifeline")
 	}
 
+	if ok, err := runService(func(ctx context.Context) error { return daemon.Run(ctx, opts) }); ok {
+		return err
+	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	if n := sdnotify.FromEnv(); n != nil {

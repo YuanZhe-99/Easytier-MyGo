@@ -4,8 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
 	"os/exec"
 	"path/filepath"
+	"runtime"
+	"strconv"
 	"strings"
 	"time"
 
@@ -215,21 +218,54 @@ func bundleDir() string {
 	return ""
 }
 
-// runPrivileged runs `easytier-mygo-svc helper <args>` through pkexec:
-// the one administrator prompt of a run-mode change.
+// runPrivileged runs `easytier-mygo-svc helper <args>` with administrator
+// rights: the one prompt of a run-mode change (pkexec on Linux, the
+// administrator password on macOS, UAC on Windows).
 func runPrivileged(args ...string) error {
 	svc, err := svcBinary()
 	if err != nil {
 		return err
 	}
-	pkexec, err := exec.LookPath("pkexec")
-	if err != nil {
-		return errors.New(L.ErrorNoPkexec())
+	if len(args) > 0 && args[0] == "install" {
+		switch runtime.GOOS {
+		case "darwin":
+			args = append(args, "--operator", strconv.Itoa(os.Getuid()))
+		case "windows":
+			args = append(args, "--operator-sid", localapi.CurrentSID())
+		}
 	}
-	out, err := exec.Command(pkexec, append([]string{svc, "helper"}, args...)...).CombinedOutput()
+	var cmd *exec.Cmd
+	switch runtime.GOOS {
+	case "darwin":
+		quoted := []string{shellQuote(svc), "helper"}
+		for _, a := range args {
+			quoted = append(quoted, shellQuote(a))
+		}
+		script := fmt.Sprintf("do shell script %q with administrator privileges", strings.Join(quoted, " "))
+		cmd = exec.Command("osascript", "-e", script)
+	case "windows":
+		list := []string{"'helper'"}
+		for _, a := range args {
+			list = append(list, "'"+strings.ReplaceAll(a, "'", "''")+"'")
+		}
+		ps := fmt.Sprintf("$p = Start-Process -FilePath '%s' -ArgumentList %s -Verb RunAs -WindowStyle Hidden -Wait -PassThru; exit $p.ExitCode",
+			strings.ReplaceAll(svc, "'", "''"), strings.Join(list, ","))
+		cmd = exec.Command("powershell", "-NoProfile", "-NonInteractive", "-Command", ps)
+		hideWindow(cmd)
+	default:
+		pkexec, err := exec.LookPath("pkexec")
+		if err != nil {
+			return errors.New(L.ErrorNoPkexec())
+		}
+		cmd = exec.Command(pkexec, append([]string{svc, "helper"}, args...)...)
+	}
+	out, err := cmd.CombinedOutput()
 	if err != nil {
 		msg := strings.TrimSpace(string(out))
-		if ee, ok := err.(*exec.ExitError); ok && (ee.ExitCode() == 126 || ee.ExitCode() == 127) {
+		if ee, ok := err.(*exec.ExitError); ok && runtime.GOOS == "linux" && (ee.ExitCode() == 126 || ee.ExitCode() == 127) {
+			return errors.New(L.ErrorAuthCancelled())
+		}
+		if strings.Contains(msg, "User canceled") || strings.Contains(msg, "-128") || strings.Contains(msg, "canceled by the user") {
 			return errors.New(L.ErrorAuthCancelled())
 		}
 		if msg == "" {
@@ -239,6 +275,9 @@ func runPrivileged(args ...string) error {
 	}
 	return nil
 }
+
+// shellQuote quotes a word for /bin/sh.
+func shellQuote(s string) string { return "'" + strings.ReplaceAll(s, "'", `'\''`) + "'" }
 
 // uninstallHelper removes the helper after moving the networks to the
 // user daemon.

@@ -3,7 +3,6 @@ package helper
 import (
 	"errors"
 	"fmt"
-	"io"
 	"os"
 	"os/exec"
 	"os/user"
@@ -126,28 +125,6 @@ func systemctl(args ...string) error {
 		return fmt.Errorf("systemctl %s: %v: %s", strings.Join(args, " "), err, strings.TrimSpace(string(out)))
 	}
 	return nil
-}
-
-func fileExists(p string) bool {
-	_, err := os.Stat(p)
-	return err == nil
-}
-
-// copyRootOwned copies an executable to dst as root:root 0755, atomically.
-func copyRootOwned(src, dst string) error {
-	in, err := os.Open(src)
-	if err != nil {
-		return err
-	}
-	defer in.Close()
-	data, err := io.ReadAll(in)
-	if err != nil {
-		return err
-	}
-	if err := fsutil.WriteFileAtomic(dst, data, 0o755); err != nil {
-		return err
-	}
-	return os.Chown(dst, 0, 0)
 }
 
 // SelfUpdate replaces the helper's binaries with a signed bundle from an

@@ -9,8 +9,8 @@ installed, and never again when the GUI starts. The GUI itself never runs elevat
 | Mode | Requirement | When networks run | Linux | macOS | Windows |
 |---|---|---|---|---|---|
 | No privileges | none | While the GUI runs; `no_tun` networks only | The GUI starts a user-level daemon as its child | same | same |
-| Follow GUI | privileged helper installed once | While a GUI session is attached. When the GUI quits or crashes, networks stop and the idle helper exits. Nothing runs at boot. | systemd socket-activated system unit (not enabled at boot) | launchd daemon started on demand through `Sockets` | demand-start service whose DACL lets the operator start it |
-| Background service | same helper; switching from Follow GUI needs no new authorization | From boot, independent of the GUI | the same unit enabled for `multi-user.target` | `RunAtLoad` + `KeepAlive` | automatic start |
+| Follow GUI | privileged helper installed once | While a GUI session is attached. When the GUI quits or crashes, networks stop and the idle helper exits. Nothing runs at boot. | systemd socket-activated system unit (not enabled at boot) | LaunchDaemon, always loaded; the daemon runs networks only with a session | automatic service; the daemon runs networks only with a session |
+| Background service | same helper; switching from Follow GUI needs no new authorization | From boot, independent of the GUI | the same unit enabled for `multi-user.target` | the same daemon; the setting lets networks run without a session | the same service; same setting |
 
 ## Authorization
 

@@ -54,6 +54,9 @@ type Options struct {
 	Privileged bool
 	// Lifeline ends the daemon when it reaches EOF (the GUI's pipe).
 	Lifeline *os.File
+	// ParentPID ends the daemon when that process exits (the GUI, on
+	// systems where a pipe cannot be handed to a child).
+	ParentPID int
 	// IdleExit ends a helper that has no session, no running network and
 	// is not in background mode for this long (0: never).
 	IdleExit time.Duration
@@ -151,6 +154,15 @@ func Run(ctx context.Context, opts Options) error {
 					cancel()
 					return
 				}
+			}
+		}()
+	}
+	if opts.ParentPID > 0 {
+		go func() {
+			watchParent(ctx, opts.ParentPID)
+			if ctx.Err() == nil {
+				opts.Logf("parent process exited: stopping")
+				cancel()
 			}
 		}()
 	}
