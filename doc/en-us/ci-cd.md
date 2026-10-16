@@ -5,8 +5,8 @@ so a push there is checked only by the local gate.
 
 | Workflow | Trigger | Does |
 |---|---|---|
-| `ci.yml` | push to `main`, pull requests, manual | Formatting, vet, tests (also with `CGO_ENABLED=0`), MyGo vet, interface catalogs, doc mirror check, upstream pins; build and unit tests on Windows and macOS. |
-| `ci.yml` → smoke | after the checks | `scripts/smoke.sh user` and `helper` on Linux, macOS and Windows runners: a `no_tun` network through the user daemon and through an installed helper, then uninstall. |
+| `ci.yml` | push to `main`, pull requests, manual | Formatting, vet, tests (also with `CGO_ENABLED=0`), MyGo vet, interface catalogs, doc mirror check, upstream pins; build and unit tests on Windows (x64 and ARM64) and macOS. |
+| `ci.yml` → smoke | after the checks | `scripts/smoke.sh user` and `helper` on Linux, macOS and Windows (x64, ARM64) runners: a `no_tun` network through the user daemon and through an installed helper, then uninstall. |
 | `upstream.yml` | weekly, manual | `go run ./tools/deps check -strict`; opens an issue when MyGo or EasyTier has a newer release. |
 | `dependabot.yml` | weekly | Action and Go module updates. |
 

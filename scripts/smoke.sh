@@ -58,9 +58,12 @@ helper)
 	else
 		sudo "$svc" helper install --from "$bin" --operator "$(id -u)"
 	fi
-	sleep 3
 	"$svc" helper status
-	c=("$ctl")
+	c=("$ctl" -socket "$("$svc" helper socket)")
+	for _ in $(seq 1 20); do
+		"${c[@]}" info > /dev/null 2>&1 && break
+		sleep 1
+	done
 	;;
 *)
 	echo "usage: $0 user|helper" >&2
@@ -100,4 +103,10 @@ done
 echo "smoke ($mode): network never came up" >&2
 "${c[@]}" list >&2 || true
 "${c[@]}" events >&2 || true
+if [ "$mode" = helper ]; then
+	case "$goos" in
+	linux) sudo journalctl -u easytier-mygo.service --no-pager | tail -30 >&2 ;;
+	darwin) sudo tail -30 "/Library/Application Support/EasyTier MyGo/state/helper.log" >&2 ;;
+	esac
+fi
 exit 1

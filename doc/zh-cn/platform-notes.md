@@ -4,7 +4,7 @@
 |---|---|
 | Linux（systemd） | 主平台。新 daemon、运行方式与助手已实现并验证（见下）；GUI 正在重建。 |
 | macOS | 已实现，未经真机验证：用户态 daemon、LaunchDaemon 助手、经 `osascript` 的管理员授权、签名自更新。 |
-| Windows | 已实现，未经真机验证：用户态 daemon、服务助手、经 PowerShell 的 UAC、AF_UNIX 上按 SID 授权、内核的作业对象、签名自更新。 |
+| Windows（x64、ARM64） | 已实现，未经真机验证：用户态 daemon、服务助手、经 PowerShell 的 UAC、AF_UNIX 上按 SID 授权、内核的作业对象、签名自更新。 |
 
 ## Linux
 

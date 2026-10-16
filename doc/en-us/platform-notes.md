@@ -4,7 +4,7 @@
 |---|---|
 | Linux (systemd) | Primary platform. New daemon, run modes and helper implemented and verified (below); the GUI is being rebuilt. |
 | macOS | Implemented, not verified on a real machine: user daemon, LaunchDaemon helper, administrator prompt through `osascript`, signed self-update. |
-| Windows | Implemented, not verified on a real machine: user daemon, service helper, UAC through PowerShell, SID authorization over AF_UNIX, job object for cores, signed self-update. |
+| Windows (x64, ARM64) | Implemented, not verified on a real machine: user daemon, service helper, UAC through PowerShell, SID authorization over AF_UNIX, job object for cores, signed self-update. |
 
 ## Linux
 

@@ -400,7 +400,7 @@ func UnpackUPX(dir, upx string) error {
 	}
 	for _, e := range entries {
 		p := filepath.Join(dir, e.Name())
-		if e.IsDir() || !IsUPX(p) {
+		if e.IsDir() || e.Name() == "upx" || e.Name() == "upx.exe" || !IsUPX(p) {
 			continue
 		}
 		if out, err := exec.Command(upx, "-d", "-q", p).CombinedOutput(); err != nil {

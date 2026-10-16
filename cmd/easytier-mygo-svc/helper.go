@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"flag"
+	"fmt"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -92,6 +93,9 @@ func helperCmd(args []string) error {
 		return helper.Uninstall(*purge)
 	case "status":
 		return json.NewEncoder(os.Stdout).Encode(helper.Inspect())
+	case "socket":
+		fmt.Println(localapi.SystemSocketPath)
+		return nil
 	case "add-core":
 		fs := flag.NewFlagSet("helper add-core", flag.ExitOnError)
 		name := fs.String("name", "", "name of the custom core")

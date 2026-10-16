@@ -10,6 +10,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 )
 
@@ -18,7 +19,7 @@ import (
 func fakeZip(t *testing.T, dir string) []byte {
 	var buf bytes.Buffer
 	zw := zip.NewWriter(&buf)
-	for _, name := range []string{"easytier-core", "easytier-cli", "easytier-web"} {
+	for _, name := range []string{exe("easytier-core"), exe("easytier-cli"), exe("easytier-web")} {
 		h := &zip.FileHeader{Name: dir + "/" + name, Method: zip.Deflate}
 		h.SetMode(0o755)
 		w, err := zw.CreateHeader(h)
@@ -100,11 +101,11 @@ func TestInstallVerifiesAndUnpacks(t *testing.T) {
 	core, cli := Binaries(filepath.Join(m.Dir, c.Tag))
 	for _, p := range []string{core, cli} {
 		info, err := os.Stat(p)
-		if err != nil || info.Mode().Perm()&0o100 == 0 {
+		if err != nil || (runtime.GOOS != "windows" && info.Mode().Perm()&0o100 == 0) {
 			t.Fatalf("%s not installed as an executable: %v", p, err)
 		}
 	}
-	if _, err := os.Stat(filepath.Join(m.Dir, c.Tag, "easytier-web")); err == nil {
+	if _, err := os.Stat(filepath.Join(m.Dir, c.Tag, exe("easytier-web"))); err == nil {
 		t.Fatal("the web console must be skipped")
 	}
 	got, ok := m.Find("v2.6.4")

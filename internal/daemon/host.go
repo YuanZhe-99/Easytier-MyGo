@@ -184,9 +184,11 @@ func Run(ctx context.Context, opts Options) error {
 	return err
 }
 
+// socketMode: the helper's socket is reachable by every local user (each
+// caller is authorized by its credentials); a user daemon's is private.
 func socketMode(o Options) os.FileMode {
-	if o.SocketGroup != 0 {
-		return 0o660
+	if o.Host == localapi.HostHelper {
+		return 0o666
 	}
 	return 0o600
 }
