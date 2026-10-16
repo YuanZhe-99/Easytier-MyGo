@@ -114,7 +114,8 @@ func stopService() {
 	}
 }
 
-// Uninstall stops and deletes the service and its files.
+// Uninstall stops and deletes the service and its files, and the
+// `EasyTier MyGo` folders above them once they are empty.
 func Uninstall(purge bool) error {
 	if !elevated() {
 		return errors.New("removing the helper needs administrator rights")
@@ -127,11 +128,11 @@ func Uninstall(purge bool) error {
 		}
 		m.Disconnect()
 	}
-	if err := os.RemoveAll(BinDir); err != nil {
+	if err := removeWithParent(BinDir); err != nil {
 		return err
 	}
 	if purge {
-		return os.RemoveAll(StateDir)
+		return removeWithParent(StateDir)
 	}
 	return nil
 }

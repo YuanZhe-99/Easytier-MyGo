@@ -58,8 +58,8 @@ Verified so far on Windows 11 ARM64 (Go 1.27.2, no C compiler): the local gate p
 `scripts/smoke.sh user` runs a `no_tun` network on the bundled v2.6.4 core through the user daemon
 and shuts it down through the API. The helper, installed and removed through UAC, runs the same
 network for a non-administrator operator while a session is attached (`ctl watch`); uninstalling
-removes the service, the binaries and the state, but leaves the empty `EasyTier MyGo` folders under
-`%ProgramFiles%` and `%ProgramData%`.
+removes the service, the binaries, the state and the `EasyTier MyGo` folders under `%ProgramFiles%`
+and `%ProgramData%`.
 
 ## Known limitations
 

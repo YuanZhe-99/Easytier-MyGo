@@ -34,3 +34,54 @@ func TestUnitsVerify(t *testing.T) {
 		t.Errorf("systemd-analyze: %s", line)
 	}
 }
+
+// TestRemoveWithParent checks that uninstalling removes the product folder
+// only once nothing else is left in it (regression: Windows left empty
+// `EasyTier MyGo` folders behind).
+func TestRemoveWithParent(t *testing.T) {
+	cases := []struct {
+		name          string
+		dir, sibling  bool // what exists under the parent beforehand
+		parentRemains bool
+	}{
+		{"only dir", true, false, false},
+		{"dir and sibling", true, true, true},
+		{"dir already gone", false, false, false},
+		{"dir gone, sibling stays", false, true, true},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			parent := filepath.Join(t.TempDir(), "EasyTier MyGo")
+			dir := filepath.Join(parent, "helper")
+			if err := os.MkdirAll(parent, 0o755); err != nil {
+				t.Fatal(err)
+			}
+			if c.dir {
+				if err := os.MkdirAll(filepath.Join(dir, "sub"), 0o755); err != nil {
+					t.Fatal(err)
+				}
+				if err := os.WriteFile(filepath.Join(dir, "sub", "f"), []byte("x"), 0o644); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if c.sibling {
+				if err := os.Mkdir(filepath.Join(parent, "state"), 0o755); err != nil {
+					t.Fatal(err)
+				}
+			}
+			if err := removeWithParent(dir); err != nil {
+				t.Fatal(err)
+			}
+			if fileExists(dir) {
+				t.Error("dir still exists")
+			}
+			if got := fileExists(parent); got != c.parentRemains {
+				t.Errorf("parent exists = %v, want %v", got, c.parentRemains)
+			}
+			// A second call (repeated uninstall) must succeed too.
+			if err := removeWithParent(dir); err != nil {
+				t.Errorf("repeat: %v", err)
+			}
+		})
+	}
+}

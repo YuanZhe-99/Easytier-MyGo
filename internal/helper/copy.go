@@ -1,7 +1,10 @@
 package helper
 
 import (
+	"errors"
+	"io/fs"
 	"os"
+	"path/filepath"
 	"runtime"
 
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/fsutil"
@@ -34,4 +37,29 @@ func exeName(name string) string {
 		return name + ".exe"
 	}
 	return name
+}
+
+// removeWithParent deletes dir and everything below it, then its parent
+// when that is left empty.
+//
+// Inputs: dir, a directory that may be absent.
+// Side effects: removes files; the parent stays when anything else is in it.
+// Notes: a missing dir or parent is not an error, so a repeated uninstall
+// succeeds.
+func removeWithParent(dir string) error {
+	if err := os.RemoveAll(dir); err != nil {
+		return err
+	}
+	parent := filepath.Dir(dir)
+	entries, err := os.ReadDir(parent)
+	if errors.Is(err, fs.ErrNotExist) {
+		return nil
+	}
+	if err != nil || len(entries) > 0 {
+		return err
+	}
+	if err := os.Remove(parent); err != nil && !errors.Is(err, fs.ErrNotExist) {
+		return err
+	}
+	return nil
 }

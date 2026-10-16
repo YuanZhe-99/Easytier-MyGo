@@ -42,7 +42,7 @@
 - **Windows：** 助手是自动启动的服务 `EasyTierMyGoHelper`（二进制在 `%ProgramFiles%\EasyTier MyGo\helper`，状态在 `%ProgramData%\EasyTier MyGo\state`，用 `icacls` 限制权限），失败时重启。本地 API 为 AF_UNIX socket；通过 `SIO_AF_UNIX_GETPEERPID` 与其令牌（用户 SID、Administrators 成员身份）识别调用者。用户态 daemon 监视 GUI 进程（`--parent-pid`），因为管道无法传给子进程；内核运行在关闭即终止的作业对象中。自更新会先把运行中的可执行文件改名移开，然后退出，由服务管理器重启。
 
 在真机验证之前，这些只是可编译并通过 vet 的设计，而不是结果。
-目前已在 Windows 11 ARM64（Go 1.27.2，无 C 编译器）上验证：本地检查全部通过；`scripts/smoke.sh user` 通过用户态 daemon 在附带的 v2.6.4 内核上运行 `no_tun` 网络，并通过 API 关闭。通过 UAC 安装和移除的特权助手，在会话连接时（`ctl watch`）为非管理员 operator 运行同一网络；卸载会移除服务、二进制和状态，但会留下 `%ProgramFiles%` 与 `%ProgramData%` 下空的 `EasyTier MyGo` 文件夹。
+目前已在 Windows 11 ARM64（Go 1.27.2，无 C 编译器）上验证：本地检查全部通过；`scripts/smoke.sh user` 通过用户态 daemon 在附带的 v2.6.4 内核上运行 `no_tun` 网络，并通过 API 关闭。通过 UAC 安装和移除的特权助手，在会话连接时（`ctl watch`）为非管理员 operator 运行同一网络；卸载会移除服务、二进制、状态以及 `%ProgramFiles%` 与 `%ProgramData%` 下的 `EasyTier MyGo` 文件夹。
 
 ## 已知限制
 
