@@ -14,6 +14,8 @@ The project restarted from 0.1.0 on 2026-10-16. The earlier, inherited history (
 - Error messages at the bottom of the window were invisible (text color left unset); they are
   white on red now.
 - An `instance_id` that is not a UUID is named before the core refuses it without a reason.
+- New bundle signing key (`internal/bundlesig/release.pub`): helpers of 0.1.0 and 0.1.1 know only
+  the old one, so updating them to 0.1.2 asks for administrator approval once.
 - MyGo v0.5.5 / EasyTier v2.6.4 (checked, unchanged).
 
 ## 0.1.1 (2026-10-16)
