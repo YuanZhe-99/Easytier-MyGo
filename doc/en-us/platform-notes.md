@@ -77,6 +77,7 @@ Verified on macOS 27.0.1, Apple M1 (2026-10-16, Go 1.27.2 from Homebrew, EasyTie
 | Helper with TUN | Two TUN networks get `utun` devices with their addresses and peer; the devices go away when they stop |
 | Helper uninstall `--purge` | Removes the LaunchDaemon, the binaries, the state, the `EasyTier MyGo` folder and the socket directory |
 | Daemon tests | `internal/daemon` tests run on macOS too (they used to be Linux-only) |
+| Helper reinstall, 0.1.5 → 0.1.6 (2026-10-17) | A 0.1.5 helper left installed but not loaded by the 0.1.5 reinstall: after updating the app to 0.1.6 and one administrator approval, the 0.1.6 install reloads it (launchd `state = running`, version 0.1.6, `ctl.sock` back) and the networks reconnect |
 | Helper self-update by code signature (2026-10-17) | Unit test with ad hoc signed copies: a binary satisfying the installed copy's designated requirement is installed; another signature or an older version is refused, the installed files stay and nothing staged is left |
 | Code signature (2026-10-17) | `MYGO_SIGN` build: the app, its executables and the `.dmg` carry `TeamIdentifier=982C6JDNCS` with the hardened runtime and verify strictly; the signed daemon runs the signed core (`no_tun` network up); a rebuild keeps the same designated requirement |
 
