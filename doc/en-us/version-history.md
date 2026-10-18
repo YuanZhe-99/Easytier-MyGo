@@ -3,6 +3,16 @@
 The project restarted from 0.1.0 on 2026-10-16. The earlier, inherited history (versions up to
 0.10.80) is preserved under the git tag `archive/v0.10.80` and is not continued.
 
+## 0.1.5 (2026-10-17)
+
+- macOS: the app is signed with the maintainer's Apple Development certificate (Team ID
+  `982C6JDNCS`) instead of ad hoc, so macOS keeps its privacy grants across updates. The first
+  update from an earlier version asks for them once more. The app is still not notarized: remove
+  the quarantine of a downloaded copy once ([platform-notes.md](platform-notes.md)).
+- macOS: updating the privileged helper asks for administrator approval, because the code
+  signature changes the files its bundle manifest covers.
+- MyGo v0.5.5 / EasyTier v2.6.4 (checked, unchanged).
+
 ## 0.1.4 (2026-10-16)
 
 - Peer list: machine-style hostnames are shown as friendly names (`macbook-pro` → MacBook Pro,

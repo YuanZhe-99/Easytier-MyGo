@@ -2,6 +2,12 @@
 
 项目于 2026-10-16 从 0.1.0 重新开始。此前继承的历史（直到 0.10.80）保存在 git tag `archive/v0.10.80` 下，不再延续。
 
+## 0.1.5（2026-10-17）
+
+- macOS：应用改用维护者的 Apple Development 证书（Team ID `982C6JDNCS`）签名，不再是 ad hoc 签名，因此 macOS 会在更新后保留隐私授权。从更早版本首次更新时会再请求一次。应用仍未经过公证：下载的副本需要移除一次隔离属性（[platform-notes.md](platform-notes.md)）。
+- macOS：更新特权助手需要管理员批准，因为代码签名改变了其构建包清单所覆盖的文件。
+- MyGo v0.5.5 / EasyTier v2.6.4（已检查，未变化）。
+
 ## 0.1.4（2026-10-16）
 
 - 节点列表：机器风格的主机名显示为友好名称（`macbook-pro` → MacBook Pro，`Intel-NUC8i5BEH` → Intel NUC8i5BEH）；行的提示文字是原始主机名。
