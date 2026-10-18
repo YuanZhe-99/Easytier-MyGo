@@ -32,6 +32,39 @@ jobs:
         if: matrix.name == 'Windows'
         run: sudo apt-get update && sudo apt-get install -y nsis zip
 
+      # The macOS apps are signed with the maintainer's Apple Development
+      # certificate, so their Team ID keeps the privacy grants across
+      # updates; unset, they are signed ad hoc.
+      - name: Import the signing certificate
+        if: matrix.name == 'macOS'
+        env:
+          CERT_P12: ${{ secrets.EASYTIER_MYGO_MACOS_CERT_P12 }}
+          CERT_PASSWORD: ${{ secrets.EASYTIER_MYGO_MACOS_CERT_PASSWORD }}
+        run: |
+          if [ -z "$CERT_P12" ]; then echo "No signing certificate: ad hoc signature."; exit 0; fi
+          kc="$RUNNER_TEMP/easytier-mygo.keychain-db"
+          kcpw=$(openssl rand -hex 16)
+          security create-keychain -p "$kcpw" "$kc"
+          security set-keychain-settings -lut 21600 "$kc"
+          security unlock-keychain -p "$kcpw" "$kc"
+          echo "$CERT_P12" | base64 --decode > "$RUNNER_TEMP/cert.p12"
+          security import "$RUNNER_TEMP/cert.p12" -k "$kc" -P "$CERT_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$kcpw" "$kc" > /dev/null
+          security list-keychains -d user -s "$kc" $(security list-keychains -d user | tr -d '"')
+          openssl pkcs12 -in "$RUNNER_TEMP/cert.p12" -passin env:CERT_PASSWORD -nokeys -clcerts -legacy -out "$RUNNER_TEMP/cert.pem" 2>/dev/null \
+            || openssl pkcs12 -in "$RUNNER_TEMP/cert.p12" -passin env:CERT_PASSWORD -nokeys -clcerts -out "$RUNNER_TEMP/cert.pem"
+          # A self-signed certificate is its own root and must be trusted; an
+          # Apple-issued one chains to Apple's roots already.
+          if [ "$(openssl x509 -in "$RUNNER_TEMP/cert.pem" -noout -subject -nameopt RFC2253 | sed 's/^subject=//')" = \
+               "$(openssl x509 -in "$RUNNER_TEMP/cert.pem" -noout -issuer -nameopt RFC2253 | sed 's/^issuer=//')" ]; then
+            sudo security add-trusted-cert -d -r trustRoot -p codeSign -k /Library/Keychains/System.keychain "$RUNNER_TEMP/cert.pem"
+          fi
+          rm -f "$RUNNER_TEMP/cert.p12"
+          security find-identity -p codesigning "$kc"
+          # The identity by its SHA-1, whatever the certificate is called.
+          id=$(openssl x509 -in "$RUNNER_TEMP/cert.pem" -noout -fingerprint -sha1 | sed 's/.*=//; s/://g')
+          echo "MYGO_SIGN=$id" >> "$GITHUB_ENV"
+
       # Fetches the pinned EasyTier core for each target (SHA-256 checked,
       # UPX removed), builds the daemon and control CLI into the platform
       # resources, then runs `mygo build`.
@@ -46,6 +79,23 @@ jobs:
           # unset, no updates are published.
           MYGO_UPDATER_PRIVATE_KEY: ${{ secrets.MYGO_UPDATER_PRIVATE_KEY }}
         run: scripts/build.sh ${{ matrix.targets }}
+
+      # Each disk image must verify, and the app in it must carry a
+      # signature that verifies strictly; Gatekeeper's verdict is printed
+      # (the app is not notarized, so it rejects it).
+      - name: Verify the disk images
+        if: matrix.name == 'macOS'
+        run: |
+          find build -maxdepth 2 -type f -name '*.dmg' -print0 | while IFS= read -r -d '' dmg; do
+            echo "== $dmg"
+            hdiutil verify "$dmg"
+            mnt=$(mktemp -d)
+            hdiutil attach -nobrowse -readonly -mountpoint "$mnt" "$dmg" > /dev/null
+            codesign --verify --deep --strict --verbose=2 "$mnt"/*.app
+            codesign -dv --verbose=2 "$mnt"/*.app 2>&1 | grep -E '^(Authority|TeamIdentifier|Timestamp|Runtime)'
+            spctl --assess --type execute --verbose=4 "$mnt"/*.app || true
+            hdiutil detach "$mnt" > /dev/null
+          done
 
       - name: Collect the downloads
         shell: bash

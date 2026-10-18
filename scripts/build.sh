@@ -9,6 +9,8 @@
 # resources/<goos>-<goarch>/bin, which `mygo build` ships with the app.
 # Linux .deb packages get their dependencies corrected afterwards: MyGo
 # declares WebKitGTK for every app, which a native-UI app does not use.
+# MYGO_SIGN passes a signing identity to `mygo build -sign` (macOS; unset,
+# the app is signed ad hoc).
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
@@ -36,7 +38,11 @@ for t in "${targets[@]}"; do
 	fi
 done
 
-go tool mygo build -platform "$(IFS=,; echo "${targets[*]}")"
+sign=()
+if [ -n "${MYGO_SIGN:-}" ]; then
+	sign=(-sign "$MYGO_SIGN")
+fi
+go tool mygo build ${sign[@]+"${sign[@]}"} -platform "$(IFS=,; echo "${targets[*]}")"
 
 # Correct the Debian dependencies: GTK 3 and the tray library, no WebKitGTK.
 for deb in build/*/*.deb; do

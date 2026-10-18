@@ -9,6 +9,31 @@ a `.dmg` (macOS host required). With `MYGO_UPDATER_PRIVATE_KEY` set it also writ
 update files of each platform ([ci-cd.md](ci-cd.md)); their release notes are the version's
 section of `doc/en-us/version-history.md`.
 
+## macOS code signature
+
+macOS apps are signed with the maintainer's Apple Development certificate (Team ID `982C6JDNCS`),
+the one shared by all the maintainer's macOS apps. `scripts/build.sh` passes `MYGO_SIGN` to
+`mygo build -sign`, which signs the app, every executable in its resources and the disk image with
+the hardened runtime and a secure timestamp:
+
+```bash
+MYGO_SIGN=<certificate SHA-1> scripts/build.sh darwin/arm64
+codesign -dvv "build/darwin-arm64/EasyTier MyGo.app"   # TeamIdentifier=982C6JDNCS
+```
+
+The identity is named by the certificate's SHA-1 (`security find-identity -p codesigning`); the
+signing Mac also needs Apple's WWDR G3 intermediate certificate in its keychain. With a Team ID the
+app's designated requirement (identifier, Apple anchor, certificate) is the same for every build,
+so macOS keeps its privacy grants across rebuilds and updates; an ad hoc signature (no `MYGO_SIGN`)
+is bound to one build's hash. The app needs no entitlements: its executables are Go and Rust
+programs that load no libraries outside macOS, so library validation has nothing to refuse.
+The app is not notarized, so a downloaded copy is blocked by Gatekeeper until its quarantine is
+removed ([platform-notes.md](platform-notes.md)).
+
+The macOS signature rewrites the bundled executables, so the helper's bundle manifest
+(`EASYTIER_MYGO_SIGNING_KEY`), made from the files before `mygo build`, does not match them; on
+macOS a helper update asks for administrator approval.
+
 ## Bundled binaries
 
 Files under `resources/<goos>-<goarch>/` ship with the app and are found at run time through

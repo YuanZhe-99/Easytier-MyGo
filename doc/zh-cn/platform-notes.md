@@ -60,6 +60,7 @@
 | 助手与 TUN | 两个 TUN 网络获得带地址的 `utun` 设备并互为对等节点；停止后设备消失 |
 | 助手卸载 `--purge` | 移除 LaunchDaemon、二进制、状态、`EasyTier MyGo` 文件夹与 socket 目录 |
 | Daemon 测试 | `internal/daemon` 测试也在 macOS 上运行（以前仅限 Linux） |
+| 代码签名（2026-10-17） | 设置 `MYGO_SIGN` 构建：应用、其可执行文件与 `.dmg` 都带 `TeamIdentifier=982C6JDNCS` 和 hardened runtime，并通过严格校验；签名后的 daemon 能运行签名后的内核（`no_tun` 网络启动）；重新构建后指定要求保持不变 |
 
 macOS 上未验证：GUI 安装按钮触发的 `osascript` 授权、助手自更新，以及 GUI 外观（未截图）。
 
@@ -71,3 +72,5 @@ macOS 上未验证：GUI 安装按钮触发的 `osascript` 授权、助手自更
 - 标为未测试的内核可能改变 CLI 输出或配置格式；应用会降级为“无法读取状态”而不重启任何东西，也可以重新选回之前的内核。
 - 未认证的 GitHub API 请求每小时限 60 次；发布列表按 ETag 缓存，只在请求时或每日检查时获取。
 - MyGo 生成的 `.deb` 对所有应用都声明依赖 WebKitGTK；`scripts/build.sh` 会去掉该依赖。
+- macOS 应用已签名但未经公证：Gatekeeper 会拦截下载的副本。复制到“应用程序”后移除一次隔离属性（`xattr -dr com.apple.quarantine "/Applications/EasyTier MyGo.app"`），或在“系统设置 → 隐私与安全性”中允许它。从使用 Apple Development 证书之前（ad hoc）签名的版本更新可以正常进行，但 macOS 会再请求一次隐私权限；之后的更新会保留这些权限。
+- 在 macOS 上，特权助手的构建包清单经代码签名后不再一致，因此更新助手需要管理员批准（[packaging.md](packaging.md)）。

@@ -9,7 +9,7 @@
 | `upstream.yml` | 每周、手动 | `go run ./tools/deps check -strict`；MyGo 或 EasyTier 有新版时开 issue。 |
 | `dependabot.yml` | 每周 | Action 与 Go 模块更新。 |
 
-`release.yml`（tag `v*` 或手动触发）按平台运行 `scripts/build.sh`：Linux 与 Windows 在 Ubuntu 上构建（安装包用 NSIS），macOS 在 macOS runner 上构建。推送 tag 时先确认它与 `internal/version` 一致，再连同 `SHA256SUMS.txt` 发布下载。密钥 `EASYTIER_MYGO_SIGNING_KEY`（由 `go run ./tools/sign keygen` 生成）用于给构建包签名；私钥只保存在 secret 和维护者的离线副本中。密钥 `MYGO_UPDATER_PRIVATE_KEY`（由 `go tool mygo keygen` 生成；公钥是 `mygo.json` 中的 `updates.publicKey`）用于给应用更新签名：每个平台一个压缩包、相对最近几个版本的增量包和 `update-<target>.json`，都附在 release 上。已安装的应用读取最新 release 的清单；没有这个 secret 就不发布更新，已安装的应用停留在原版本。
+`release.yml`（tag `v*` 或手动触发）按平台运行 `scripts/build.sh`：Linux 与 Windows 在 Ubuntu 上构建（安装包用 NSIS），macOS 在 macOS runner 上构建。推送 tag 时先确认它与 `internal/version` 一致，再连同 `SHA256SUMS.txt` 发布下载。密钥 `EASYTIER_MYGO_SIGNING_KEY`（由 `go run ./tools/sign keygen` 生成）用于给构建包签名；私钥只保存在 secret 和维护者的离线副本中。密钥 `MYGO_UPDATER_PRIVATE_KEY`（由 `go tool mygo keygen` 生成；公钥是 `mygo.json` 中的 `updates.publicKey`）用于给应用更新签名：每个平台一个压缩包、相对最近几个版本的增量包和 `update-<target>.json`，都附在 release 上。已安装的应用读取最新 release 的清单；没有这个 secret 就不发布更新，已安装的应用停留在原版本。密钥 `EASYTIER_MYGO_MACOS_CERT_P12`（Apple Development 证书及其私钥，base64 编码的 `.p12`）和 `EASYTIER_MYGO_MACOS_CERT_PASSWORD`（其密码）用于给 macOS 应用签名：任务把它们导入临时钥匙串，仅当证书是自签名时才把它信任为根证书，并把 `MYGO_SIGN` 设为证书的 SHA-1（[packaging.md](packaging.md)）；没有它们时应用以 ad hoc 方式签名。随后用 `hdiutil verify` 检查每个磁盘映像，并用 `codesign --verify --deep --strict` 检查其中的应用。
 
 ## 上游升级流程
 

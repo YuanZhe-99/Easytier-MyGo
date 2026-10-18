@@ -39,6 +39,10 @@
 | MagicDNS name | MagicDNS 名称 |
 | vendor logo | 厂商标志 |
 | friendly name (of a peer) | 友好名称 |
+| code signature | 代码签名 |
+| designated requirement (macOS) | 指定要求 |
+| notarization / notarized | 公证 / 经过公证 |
+| quarantine (macOS) | 隔离属性 |
 
 ## 6. 审阅清单
 

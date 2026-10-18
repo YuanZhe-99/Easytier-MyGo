@@ -18,7 +18,13 @@ private key only there and in the maintainer's offline copy. The secret `MYGO_UP
 (from `go tool mygo keygen`; its public key is `updates.publicKey` in `mygo.json`) signs the app
 updates: per platform an archive, deltas from the last versions and `update-<target>.json`, all
 attached to the release. Installed apps read the manifests of the latest release; without the
-secret no updates are published and installed apps stay on their version.
+secret no updates are published and installed apps stay on their version. The secrets
+`EASYTIER_MYGO_MACOS_CERT_P12` (the Apple Development certificate and its key as a base64 `.p12`)
+and `EASYTIER_MYGO_MACOS_CERT_PASSWORD` (its password) sign the macOS apps: the job imports them
+into a temporary keychain, trusts the certificate as a root only when it is self-signed, and sets
+`MYGO_SIGN` to the certificate's SHA-1 ([packaging.md](packaging.md)); without them the apps are
+signed ad hoc. Each disk image is then checked with `hdiutil verify` and the app in it with
+`codesign --verify --deep --strict`.
 
 ## Upstream update procedure
 

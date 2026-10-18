@@ -77,6 +77,7 @@ Verified on macOS 27.0.1, Apple M1 (2026-10-16, Go 1.27.2 from Homebrew, EasyTie
 | Helper with TUN | Two TUN networks get `utun` devices with their addresses and peer; the devices go away when they stop |
 | Helper uninstall `--purge` | Removes the LaunchDaemon, the binaries, the state, the `EasyTier MyGo` folder and the socket directory |
 | Daemon tests | `internal/daemon` tests run on macOS too (they used to be Linux-only) |
+| Code signature (2026-10-17) | `MYGO_SIGN` build: the app, its executables and the `.dmg` carry `TeamIdentifier=982C6JDNCS` with the hardened runtime and verify strictly; the signed daemon runs the signed core (`no_tun` network up); a rebuild keeps the same designated requirement |
 
 Not verified on macOS: the `osascript` prompt from the GUI's install button, helper self-update,
 and the GUI's appearance (no screenshot was taken).
@@ -95,3 +96,10 @@ and the GUI's appearance (no screenshot was taken).
 - Unauthenticated GitHub API requests are limited to 60 per hour; release lists are cached with
   their ETag and fetched only on request or by the daily check.
 - MyGo's `.deb` declares WebKitGTK for every app; `scripts/build.sh` removes that dependency.
+- The macOS app is signed but not notarized: Gatekeeper blocks a downloaded copy. Remove its
+  quarantine once after copying it to Applications (`xattr -dr com.apple.quarantine
+  "/Applications/EasyTier MyGo.app"`), or allow it in System Settings → Privacy & Security.
+  Updating from a build signed before the Apple Development certificate (ad hoc) works, but macOS
+  asks for its privacy permissions again once; later updates keep them.
+- On macOS the helper's bundle manifest does not survive the code signature, so updating the
+  helper asks for administrator approval ([packaging.md](packaging.md)).
