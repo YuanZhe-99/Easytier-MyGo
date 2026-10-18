@@ -31,8 +31,11 @@ The app is not notarized, so a downloaded copy is blocked by Gatekeeper until it
 removed ([platform-notes.md](platform-notes.md)).
 
 The macOS signature rewrites the bundled executables, so the helper's bundle manifest
-(`EASYTIER_MYGO_SIGNING_KEY`), made from the files before `mygo build`, does not match them; on
-macOS a helper update asks for administrator approval.
+(`EASYTIER_MYGO_SIGNING_KEY`), made from the files before `mygo build`, does not match them. On
+macOS the helper therefore updates itself by code signature instead: each new executable must
+satisfy the designated requirement of the installed copy (same identifier and certificate). A
+helper installed from an ad hoc build designates its own hash, so updating it asks for
+administrator approval once.
 
 ## Bundled binaries
 

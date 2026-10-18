@@ -18,7 +18,7 @@ effects and notes where non-trivial).
 | `internal/profiles` | Network store | `Store`, `Profile` |
 | `internal/supervisor` | Per-network worker | `Worker`, `Config`, `Preflight` |
 | `internal/daemon` | Host, run-mode decisions, API | `Run`, `Options`, `Daemon.reconcile` |
-| `internal/helper` | Privileged helper installation and self-update | `Install`, `Uninstall`, `Inspect`, `SelfUpdate`, `installBundle` |
+| `internal/helper` | Privileged helper installation and self-update | `Install`, `Uninstall`, `Inspect`, `SelfUpdate`, `installBundle`, `replaceSigned` (macOS) |
 | `internal/bundlesig` | Signed app bundles for helper self-update | `Sign`, `Read`, `Bundle` |
 | `internal/cores` | EasyTier core manager | `Manager.Releases`, `Manager.Install`, `Binaries` |
 | `internal/fsutil` | Atomic writes | `WriteFileAtomic`, `WriteJSON` |

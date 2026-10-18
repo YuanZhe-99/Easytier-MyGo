@@ -246,6 +246,16 @@ func (msgs Messages) ActionOpenRunMode() string {
 	return Catalog.Format(msgs.locale, "ActionOpenRunMode", nil)
 }
 
+// ActionStartHelper says "Start helper"
+// in the language the app shows.
+func ActionStartHelper() string { return In(i18n.Locale()).ActionStartHelper() }
+
+// ActionStartHelper says "Start helper"
+// in the language of msgs.
+func (msgs Messages) ActionStartHelper() string {
+	return Catalog.Format(msgs.locale, "ActionStartHelper", nil)
+}
+
 // ActionRemove says "Remove"
 // in the language the app shows.
 func ActionRemove() string { return In(i18n.Locale()).ActionRemove() }
@@ -484,6 +494,16 @@ func BannerHelperOutdated() string { return In(i18n.Locale()).BannerHelperOutdat
 // in the language of msgs.
 func (msgs Messages) BannerHelperOutdated() string {
 	return Catalog.Format(msgs.locale, "BannerHelperOutdated", nil)
+}
+
+// BannerHelperStopped says "The privileged helper is installed but not running. Starting it needs administrator approval."
+// in the language the app shows.
+func BannerHelperStopped() string { return In(i18n.Locale()).BannerHelperStopped() }
+
+// BannerHelperStopped says "The privileged helper is installed but not running. Starting it needs administrator approval."
+// in the language of msgs.
+func (msgs Messages) BannerHelperStopped() string {
+	return Catalog.Format(msgs.locale, "BannerHelperStopped", nil)
 }
 
 // BannerStale says "No updates for a few seconds; the values below may be out of date."

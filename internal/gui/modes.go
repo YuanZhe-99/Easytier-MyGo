@@ -355,7 +355,8 @@ func (a *App) updateHelper(c *localapi.Client) {
 	})
 }
 
-// reinstallHelper updates the helper with an administrator prompt.
+// reinstallHelper installs the helper again with an administrator prompt:
+// it updates an outdated helper or starts one launchd no longer runs.
 func (a *App) reinstallHelper() {
 	a.update(func() { a.busy["mode"] = true })
 	go func() {

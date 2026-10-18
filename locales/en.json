@@ -35,6 +35,7 @@
   "ActionImport": "Import file…",
   "ActionOpenLogs": "Open log folder",
   "ActionOpenRunMode": "Run mode settings",
+  "ActionStartHelper": "Start helper",
   "ActionRemove": "Remove",
   "ActionRetry": "Try again",
   "ActionSave": "Save",
@@ -80,6 +81,7 @@
   },
   "BannerHelperMissing": "The privileged helper is not installed. Choose a run mode in Settings.",
   "BannerHelperOutdated": "The privileged helper is older than this app. Updating it needs administrator approval once.",
+  "BannerHelperStopped": "The privileged helper is installed but not running. Starting it needs administrator approval.",
   "BannerStale": "No updates for a few seconds; the values below may be out of date.",
   "ChartGap": "{time}: no measurement",
   "@ChartGap": {

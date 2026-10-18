@@ -12,6 +12,7 @@ import (
 	"github.com/egoist/mygo/ui"
 
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/health"
+	"github.com/YuanZhe-99/Easytier-MyGo/internal/helper"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/localapi"
 )
 
@@ -75,6 +76,10 @@ func TestViewsRender(t *testing.T) {
 			a.editor.load("instance_name = \"home\"\nhostname = \"laptop\"\ndhcp = true\nlisteners = [\"tcp://0.0.0.0:11010\"]\n\n[network_identity]\nnetwork_name = \"family-net\"\nnetwork_secret = \"s3cret\"\n\n[[peer]]\nuri = \"tcp://public.easytier.cn:11010\"\n\n[flags]\nno_tun = false\n", "rev1")
 		},
 		"create": func(a *App) { a.createDlg = &createDialog{name: "Office"} },
+		"helper-stopped": func(a *App) {
+			a.connected, a.connErr, a.prefs.Mode = false, "daemon not running", ModeHelper
+			a.helperSt = helper.Status{Installed: true}
+		},
 	}
 	for _, lang := range []string{"en", "zh-Hans", "zh-Hant", "ja"} {
 		i18n.SetLocaleFunc(func() string { return lang })
@@ -141,6 +146,25 @@ func TestHideDockDefaultsOn(t *testing.T) {
 		}
 		if got := loadPrefs().HideDock; got != tc.want {
 			t.Errorf("%s: HideDock = %v, want %v", tc.file, got, tc.want)
+		}
+	}
+}
+
+// TestShownStatusStale checks that the network page never shows a last
+// reported state as current once the daemon's data is stale.
+func TestShownStatusStale(t *testing.T) {
+	n := localapi.NetworkStatus{Run: true, State: localapi.StateConnected, Error: "x", Reason: "no-peers"}
+	cases := []struct {
+		stale bool
+		want  localapi.State
+	}{
+		{false, localapi.StateConnected},
+		{true, localapi.StateUnknown},
+	}
+	for _, c := range cases {
+		got := shownStatus(n, c.stale)
+		if got.State != c.want || c.stale && (got.Error != "" || got.Reason != "") {
+			t.Errorf("stale=%v: got %+v, want state %s", c.stale, got, c.want)
 		}
 	}
 }

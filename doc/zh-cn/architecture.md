@@ -24,7 +24,7 @@ Daemon 按运行方式（[run-modes.md](run-modes.md)）运行在两种权限环
 | `internal/supervisor` | 每个网络一个 worker：内核进程、检查、有限恢复、带回滚的应用、流量。 |
 | `internal/daemon` | 宿主：worker、运行方式判断、会话、API 处理。 |
 | `internal/helper` | 安装、卸载与检查特权助手（Linux：systemd）。 |
-| `internal/bundlesig` | 签名并校验助手用来自更新的应用包；校验过的文件以字节返回，绝不重新读取。 |
+| `internal/bundlesig` | 签名并校验助手用来自更新的应用包（Linux、Windows；macOS 校验代码签名）；校验过的文件以字节返回，绝不重新读取。 |
 | `internal/sdnotify` | systemd 通知与 socket 激活。 |
 | `internal/fsutil` | 原子文件写入与 JSON 文档。 |
 | `internal/gui` | GUI：连接 daemon、会话、视图、托盘。 |

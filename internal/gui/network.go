@@ -16,9 +16,10 @@ import (
 func (a *App) networkView(c *ui.Context) {
 	a.mu.Lock()
 	n, ok := a.networkByID(a.selected)
-	connected := a.connected
+	connected, stale := a.connected, a.stale()
 	empty := len(a.networks) == 0
 	a.mu.Unlock()
+	n = shownStatus(n, stale)
 	ui.Scroll(c.Key("network-page")).Grow(1).Padding(24).Gap(16).Children(func() {
 		switch {
 		case empty && connected:
@@ -27,6 +28,9 @@ func (a *App) networkView(c *ui.Context) {
 			ui.Text(c, L.NetworkNoneSelected()).TextColor(c.Theme().TextMuted)
 		default:
 			a.networkHeader(c, n)
+			if stale {
+				return // the banner explains; nothing below would be current
+			}
 			if n.Run && n.State != localapi.StateStopped {
 				a.trafficCard(c, n)
 				a.infoTiles(c, n)
@@ -36,6 +40,17 @@ func (a *App) networkView(c *ui.Context) {
 			}
 		}
 	})
+}
+
+// shownStatus is the status the network page shows: without current data
+// from the daemon (no session, or no frame for staleAfter) the network's
+// state is unknown, never its last reported one (regression: the
+// page kept showing "Connected" and its uptime after the helper had gone).
+func shownStatus(n localapi.NetworkStatus, stale bool) localapi.NetworkStatus {
+	if stale {
+		n.State, n.Reason, n.Error = localapi.StateUnknown, "", ""
+	}
+	return n
 }
 
 // emptyState invites the first network.

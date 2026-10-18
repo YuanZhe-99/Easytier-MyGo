@@ -3,6 +3,19 @@
 The project restarted from 0.1.0 on 2026-10-16. The earlier, inherited history (versions up to
 0.10.80) is preserved under the git tag `archive/v0.10.80` and is not continued.
 
+## 0.1.6 (2026-10-17)
+
+- macOS: reinstalling the privileged helper (the "Update helper" banner) could leave it not
+  running: `launchctl bootout` returns before the old job is gone, and the following `bootstrap`
+  failed. The install now waits for the old job and retries; a helper that is installed but not
+  running shows a banner with "Start helper".
+- macOS: the helper updates itself by code signature (the new executables must satisfy the
+  installed copies' designated requirement), so updates after this one need no administrator
+  approval. Updating a 0.1.5 or earlier helper asks once more.
+- Network page: without current data from the background service the status reads Unknown and
+  the traffic, tiles and peers are hidden, instead of the last reported "Connected".
+- MyGo v0.5.5 / EasyTier v2.6.4 (checked, unchanged).
+
 ## 0.1.5 (2026-10-17)
 
 - macOS: the app is signed with the maintainer's Apple Development certificate (Team ID

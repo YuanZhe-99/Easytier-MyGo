@@ -16,7 +16,7 @@
 | `internal/profiles` | 网络存储 | `Store`, `Profile` |
 | `internal/supervisor` | 每网络 worker | `Worker`, `Config`, `Preflight` |
 | `internal/daemon` | 宿主、运行方式判断、API | `Run`, `Options`, `Daemon.reconcile` |
-| `internal/helper` | 特权助手安装与自更新 | `Install`, `Uninstall`, `Inspect`, `SelfUpdate`, `installBundle` |
+| `internal/helper` | 特权助手安装与自更新 | `Install`, `Uninstall`, `Inspect`, `SelfUpdate`, `installBundle`, `replaceSigned`（macOS） |
 | `internal/bundlesig` | 用于助手自更新的签名应用包 | `Sign`, `Read`, `Bundle` |
 | `internal/cores` | EasyTier 内核管理 | `Manager.Releases`, `Manager.Install`, `Binaries` |
 | `internal/fsutil` | 原子写入 | `WriteFileAtomic`, `WriteJSON` |

@@ -1,7 +1,7 @@
 {
   "name": "EasyTier MyGo",
   "identifier": "com.yuanzhe.easytiermygo",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "main": "./cmd/easytier-mygo",
   "out": "build",
   "i18n": {

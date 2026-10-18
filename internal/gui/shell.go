@@ -141,6 +141,9 @@ func (a *App) banner(c *ui.Context) {
 	a.mu.Lock()
 	connected, connErr, stale, mode := a.connected, a.connErr, a.stale(), a.prefs.Mode
 	outdated, busy := a.helperOutdated, a.busy["mode"]
+	// An installed helper that launchd does not run (a failed reload)
+	// needs an administrator to start it again.
+	unloaded := !connected && mode == ModeHelper && a.helperSt.Installed && !a.helperSt.Active
 	a.mu.Unlock()
 	if outdated && connected {
 		ui.Row(c).FillWidth().Padding(10, 16).Gap(8).AlignItems(ui.Center).Background(k.warn.Alpha(0.14)).Children(func() {
@@ -155,6 +158,8 @@ func (a *App) banner(c *ui.Context) {
 	switch {
 	case !connected && mode == ModeHelper && connErr == errHelperMissing.Error():
 		msg = L.BannerHelperMissing()
+	case unloaded:
+		msg = L.BannerHelperStopped()
 	case !connected && connErr != "":
 		msg = L.BannerDisconnected(connErr)
 	case !connected:
@@ -167,7 +172,11 @@ func (a *App) banner(c *ui.Context) {
 	ui.Row(c).FillWidth().Padding(10, 16).Gap(8).AlignItems(ui.Center).Background(k.warn.Alpha(0.14)).Children(func() {
 		dot(c, k.warn, 8)
 		ui.Text(c, msg).FontSize(sizeSmall).Grow(1)
-		if !connected && mode == ModeHelper {
+		if unloaded {
+			if ui.PrimaryButton(c, L.ActionStartHelper()).Disabled(busy).Clicked() {
+				a.reinstallHelper()
+			}
+		} else if !connected && mode == ModeHelper {
 			if ui.Button(c, L.ActionOpenRunMode()).Clicked() {
 				a.update(func() { a.page = pageSettings })
 			}

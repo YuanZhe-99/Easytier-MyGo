@@ -10,14 +10,19 @@ screenshots (`SCREENSHOT_DIR`).
   Logs and Settings.
 - **Network page:** a header card (name, EasyTier version, status badge, Connect/Disconnect);
   while running, the traffic row, the live traffic chart, info tiles (virtual IPv4, NAT type, peer
-  count, uptime) and Peers | Events; while stopped, the configuration summary and Edit.
+  count, uptime) and Peers | Events; while stopped, the configuration summary and Edit. Without
+  current data from the daemon (no session, or no update for a few seconds) the badge reads
+  Unknown and nothing below the header is shown, so a last reported state never looks current.
+- **Banner:** above the page when the connection is missing or stale. When the helper is installed
+  but launchd or the service manager does not run it, it offers "Start helper", which installs it
+  again with one administrator approval.
 - **Configuration:** Form | TOML tabs; Save and Save & Apply are separate.
 - **Settings:** General, Run mode, Cores, Advanced, About.
 - **App updates (About):** a daily check (switchable) and "Check for updates" read the signed
   update of the latest GitHub release; "Install and restart" installs it in place and relaunches.
   In No privileges mode the user daemon stops during the install (Windows cannot replace running
   programs) and starts again with the new version; the helper then updates itself from the signed
-  bundle. Copies installed by a package manager (`.deb`) and development builds say they cannot
+  bundle (on macOS by code signature, [packaging.md](packaging.md)). Copies installed by a package manager (`.deb`) and development builds say they cannot
   update themselves.
 - **First run:** choose a run mode → install the helper if needed → create or import a network. A
   failed choice (a cancelled prompt, a failed install) is shown on the welcome page under the cards.

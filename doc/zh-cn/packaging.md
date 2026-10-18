@@ -13,7 +13,7 @@ codesign -dvv "build/darwin-arm64/EasyTier MyGo.app"   # TeamIdentifier=982C6JDN
 
 签名身份用证书的 SHA-1 指定（`security find-identity -p codesigning`）；签名用的 Mac 的钥匙串里还需要 Apple 的 WWDR G3 中间证书。有了 Team ID，应用的指定要求（designated requirement：标识符、Apple 根证书、证书）在每次构建中都相同，macOS 因此在重新构建和更新后保留隐私授权；ad hoc 签名（不设 `MYGO_SIGN`）只绑定某一次构建的哈希。应用不需要任何 entitlement：它的可执行文件是 Go 和 Rust 程序，不加载 macOS 以外的库，库验证没有可拒绝的对象。应用没有经过公证，因此下载的副本会被 Gatekeeper 拦截，直到移除其隔离属性（[platform-notes.md](platform-notes.md)）。
 
-macOS 签名会改写附带的可执行文件，因此特权助手的构建包清单（`EASYTIER_MYGO_SIGNING_KEY`，在 `mygo build` 之前根据文件生成）与它们不再一致；在 macOS 上更新助手需要管理员批准。
+macOS 签名会改写附带的可执行文件，因此特权助手的构建包清单（`EASYTIER_MYGO_SIGNING_KEY`，在 `mygo build` 之前根据文件生成）与它们不再一致。因此在 macOS 上助手改为按代码签名自更新：每个新的可执行文件都必须满足已安装副本的指定要求（相同的标识符和证书）。从 ad hoc 构建安装的助手，其指定要求是它自身的哈希，因此更新它需要一次管理员批准。
 
 ## 附带的二进制
 
