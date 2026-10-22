@@ -174,6 +174,9 @@ func Run(ctx context.Context, opts Options) error {
 
 	select {
 	case <-ctx.Done():
+		// Connection handlers may still reconcile (a session ending stops or
+		// freezes networks); they finish before the state is released.
+		<-serveErr
 	case err = <-serveErr:
 		cancel()
 	}

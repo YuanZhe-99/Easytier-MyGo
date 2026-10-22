@@ -227,6 +227,46 @@ func TestStoppedNetworkKeepsNoVerdict(t *testing.T) {
 	}
 }
 
+// TestRunWaitsForSessions: a session that is still starting networks when
+// the daemon stops finishes before Run returns, so nothing writes to the
+// state directory once it is released (a CI flake left files behind).
+func TestRunWaitsForSessions(t *testing.T) {
+	h := start(t, nil)
+	for range 12 {
+		h.do(localapi.Request{Type: localapi.RequestConnect, Network: h.create(noTUN)})
+	}
+	ctx, stop := context.WithCancel(context.Background())
+	defer stop()
+	go func() { _ = h.client.Attach(ctx, nil, func(*localapi.Push) error { return nil }) }()
+	time.Sleep(5 * time.Millisecond)
+	h.cancel()
+	<-h.done
+	h.done <- nil // for the cleanup
+	before := tree(t, filepath.Join(h.dir, "state"))
+	time.Sleep(300 * time.Millisecond)
+	if after := tree(t, filepath.Join(h.dir, "state")); after != before {
+		t.Fatalf("the state changed after Run returned:\nbefore:\n%s\nafter:\n%s", before, after)
+	}
+}
+
+// tree lists the files under dir with their sizes.
+func tree(t *testing.T, dir string) string {
+	var b strings.Builder
+	err := filepath.WalkDir(dir, func(p string, e os.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if info, err := e.Info(); err == nil {
+			fmt.Fprintf(&b, "%s %d\n", p, info.Size())
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return b.String()
+}
+
 // TestCrashIsRecovered: a core that dies is restarted (bounded recovery).
 func TestCrashIsRecovered(t *testing.T) {
 	h := start(t, nil)
