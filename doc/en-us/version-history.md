@@ -3,6 +3,16 @@
 The project restarted from 0.1.0 on 2026-10-16. The earlier, inherited history (versions up to
 0.10.80) is preserved under the git tag `archive/v0.10.80` and is not continued.
 
+## 0.1.7 (2026-10-22)
+
+- The window's title bar is part of the interface: a slim strip across the top with the app chip
+  replaces the system title bar, and the system's window buttons sit in it (traffic lights on
+  macOS; caption buttons with Snap Layouts on Windows). The strip drags the window, a double-click
+  maximizes it, and it hides in full screen.
+- Tray: the icon's colors follow a dark or light menu bar or taskbar.
+- Linux: the `.deb` and `install.sh` no longer need WebKitGTK (MyGo's `linux.webview`).
+- MyGo v0.6.2 (updated from v0.5.5) / EasyTier v2.6.4 (checked, unchanged).
+
 ## 0.1.6 (2026-10-17)
 
 - macOS: reinstalling the privileged helper (the "Update helper" banner) could leave it not

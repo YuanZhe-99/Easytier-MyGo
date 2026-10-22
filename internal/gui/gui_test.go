@@ -115,6 +115,50 @@ func TestViewsRender(t *testing.T) {
 	i18n.SetLocaleFunc(nil)
 }
 
+// TestTitleBarClearsWindowButtons checks that the title-bar chip sits in the
+// strip, past the room the system's window buttons take, and that the
+// strip goes away in full screen. With SCREENSHOT_DIR set it writes PNGs.
+func TestTitleBarClearsWindowButtons(t *testing.T) {
+	dir := os.Getenv("SCREENSHOT_DIR")
+	cases := map[string]ui.TitleBar{
+		"mac":     {Height: titleBarH, Left: 76},
+		"windows": {Height: titleBarH, Right: 138},
+	}
+	for name, bar := range cases {
+		for _, welcome := range []bool{false, true} {
+			a := demoApp(t)
+			if welcome {
+				a.page, a.prefs.Mode = pageWelcome, ModeUnset
+			}
+			tt := ui.NewTester(a.view, 1100, 720)
+			tt.SetTitleBar(bar)
+			tt.Frame()
+			r, ok := tt.Find(appName)
+			if !ok {
+				t.Fatalf("%s welcome=%v: no title-bar chip", name, welcome)
+			}
+			if r.X < bar.Left || r.X+r.W > 1100-bar.Right || r.Y+r.H > titleBarH {
+				t.Errorf("%s welcome=%v: chip %+v overlaps the window buttons %+v", name, welcome, r, bar)
+			}
+			if dir != "" && !welcome {
+				f, err := os.Create(filepath.Join(dir, "titlebar-"+name+".png"))
+				if err != nil {
+					t.Fatal(err)
+				}
+				_ = png.Encode(f, tt.Image())
+				f.Close()
+			}
+		}
+	}
+	a := demoApp(t)
+	a.fullScreen = true
+	tt := ui.NewTester(a.view, 1100, 720)
+	tt.Frame()
+	if tt.HasText(appName) {
+		t.Error("the title-bar strip shows in full screen")
+	}
+}
+
 func TestNewerTag(t *testing.T) {
 	for _, tc := range []struct {
 		a, b string

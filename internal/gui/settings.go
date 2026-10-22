@@ -450,7 +450,7 @@ func (a *App) welcomeView(c *ui.Context) {
 	}
 	a.mu.Unlock()
 	k := tok(c)
-	ui.Scroll(c.Key("welcome")).Fill().Background(t.Background).Padding(40).Gap(20).AlignItems(ui.Center).Children(func() {
+	ui.Scroll(c.Key("welcome")).Grow(1).Fill().Background(t.Background).Padding(40).Gap(20).AlignItems(ui.Center).Children(func() {
 		ui.Column(c).MaxWidth(860).Gap(16).Children(func() {
 			if appIcon != nil {
 				ui.Image(c, appIcon).Width(72).Height(72)

@@ -2,7 +2,7 @@
 
 `scripts/build.sh [goos/goarch …]` fetches the core, builds the daemon and control CLI into the
 platform resources, signs the bundle when `EASYTIER_MYGO_SIGNING_KEY` is set, runs
-`go tool mygo build`, and removes MyGo's WebKitGTK dependency from the `.deb`.
+`go tool mygo build`. `mygo.json` sets `linux.webview` to `false`, so the `.deb` and `install.sh` need GTK and the tray library, not WebKitGTK.
 `go tool mygo build` produces the platform artifacts: on Linux a `.tar.gz` (with `install.sh`, a
 per-user install) and a `.deb`; on Windows an `.exe` and an NSIS installer; on macOS an `.app` and
 a `.dmg` (macOS host required). With `MYGO_UPDATER_PRIVATE_KEY` set it also writes the signed

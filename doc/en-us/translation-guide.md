@@ -34,6 +34,9 @@ and Latin words only where it helps readability.
 | core manager | 内核管理 |
 | network (profile) | 网络 |
 | peer | 节点 |
+| title bar (strip) | 标题栏（条） |
+| app chip | 应用标签 |
+| traffic lights (macOS) | 红绿灯按钮 |
 | health | 健康状态 |
 | bounded recovery | 有限恢复 |
 | save / apply | 保存 / 应用 |

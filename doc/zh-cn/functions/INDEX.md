@@ -5,7 +5,7 @@
 | 包 | 职责 | 先看 |
 |---|---|---|
 | `cmd/easytier-mygo` | GUI 入口 | `main` |
-| `internal/gui` | GUI 状态、视图、托盘 | `App`, `App.view`, `App.connectLoop`, `App.peerList`, `friendlyName`, `vendorLogo`, `magicDNSName` |
+| `internal/gui` | GUI 状态、视图、托盘 | `App`, `App.view`, `App.connectLoop`, `App.peerList`, `App.titleBar`, `TitleBarOptions`, `friendlyName`, `vendorLogo`, `magicDNSName` |
 | `cmd/easytier-mygo-svc` | Daemon 入口与助手子命令 | `run`, `helperCmd` |
 | `cmd/easytier-mygo-ctl` | 本地 API 命令行客户端 | `main` |
 | `internal/health` | 健康引擎 | `Engine.Observe`, `Policy`, `DefaultPolicy` |

@@ -1,7 +1,7 @@
 {
   "name": "EasyTier MyGo",
   "identifier": "com.yuanzhe.easytiermygo",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "main": "./cmd/easytier-mygo",
   "out": "build",
   "i18n": {
@@ -23,6 +23,7 @@
     "depends": [
       "libayatana-appindicator3-1"
     ],
-    "command": "easytier-mygo"
+    "command": "easytier-mygo",
+    "webview": false
   }
 }

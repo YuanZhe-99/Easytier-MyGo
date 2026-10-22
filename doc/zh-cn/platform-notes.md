@@ -73,6 +73,6 @@ macOS 上未验证：GUI 安装按钮触发的 `osascript` 授权、助手自更
 - Windows 只验证过 `no_tun` 网络；WinTun 未测试。macOS 的 TUN（utun）已通过助手验证。
 - 标为未测试的内核可能改变 CLI 输出或配置格式；应用会降级为“无法读取状态”而不重启任何东西，也可以重新选回之前的内核。
 - 未认证的 GitHub API 请求每小时限 60 次；发布列表按 ETag 缓存，只在请求时或每日检查时获取。
-- MyGo 生成的 `.deb` 对所有应用都声明依赖 WebKitGTK；`scripts/build.sh` 会去掉该依赖。
+- `.deb` 不依赖 WebKitGTK（`mygo.json` 中的 `linux.webview: false`）。
 - macOS 应用已签名但未经公证：Gatekeeper 会拦截下载的副本。复制到“应用程序”后移除一次隔离属性（`xattr -dr com.apple.quarantine "/Applications/EasyTier MyGo.app"`），或在“系统设置 → 隐私与安全性”中允许它。从使用 Apple Development 证书之前（ad hoc）签名的版本更新可以正常进行，但 macOS 会再请求一次隐私权限；之后的更新会保留这些权限。
 - 在 macOS 上，0.1.5 及更早的助手无法按代码签名自更新（0.1.5 校验构建包清单；更早的构建是 ad hoc 签名），因此更新它需要一次管理员批准（[packaging.md](packaging.md)）。

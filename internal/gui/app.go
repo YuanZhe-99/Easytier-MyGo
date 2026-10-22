@@ -81,6 +81,7 @@ type App struct {
 	helperOutdated bool
 	quitting       bool
 	visible        bool
+	fullScreen     bool // the window is in full screen: no title-bar strip
 	tray           *Tray
 	// openAtLogin caches the login item (reading it needs the main thread).
 	openAtLogin bool

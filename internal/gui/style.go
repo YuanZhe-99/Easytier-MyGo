@@ -27,6 +27,10 @@ const (
 	avatarSize  float32 = 36 // a peer's round avatar
 	logoSize    float32 = 22 // a vendor logo inside it (about 64%)
 	copyIconSz  float32 = 13 // the copy button beside a peer's address
+	titleBarH   float32 = 38 // the strip that is the window's title bar
+	chipIconSz  float32 = 16 // the app mark in the title-bar chip
+	trafficX    float32 = 14 // macOS traffic lights, centred in titleBarH
+	trafficY    float32 = 12
 )
 
 // tokens are the app's named colors, derived from the theme so they work

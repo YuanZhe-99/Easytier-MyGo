@@ -6,6 +6,12 @@ screenshots (`SCREENSHOT_DIR`).
 
 ## Structure
 
+- **Title bar:** the system title bar is hidden (`TitleBarOptions`); a 38-point strip across the
+  top of the window takes its place, above the sidebar and the page, and on the welcome page too. It
+  holds the app chip (icon and "EasyTier MyGo"); the rest of it drags the window, and a
+  double-click maximizes it. The system draws its own window buttons over the strip's ends (traffic
+  lights on macOS, caption buttons on Windows with Snap Layouts, the desktop's layout on Linux), and
+  the strip pads past them (`c.TitleBar()`). In full screen the strip is hidden.
 - **Sidebar:** the network list (status dot, name, virtual IP; "+" to create or import), then
   Logs and Settings.
 - **Network page:** a header card (name, EasyTier version, status badge, Connect/Disconnect);
@@ -81,7 +87,8 @@ screenshots (`SCREENSHOT_DIR`).
   Settings, Quit.
 - Quit wording follows the run mode: in No privileges and Follow GUI it disconnects every network;
   in Background service the networks keep running, with a separate "Disconnect all and quit".
-- The icon reflects connected / disconnected / error. Closing the window hides it to the tray and
+- The icon reflects connected / disconnected / error. Its gray and blue are lighter on a dark menu
+  bar or taskbar and follow it when it changes, even when the app's own theme differs. Closing the window hides it to the tray and
   says so the first time; without a tray, closing quits.
 - macOS: closing into the tray also hides the Dock icon (Settings → General, on by default; also
   when started hidden at login). Minimizing keeps it; showing the window brings it back.

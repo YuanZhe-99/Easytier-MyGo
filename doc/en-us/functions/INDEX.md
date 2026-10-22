@@ -7,7 +7,7 @@ effects and notes where non-trivial).
 | Package | Role | Start with |
 |---|---|---|
 | `cmd/easytier-mygo` | GUI entry point | `main` |
-| `internal/gui` | GUI state, views, tray | `App`, `App.view`, `App.connectLoop`, `App.peerList`, `friendlyName`, `vendorLogo`, `magicDNSName` |
+| `internal/gui` | GUI state, views, tray | `App`, `App.view`, `App.connectLoop`, `App.peerList`, `App.titleBar`, `TitleBarOptions`, `friendlyName`, `vendorLogo`, `magicDNSName` |
 | `cmd/easytier-mygo-svc` | Daemon entry point and helper subcommands | `run`, `helperCmd` |
 | `cmd/easytier-mygo-ctl` | Local API command-line client | `main` |
 | `internal/health` | Health engine | `Engine.Observe`, `Policy`, `DefaultPolicy` |

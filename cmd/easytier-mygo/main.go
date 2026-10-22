@@ -42,7 +42,8 @@ func main() {
 			{Role: mygo.RoleEditMenu},
 			{Role: mygo.RoleWindowMenu},
 		}))
-		w := mygo.NewWindow(mygo.WindowOptions{
+		// The strip at the top of the view is the title bar (gui.TitleBarOptions).
+		w := mygo.NewWindow(gui.TitleBarOptions(mygo.WindowOptions{
 			Title:     "EasyTier MyGo",
 			Width:     1100,
 			Height:    720,
@@ -51,8 +52,9 @@ func main() {
 			StateKey:  "main",
 			Hidden:    hidden,
 			Content:   ui.View(a.View),
-		})
+		}))
 		a.SetWindow(w)
+		a.WatchFullScreen(w)
 		a.SetVisible(!hidden)
 		if hidden && a.HidesDock() {
 			mygo.App.Dock.Hide()

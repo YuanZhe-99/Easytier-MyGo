@@ -97,7 +97,7 @@ and the GUI's appearance (no screenshot was taken).
   "status unreadable" without restarting anything, and the previous core can be selected again.
 - Unauthenticated GitHub API requests are limited to 60 per hour; release lists are cached with
   their ETag and fetched only on request or by the daily check.
-- MyGo's `.deb` declares WebKitGTK for every app; `scripts/build.sh` removes that dependency.
+- The `.deb` does not depend on WebKitGTK (`linux.webview: false` in `mygo.json`).
 - The macOS app is signed but not notarized: Gatekeeper blocks a downloaded copy. Remove its
   quarantine once after copying it to Applications (`xattr -dr com.apple.quarantine
   "/Applications/EasyTier MyGo.app"`), or allow it in System Settings → Privacy & Security.

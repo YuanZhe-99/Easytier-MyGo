@@ -29,7 +29,9 @@ const (
 
 // trayIcons renders the glyph in three states: gray when nothing runs,
 // blue when connected, with a red dot when a network has a problem.
-func trayIcons() map[trayState][]byte {
+// Inputs: dark, whether the bar the icon shows on is dark; the gray and
+// blue are lighter there so the glyph keeps its contrast.
+func trayIcons(dark bool) map[trayState][]byte {
 	src, err := png.Decode(bytes.NewReader(trayGlyph))
 	if err != nil {
 		return nil
@@ -59,10 +61,14 @@ func trayIcons() map[trayState][]byte {
 		return out.Bytes()
 	}
 	_ = draw.Src
+	off, on := color.NRGBA{0x6b, 0x70, 0x79, 0xff}, color.NRGBA{0x2f, 0x7b, 0xf5, 0xff}
+	if dark {
+		off, on = color.NRGBA{0xb4, 0xb9, 0xc1, 0xff}, color.NRGBA{0x5b, 0x9b, 0xff, 0xff}
+	}
 	return map[trayState][]byte{
-		trayOff:  tint(color.NRGBA{0x8a, 0x8f, 0x98, 0xff}, false),
-		trayOn:   tint(color.NRGBA{0x2f, 0x7b, 0xf5, 0xff}, false),
-		trayWarn: tint(color.NRGBA{0x2f, 0x7b, 0xf5, 0xff}, true),
+		trayOff:  tint(off, false),
+		trayOn:   tint(on, false),
+		trayWarn: tint(on, true),
 	}
 }
 
@@ -97,14 +103,18 @@ type Tray struct {
 }
 
 // NewTray creates the status icon (main thread). It returns nil when the
-// desktop has no tray; closing the window then quits.
+// desktop has no tray; closing the window then quits. The glyph follows the
+// bar it shows on, which on Windows may be dark while the app is light.
 func (a *App) NewTray() *Tray {
-	icons := trayIcons()
-	t, err := mygo.NewTray(mygo.TrayOptions{Icon: icons[trayOff], ToolTip: "EasyTier MyGo"})
+	t, err := mygo.NewTray(mygo.TrayOptions{Icon: trayIcons(false)[trayOff], ToolTip: "EasyTier MyGo"})
 	if err != nil {
 		return nil
 	}
-	tr := &Tray{app: a, tray: t, icons: icons, last: "-"}
+	tr := &Tray{app: a, tray: t, icons: trayIcons(t.Dark()), last: "-"}
+	t.OnAppearanceChange(func() {
+		tr.icons = trayIcons(t.Dark())
+		_ = t.SetIcon(tr.icons[tr.state], false)
+	})
 	tr.Refresh()
 	return tr
 }

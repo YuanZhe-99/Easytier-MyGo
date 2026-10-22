@@ -22,12 +22,16 @@ func (a *App) view(c *ui.Context) {
 	a.mu.Lock()
 	pg := a.page
 	a.mu.Unlock()
+	t := c.Theme()
 	if pg == pageWelcome {
-		a.welcomeView(c)
+		ui.Column(c).Fill().Background(t.Background).Children(func() {
+			a.titleBar(c)
+			a.welcomeView(c)
+		})
 		return
 	}
-	t := c.Theme()
 	ui.Column(c).Fill().Background(t.Background).Children(func() {
+		a.titleBar(c)
 		ui.Row(c).Fill().Grow(1).AlignItems(ui.Stretch).Children(func() {
 			a.sidebar(c)
 			ui.Column(c).Grow(1).Fill().Children(func() {
