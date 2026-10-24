@@ -20,7 +20,7 @@ const (
 // wider than maxW.
 func pageColumn(c *ui.Context, key string, maxW float32, body func()) {
 	ui.Scroll(c.Key(key)).Grow(1).FillWidth().Padding(4, 24, 24, 24).AlignItems(ui.Center).Children(func() {
-		ui.Column(c.Key(key+"-col")).FillWidth().MaxWidth(maxW).Children(body)
+		ui.Column(c.Key(key + "-col")).FillWidth().MaxWidth(maxW).Children(body)
 	})
 }
 

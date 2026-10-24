@@ -120,7 +120,7 @@ func New() *App {
 	a := &App{
 		prefs: loadPrefs(), traffic: map[string][]localapi.TrafficPoint{}, details: map[string]*localapi.NetworkDetail{},
 		summaries: map[string]netSummary{},
-		busy: map[string]bool{}, expanded: map[string]bool{}, chartSel: -1, window5m: 1, ctx: ctx, cancel: cancel, wake: make(chan struct{}, 1),
+		busy:      map[string]bool{}, expanded: map[string]bool{}, chartSel: -1, window5m: 1, ctx: ctx, cancel: cancel, wake: make(chan struct{}, 1),
 		visible: true,
 	}
 	if a.prefs.Mode == ModeUnset {

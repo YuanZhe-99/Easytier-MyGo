@@ -145,7 +145,7 @@ func joinDot(parts []string) string {
 func centered(c *ui.Context, key string, icon *ui.SVG, title, about string, actions func()) {
 	t := c.Theme()
 	ui.Column(c.Key("centered-"+key)).Grow(1).FillWidth().AlignItems(ui.Center).Padding(emptyTop, 24, 24, 24).Gap(8).Children(func() {
-		ui.Box(c).Size(emptyMark, emptyMark).Radius(emptyMark / 2).Center().Background(t.Accent.Alpha(0.12)).Margin(0, 0, 10, 0).Children(func() {
+		ui.Box(c).Size(emptyMark, emptyMark).Radius(emptyMark/2).Center().Background(t.Accent.Alpha(0.12)).Margin(0, 0, 10, 0).Children(func() {
 			ui.Icon(c, icon).Size(emptyMark/2.3, emptyMark/2.3).TextColor(t.Accent)
 		})
 		ui.Text(c, title).FontSize(sizeTitle).Bold().TextAlign(ui.Center)

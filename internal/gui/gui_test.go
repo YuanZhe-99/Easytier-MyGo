@@ -72,16 +72,16 @@ func TestViewsRender(t *testing.T) {
 			a.selected = "n2"
 			a.summaries["n2"] = summaryOf("dhcp = true\nlisteners = [\"tcp://0.0.0.0:11010\"]\n\n[network_identity]\nnetwork_name = \"lab\"\n\n[[peer]]\nuri = \"tcp://public.easytier.cn:11010\"\n", "")
 		},
-		"rail":             func(a *App) { a.prefs.SidebarRail = true },
-		"stale":            func(a *App) { a.lastPush = time.Now().Add(-time.Minute) },
-		"empty":            func(a *App) { a.networks, a.selected = nil, "" },
-		"settings":         func(a *App) { a.settingsOpen, a.settingsAt = true, setGeneral },
-		"settings-mode":    func(a *App) { a.settingsOpen, a.settingsAt = true, setRunMode },
-		"settings-core":    func(a *App) { a.settingsOpen, a.settingsAt = true, setCore },
-		"settings-about":   func(a *App) { a.settingsOpen, a.settingsAt = true, setAbout },
-		"settings-search":  func(a *App) { a.settingsOpen, a.settingsQuery = true, "update" },
-		"logs":             func(a *App) { a.page = pageLogs },
-		"welcome":          func(a *App) { a.page, a.prefs.Mode = pageWelcome, ModeUnset },
+		"rail":            func(a *App) { a.prefs.SidebarRail = true },
+		"stale":           func(a *App) { a.lastPush = time.Now().Add(-time.Minute) },
+		"empty":           func(a *App) { a.networks, a.selected = nil, "" },
+		"settings":        func(a *App) { a.settingsOpen, a.settingsAt = true, setGeneral },
+		"settings-mode":   func(a *App) { a.settingsOpen, a.settingsAt = true, setRunMode },
+		"settings-core":   func(a *App) { a.settingsOpen, a.settingsAt = true, setCore },
+		"settings-about":  func(a *App) { a.settingsOpen, a.settingsAt = true, setAbout },
+		"settings-search": func(a *App) { a.settingsOpen, a.settingsQuery = true, "update" },
+		"logs":            func(a *App) { a.page = pageLogs },
+		"welcome":         func(a *App) { a.page, a.prefs.Mode = pageWelcome, ModeUnset },
 		"edit-toml": func(a *App) {
 			a.page = pageEdit
 			a.editor = &configEditor{id: "n1", name: "Home"}
