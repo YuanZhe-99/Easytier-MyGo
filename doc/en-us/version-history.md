@@ -3,6 +3,10 @@
 The project restarted from 0.1.0 on 2026-10-16. The earlier, inherited history (versions up to
 0.10.80) is preserved under the git tag `archive/v0.10.80` and is not continued.
 
+## Unreleased
+
+- MyGo v0.6.3 (updated from v0.6.2) / EasyTier v2.6.4 (checked 2026-10-23, unchanged).
+
 ## 0.1.7 (2026-10-22)
 
 - The window's title bar is part of the interface: a slim strip across the top with the app chip
