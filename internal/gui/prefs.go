@@ -51,6 +51,8 @@ type Prefs struct {
 	AnnouncedApp    string    `json:"announced_app,omitempty"`
 	// ShowPrereleases lists pre-releases in the core manager.
 	ShowPrereleases bool `json:"show_prereleases,omitempty"`
+	// SidebarRail keeps the sidebar folded to its icons.
+	SidebarRail bool `json:"sidebar_rail,omitempty"`
 }
 
 func defaultPrefs() Prefs {

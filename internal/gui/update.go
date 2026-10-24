@@ -116,35 +116,39 @@ func (a *App) installApp() {
 	}()
 }
 
-// appUpdateSettings is the update part of the About card.
-func (a *App) appUpdateSettings(c *ui.Context) {
-	t := c.Theme()
+// appUpdateRows are About & updates' Updates rows: the state of the app's
+// update (installing with its progress, a version found with Install and
+// restart, else when it was last checked with Check for updates), then the
+// daily check. A copy that cannot update itself says so instead.
+func (a *App) appUpdateRows(c *ui.Context, r *rows) {
 	if !mygo.Updater.Enabled() {
-		ui.Text(c, L.AppUpdateUnavailable()).FontSize(sizeSmall).TextColor(t.TextMuted)
+		r.row(c, "app-update", iconArrowUp, L.SectionUpdates(), L.AppUpdateUnavailable(), nil)
 		return
 	}
 	a.mu.Lock()
-	up, busy, updating, progress, auto := a.appUpdate, a.busy["app-update"], a.updating, a.updateProgress, a.prefs.CheckAppUpdates
+	up, busy, updating, progress, auto, last := a.appUpdate, a.busy["app-update"], a.updating, a.updateProgress, a.prefs.CheckAppUpdates, a.prefs.LastAppCheck
 	a.mu.Unlock()
 	switch {
 	case updating:
-		ui.Row(c).Gap(8).AlignItems(ui.Center).Children(func() {
-			ui.Spinner(c)
-			ui.Text(c, L.AppUpdateInstalling(int(progress*100))).FontSize(sizeSmall).TextColor(t.TextMuted)
-		})
+		r.row(c, "app-update", iconArrowUp, L.AppUpdateInstalling(int(progress*100)), L.AppUpdateInstallingAbout(), func() { ui.Spinner(c) })
 	case up != nil:
-		ui.Row(c).Gap(8).Padding(8, 12).Radius(8).Background(t.Accent.Alpha(0.1)).AlignItems(ui.Center).Children(func() {
-			ui.Text(c, L.AppUpdateAvailable(up.Version)).FontSize(sizeSmall).Grow(1)
-			if ui.Button(c, L.ActionInstallUpdate()).Disabled(busy).Clicked() {
+		r.row(c, "app-update", iconArrowUp, L.AppUpdateAvailable(up.Version), L.AppUpdateAvailableAbout(), func() {
+			if ui.PrimaryButton(c.Key("app-install"), L.ActionInstallUpdate()).Disabled(busy).Clicked() {
 				a.installApp()
 			}
 		})
 	default:
-		if ui.Button(c, L.ActionCheckAppUpdate()).Disabled(busy).Clicked() {
-			go a.checkApp(true)
+		about := L.AppUpdateNeverChecked()
+		if !last.IsZero() {
+			about = L.AppUpdateLastChecked(last.Local().Format("2006-01-02 15:04"))
 		}
+		r.row(c, "app-update", iconCheck, L.SectionUpdates(), about, func() {
+			if ui.Button(c.Key("app-check"), L.ActionCheckAppUpdate()).Disabled(busy).Clicked() {
+				go a.checkApp(true)
+			}
+		})
 	}
-	settingRow(c, "app-auto", L.SettingsCheckAppUpdates(), L.SettingsCheckAppUpdatesHint(), func() {
+	r.row(c, "app-auto", iconRefresh, L.SettingsCheckAppUpdates(), L.SettingsCheckAppUpdatesHint(), func() {
 		if ui.Switch(c.Key("app-auto-sw"), &auto).Label(L.SettingsCheckAppUpdates()).Changed() {
 			a.mu.Lock()
 			p := a.prefs

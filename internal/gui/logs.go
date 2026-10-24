@@ -3,6 +3,7 @@ package gui
 import (
 	"errors"
 	"slices"
+	"time"
 
 	"github.com/egoist/mygo/ui"
 
@@ -25,41 +26,81 @@ func (a *App) logsView(c *ui.Context) {
 			evs[i].Component.ID = name
 		}
 	}
-	ui.Scroll(c.Key("logs-page")).Grow(1).Padding(24).Gap(16).Children(func() {
-		ui.Text(c, L.PageLogs()).FontSize(sizeTitle).Bold()
-		eventTimeline(c, evs, true)
+	head := paneHead{icon: iconActivity, title: L.PageLogs(), sub: L.ActivitySub(), actions: func() {
+		if ui.Button(c.Key("export"), L.ActionExportDiagnostics()).Clicked() {
+			a.exportDiagnostics()
+		}
+	}}
+	a.pane(c, head, func() {
+		pageColumn(c, "logs-page", activityW, func() { eventTimeline(c, evs, true) })
 	})
 }
 
-// eventTimeline lists events newest first: a dot and line on the left, the
-// time and a sentence on the right. withNetwork prefixes the network.
+// activityW is the Activity page's column, at most; eventTimeW its times'.
+const (
+	activityW  float32 = 820
+	eventTimeW float32 = 64
+)
+
+// eventTimeline lists the newest 100 events, newest first, by day: a
+// muted day over a rounded list whose rows hold the time, the state's
+// dot, the sentence with its detail and, when withNetwork, the network.
 func eventTimeline(c *ui.Context, evs []health.Event, withNetwork bool) {
 	t := c.Theme()
 	k := tok(c)
 	if len(evs) == 0 {
-		ui.Text(c, L.EventsEmpty()).TextColor(t.TextMuted)
+		ui.Text(c, L.EventsEmpty()).TextColor(t.TextMuted).Margin(14, 4, 0, 4)
 		return
 	}
-	card(c).Gap(0).Children(func() {
-		for i := len(evs) - 1; i >= 0 && i >= len(evs)-100; i-- {
-			e := evs[i]
-			text, col := eventSentence(e, k)
-			ui.Row(c.Key(i)).Gap(12).PaddingY(6).AlignItems(ui.Start).Children(func() {
-				ui.Column(c).Width(10).AlignItems(ui.Center).PaddingY(5).Children(func() { dot(c, col, 8) })
-				ui.Column(c).Grow(1).Gap(2).Children(func() {
-					head := e.Time.Local().Format("01-02 15:04:05")
+	bg := t.Background
+	if t.Dark {
+		bg = t.Surface
+	}
+	now := time.Now()
+	for i := len(evs) - 1; i >= 0 && i >= len(evs)-100; {
+		day := evs[i].Time.Local().Format(time.DateOnly)
+		ui.Text(c, dayName(evs[i].Time, now)).FontSize(sizeSmall).Bold().TextColor(t.TextMuted).Padding(18, 4, 8, 4)
+		ui.Column(c.Key("day-"+day)).FillWidth().Radius(listRadius).Border(1, t.Border).Background(bg).Clip().Children(func() {
+			first := true
+			for ; i >= 0 && i >= len(evs)-100 && evs[i].Time.Local().Format(time.DateOnly) == day; i-- {
+				e := evs[i]
+				if !first {
+					ui.Box(c).Height(1).FillWidth().Background(t.Border)
+				}
+				first = false
+				text, col := eventSentence(e, k)
+				ui.Row(c.Key(i)).FillWidth().Gap(14).Padding(11, 16).AlignItems(ui.Start).Children(func() {
+					ui.Text(c, e.Time.Local().Format("15:04:05")).FontSize(sizeSmall).TextColor(t.TextMuted).Width(eventTimeW).Shrink(0)
+					ui.Column(c).Width(10).Shrink(0).AlignItems(ui.Center).PaddingY(4).Children(func() { dot(c, col, 8) })
+					ui.Column(c).Grow(1).MinWidth(0).Gap(2).Children(func() {
+						ui.Text(c, text).Selectable()
+						if e.Detail != "" {
+							ui.Text(c, e.Detail).FontSize(sizeSmall).TextColor(t.TextMuted).Selectable().MaxLines(3).Ellipsis("…")
+						}
+					})
 					if withNetwork {
-						head += "  ·  " + e.Component.ID
-					}
-					ui.Text(c, head).FontSize(sizeSmall).TextColor(t.TextMuted)
-					ui.Text(c, text).Selectable()
-					if e.Detail != "" {
-						ui.Text(c, e.Detail).FontSize(sizeSmall).TextColor(t.TextMuted).Selectable().MaxLines(3).Ellipsis("…")
+						ui.Box(c).Padding(2, 8).Radius(6).Background(t.SurfaceHover).Shrink(0).Children(func() {
+							ui.Text(c, e.Component.ID).FontSize(sizeSmall).TextColor(t.TextMuted).NoWrap()
+						})
 					}
 				})
-			})
-		}
-	})
+			}
+		})
+	}
+}
+
+// dayName names an event's day: Today, Yesterday, else its date.
+func dayName(at, now time.Time) string {
+	y, m, d := at.Local().Date()
+	ny, nm, nd := now.Local().Date()
+	today := time.Date(ny, nm, nd, 0, 0, 0, 0, time.Local)
+	switch time.Date(y, m, d, 0, 0, 0, 0, time.Local) {
+	case today:
+		return L.DayToday()
+	case today.AddDate(0, 0, -1):
+		return L.DayYesterday()
+	}
+	return at.Local().Format(time.DateOnly)
 }
 
 // eventSentence turns a health event into words and a color.

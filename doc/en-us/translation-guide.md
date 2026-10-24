@@ -34,8 +34,11 @@ and Latin words only where it helps readability.
 | core manager | 内核管理 |
 | network (profile) | 网络 |
 | peer | 节点 |
-| title bar (strip) | 标题栏（条） |
-| app chip | 应用标签 |
+| pane (the floating box beside the sidebar) | 小窗 |
+| sidebar / rail | 侧边栏 / 图标栏 |
+| Settings sheet | 设置面板 |
+| notice card | 提示卡片 |
+| virtual device | 虚拟网卡 |
 | traffic lights (macOS) | 红绿灯按钮 |
 | health | 健康状态 |
 | bounded recovery | 有限恢复 |

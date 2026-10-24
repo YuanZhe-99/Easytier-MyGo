@@ -274,154 +274,165 @@ func (e *configEditor) switchTab(to int) {
 	e.tab, e.err = 0, ""
 }
 
-// editView is the editor page.
+// editView is the editor in the network's pane (doc/en-us/gui.md,
+// "Editing"): its header has Form | TOML, Cancel, Save and Save and apply;
+// the form is rows like Settings', the TOML MyGo's editor.
 func (a *App) editView(c *ui.Context) {
 	t := c.Theme()
 	a.mu.Lock()
 	e := a.editor
 	busy := e != nil && a.busy["save-"+e.id]
+	var title string
+	if e != nil {
+		n, _ := a.networkByID(e.id)
+		title = n.Name
+	}
 	a.mu.Unlock()
 	if e == nil {
 		return
 	}
-	ui.Column(c).Grow(1).Fill().Padding(24).Gap(16).Children(func() {
-		ui.Row(c).Gap(12).AlignItems(ui.Center).Children(func() {
-			ui.Text(c, L.EditTitle(e.name)).FontSize(sizeTitle).Bold().Grow(1).Ellipsis("…").NoWrap()
-			if ui.Button(c, L.ActionDeleteNetwork()).Disabled(busy).Clicked() {
-				a.confirmDelete(e.id, e.name)
+	head := paneHead{icon: iconPencil, title: title, sub: L.EditConfiguration(),
+		badge: func() {
+			if !e.loaded {
+				return
 			}
-			if ui.Button(c, L.ActionCancel()).Clicked() {
+			tab := e.tab
+			ui.Segmented(c.Key("edit-tab"), &tab, L.EditTabForm(), L.EditTabToml()).Label(L.EditConfiguration())
+			if tab != e.tab {
+				a.mu.Lock()
+				e.switchTab(tab)
+				a.mu.Unlock()
+			}
+		},
+		actions: func() {
+			if ui.Button(c.Key("edit-cancel"), L.ActionCancel()).Clicked() {
 				a.update(func() { a.page, a.editor = pageNetwork, nil })
 			}
-			if ui.Button(c, L.ActionSave()).Disabled(busy || !e.loaded).Clicked() {
+			if ui.Button(c.Key("edit-save"), L.ActionSave()).Disabled(busy || !e.loaded).Clicked() {
 				a.saveEditor(false)
 			}
-			if ui.PrimaryButton(c, L.ActionSaveApply()).Disabled(busy || !e.loaded).Clicked() {
+			if ui.PrimaryButton(c.Key("edit-apply"), L.ActionSaveApply()).Disabled(busy || !e.loaded).Clicked() {
 				a.saveEditor(true)
 			}
-		})
+		},
+	}
+	a.pane(c, head, func() {
 		if e.err != "" {
-			ui.Text(c, e.err).FontSize(sizeSmall).TextColor(tok(c).bad)
+			ui.Text(c, e.err).FontSize(sizeSmall).TextColor(tok(c).bad).Padding(4, 24, 8, 24)
 		}
 		if !e.loaded {
-			ui.Spinner(c)
+			ui.Column(c).Grow(1).FillWidth().Center().Children(func() { ui.Spinner(c) })
 			return
-		}
-		tab := e.tab
-		ui.Segmented(c.Key("edit-tab"), &tab, L.EditTabForm(), L.EditTabToml()).AlignSelf(ui.Start)
-		if tab != e.tab {
-			a.mu.Lock()
-			e.switchTab(tab)
-			a.mu.Unlock()
 		}
 		if e.tab == 1 {
-			ui.Text(c, L.EditTomlHint()).FontSize(sizeSmall).TextColor(t.TextMuted)
-			editor.View(c, &e.raw).Grow(1).FillWidth().Border(1, t.Border).Radius(8)
+			ui.Column(c.Key("edit-toml")).Grow(1).FillWidth().MinHeight(0).Padding(4, 24, 24, 24).Gap(10).Children(func() {
+				ui.Text(c, L.EditTomlHint()).FontSize(sizeSmall).TextColor(t.TextMuted)
+				editor.View(c, &e.raw).Grow(1).FillWidth().Border(1, t.Border).Radius(cardRadius)
+			})
 			return
 		}
-		ui.Scroll(c.Key("edit-form")).Grow(1).Gap(16).Children(func() { a.formView(c, e) })
+		pageColumn(c, "edit-form", pageColumnW, func() { a.formView(c, e) })
 	})
 }
 
-// formView is the projection of the document as fields.
+// formView is the projection of the document as rows: the network, its
+// address, its connections, routing, the advanced flags (folded), and
+// Delete network last. Lists of addresses take a text area under their
+// row.
 func (a *App) formView(c *ui.Context, e *configEditor) {
 	t := c.Theme()
-	hint := func(s string) { ui.Text(c, s).FontSize(sizeSmall).TextColor(t.TextMuted) }
-	section := func(title string, fn func()) {
-		card(c).Children(func() {
-			ui.Text(c, title).FontSize(sizeHeading).Bold()
-			fn()
-		})
+	a.mu.Lock()
+	busy := a.busy["save-"+e.id]
+	a.mu.Unlock()
+	var r rows
+	field := func(key string, v *string, placeholder string) ui.Element {
+		return ui.TextInput(c.Key(key), v).Placeholder(placeholder).Width(rowControlW)
 	}
-	section(L.EditSectionBasic(), func() {
-		ui.Field(c, L.FieldDisplayName(), func() { ui.TextInput(c.Key("f-name"), &e.name).FillWidth() })
-		ui.Field(c, L.FieldNetworkName(), func() { ui.TextInput(c.Key("f-netname"), &e.netName).FillWidth() })
-		ui.Field(c, L.FieldNetworkSecret(), func() {
-			ui.Row(c).Gap(8).Children(func() {
-				in := ui.TextInput(c.Key("f-secret"), &e.secret).Grow(1)
-				if !e.showSecret {
-					in.Password()
-				}
-				ui.Checkbox(c.Key("f-show"), &e.showSecret, L.FieldShowSecret())
-			})
+	area := func(key string, v *string, placeholder string) {
+		ui.TextArea(c.Key(key), v).Placeholder(placeholder).FillWidth().MinHeight(64)
+	}
+	r.section(c, "f-basic", L.EditSectionBasic(), nil, func(r *rows) {
+		r.row(c, "f-name", iconTag, L.FieldDisplayName(), L.EditNameAbout(), func() { field("f-name-in", &e.name, "") })
+		r.row(c, "f-netname", iconNetwork, L.FieldNetworkName(), L.FieldSecretHint(), func() { field("f-netname-in", &e.netName, "") })
+		r.row(c, "f-secret", iconKey, L.FieldNetworkSecret(), L.EditSecretAbout(), func() {
+			in := ui.TextInput(c.Key("f-secret-in"), &e.secret).Width(rowControlW - paneButton - 4)
+			if !e.showSecret {
+				in.Password()
+			}
+			icon, label := iconEye, L.FieldShowSecret()
+			if e.showSecret {
+				icon, label = iconEyeOff, L.ActionHide()
+			}
+			if iconButton(c, "f-secret-show", icon, label, false) {
+				e.showSecret = !e.showSecret
+			}
 		})
-		hint(L.FieldSecretHint())
-		ui.Field(c, L.FieldHostname(), func() {
-			ui.TextInput(c.Key("f-host"), &e.hostname).Placeholder(L.FieldHostnamePlaceholder()).FillWidth()
+		r.row(c, "f-host", iconDevice, L.FieldHostname(), L.EditHostnameAbout(), func() {
+			field("f-host-in", &e.hostname, L.FieldHostnamePlaceholder())
 		})
-		ui.Field(c, L.FieldInstanceID(), func() {
-			ui.Row(c).Gap(8).Children(func() {
-				ui.TextInput(c.Key("f-instance-id"), &e.instanceID).Grow(1)
-				if ui.Button(c.Key("f-instance-new"), L.ActionNewInstanceID()).Clicked() {
-					e.instanceID = configdoc.NewUUID()
-				}
-			})
+		r.row(c, "f-instance", iconHash, L.FieldInstanceID(), L.FieldInstanceIDHint(), func() {
+			field("f-instance-in", &e.instanceID, "").Width(rowControlW - paneButton - 4)
+			if iconButton(c, "f-instance-new", iconRefresh, L.ActionNewInstanceID(), false) {
+				e.instanceID = configdoc.NewUUID()
+			}
 		})
-		hint(L.FieldInstanceIDHint())
-		ui.Row(c).Gap(10).AlignItems(ui.Center).Children(func() {
-			ui.Switch(c.Key("f-dhcp"), &e.dhcp).Label(L.FieldDHCP())
-			ui.Text(c, L.FieldDHCP())
+	})
+	r.section(c, "f-address", L.EditSectionAddress(), nil, func(r *rows) {
+		r.row(c, "f-dhcp", iconPin, L.FieldDHCP(), L.EditDHCPAbout(), func() {
+			ui.Switch(c.Key("f-dhcp-sw"), &e.dhcp).Label(L.FieldDHCP())
 		})
-		if !e.dhcp {
-			ui.Field(c, L.FieldIPv4(), func() { ui.TextInput(c.Key("f-ipv4"), &e.ipv4).Placeholder("10.144.144.1/24").FillWidth() })
+		r.row(c, "f-ipv4", iconPin, L.FieldIPv4(), L.EditIPv4About(), func() {
+			field("f-ipv4-in", &e.ipv4, "10.144.144.1/24").Disabled(e.dhcp)
+		})
+	})
+	r.section(c, "f-connect", L.EditSectionConnect(), nil, func(r *rows) {
+		r.row(c, "f-peers", iconServer, L.FieldPeers(), L.FieldPeersHint(), nil)
+		r.block(c, "f-peers-area", func() { area("f-peers-in", &e.peers, "tcp://public.easytier.cn:11010") })
+		r.row(c, "f-listeners", iconEar, L.FieldListeners(), L.FieldListenersHint(), nil)
+		r.block(c, "f-listeners-area", func() { area("f-listeners-in", &e.listeners, "tcp://0.0.0.0:11010\nudp://0.0.0.0:11010") })
+		device := !e.noTun
+		r.row(c, "f-device", iconDevice, L.SummaryDevice(), L.EditDeviceAbout(), func() {
+			if ui.Switch(c.Key("f-device-sw"), &device).Label(L.SummaryDevice()).Changed() {
+				e.noTun = !device
+			}
+		})
+	})
+	r.section(c, "f-routing", L.EditSectionRouting(), nil, func(r *rows) {
+		r.row(c, "f-proxies", iconRoute, L.FieldProxies(), L.FieldProxiesHint(), nil)
+		r.block(c, "f-proxies-area", func() { area("f-proxies-in", &e.proxies, "192.168.1.0/24") })
+		r.row(c, "f-exits", iconExit, L.FieldExitNodes(), L.FieldExitNodesHint(), nil)
+		r.block(c, "f-exits-area", func() { area("f-exits-in", &e.exits, "10.144.144.2") })
+	})
+	r.section(c, "f-advanced", L.EditSectionAdvanced(), func() {
+		label := L.ActionShow()
+		if e.advanced {
+			label = L.ActionHide()
 		}
-	})
-	section(L.EditSectionConnect(), func() {
-		ui.Field(c, L.FieldPeers(), func() {
-			ui.TextArea(c.Key("f-peers"), &e.peers).Placeholder("tcp://public.easytier.cn:11010").FillWidth().MinHeight(70)
-		})
-		hint(L.FieldPeersHint())
-		ui.Field(c, L.FieldListeners(), func() {
-			ui.TextArea(c.Key("f-listeners"), &e.listeners).Placeholder("tcp://0.0.0.0:11010\nudp://0.0.0.0:11010").FillWidth().MinHeight(70)
-		})
-		hint(L.FieldListenersHint())
-		ui.Row(c).Gap(10).AlignItems(ui.Center).Children(func() {
-			ui.Switch(c.Key("f-notun"), &e.noTun).Label(L.FieldNoTun())
-			ui.Column(c).Grow(1).Gap(2).Children(func() {
-				ui.Text(c, L.FieldNoTun())
-				hint(L.FieldNoTunHint())
-			})
-		})
-	})
-	section(L.EditSectionRouting(), func() {
-		ui.Field(c, L.FieldProxies(), func() {
-			ui.TextArea(c.Key("f-proxies"), &e.proxies).Placeholder("192.168.1.0/24").FillWidth().MinHeight(56)
-		})
-		hint(L.FieldProxiesHint())
-		ui.Field(c, L.FieldExitNodes(), func() {
-			ui.TextArea(c.Key("f-exits"), &e.exits).Placeholder("10.144.144.2").FillWidth().MinHeight(40)
-		})
-		hint(L.FieldExitNodesHint())
-	})
-	card(c).Children(func() {
-		ui.Row(c).AlignItems(ui.Center).Children(func() {
-			ui.Text(c, L.EditSectionAdvanced()).FontSize(sizeHeading).Bold().Grow(1)
-			label := L.ActionShow()
-			if e.advanced {
-				label = L.ActionHide()
-			}
-			if ui.Button(c.Key("adv-toggle"), label).Clicked() {
-				e.advanced = !e.advanced
-			}
-		})
+		if ui.Button(c.Key("adv-toggle"), label).Clicked() {
+			e.advanced = !e.advanced
+		}
+	}, func(r *rows) {
 		if !e.advanced {
-			hint(L.EditAdvancedHint())
+			r.row(c, "f-adv-folded", iconFlag, L.EditAdvancedHint(), "", nil)
 			return
 		}
 		for _, key := range advancedFlags {
 			on := e.flags[key]
 			label, h := flagLabel(key)
-			ui.Row(c.Key("flag-" + key)).Gap(10).AlignItems(ui.Center).Children(func() {
-				ui.Switch(c, &on).Label(label)
-				ui.Column(c).Grow(1).Gap(2).Children(func() {
-					ui.Text(c, label)
-					hint(h)
-				})
+			r.row(c, "flag-"+key, iconFlag, label, h, func() {
+				ui.Switch(c.Key("flag-sw-"+key), &on).Label(label)
 			})
 			e.flags[key] = on
 		}
-		ui.Field(c, L.FieldDevName(), func() { ui.TextInput(c.Key("f-dev"), &e.devName).Placeholder("et0").FillWidth() })
-		ui.Field(c, L.FieldMTU(), func() { ui.TextInput(c.Key("f-mtu"), &e.mtu).Placeholder("1380").FillWidth() })
+		r.row(c, "f-dev", iconDevice, L.FieldDevName(), "", func() { field("f-dev-in", &e.devName, "et0") })
+		r.row(c, "f-mtu", iconRuler, L.FieldMTU(), "", func() { field("f-mtu-in", &e.mtu, "1380") })
+	})
+	r.section(c, "f-delete", L.EditSectionDelete(), nil, func(r *rows) {
+		r.rowIn(c, "f-delete-row", iconTrash, L.ActionDeleteNetwork(), L.EditDeleteAbout(), t.TextMuted, func() {
+			if ui.Button(c.Key("f-delete-btn"), L.ActionDeleteNetwork()).Disabled(busy).Clicked() {
+				a.confirmDelete(e.id, e.name)
+			}
+		})
 	})
 }
 
@@ -492,6 +503,9 @@ func (a *App) openCreate() {
 	a.update(func() { a.createDlg = &createDialog{} })
 }
 
+// createDialogView is Add network (doc/en-us/gui.md, "Editing"): a dialog
+// over the dimmed window, its fields as rows, then Import file…, Cancel
+// and Create. The window's buttons stay over the dimming on Windows.
 func (a *App) createDialogView(c *ui.Context) {
 	a.mu.Lock()
 	d := a.createDlg
@@ -507,36 +521,64 @@ func (a *App) createDialogView(c *ui.Context) {
 			a.update(func() { a.createDlg = nil })
 		}
 	}()
-	ui.Modal(c, &open, func() {
-		ui.Column(c).Width(460).Padding(24).Gap(12).Background(t.Background).Radius(cardRadius).Children(func() {
-			ui.Text(c, L.CreateTitle()).FontSize(sizeTitle).Bold()
-			ui.Text(c, L.CreateBody()).FontSize(sizeSmall).TextColor(t.TextMuted)
-			ui.Field(c, L.FieldDisplayName(), func() {
-				ui.TextInput(c.Key("c-name"), &d.name).Placeholder(L.CreateNamePlaceholder()).FillWidth().AutoFocus()
+	ui.DialogBase(c, &open, func(back, panel ui.Element) {
+		back.Background(sheetScrim).Padding(dialogTop, sheetX, sheetBottom, sheetX).AlignItems(ui.Center).Justify(ui.Start)
+		panel.Radius(paneRadius).Background(t.Background).Shadow(0, 10, 30, 0, sheetShadow).Clip()
+		ui.Column(c.Key("create")).Width(dialogW).Children(func() {
+			ui.Row(c.Key("create-head")).Height(sheetHeaderH).Shrink(0).Padding(0, 12, 0, 20).AlignItems(ui.Center).Children(func() {
+				ui.Text(c, L.CreateTitle()).FontSize(sizeHeading).Bold().Grow(1)
+				if iconButton(c, "create-close", iconClose, L.ActionClose(), false) {
+					open = false
+				}
 			})
-			ui.Field(c, L.FieldNetworkName(), func() { ui.TextInput(c.Key("c-net"), &d.netName).FillWidth() })
-			ui.Field(c, L.FieldNetworkSecret(), func() { ui.TextInput(c.Key("c-secret"), &d.secret).Password().FillWidth() })
-			ui.Field(c, L.CreatePeer(), func() {
-				ui.TextInput(c.Key("c-peer"), &d.peer).Placeholder("tcp://public.easytier.cn:11010").FillWidth()
-			})
-			ui.Checkbox(c.Key("c-notun"), &d.noTun, L.FieldNoTun())
-			if d.err != "" {
-				ui.Text(c, d.err).FontSize(sizeSmall).TextColor(tok(c).bad)
-			}
-			ui.Row(c).Gap(8).Children(func() {
-				if ui.Button(c, L.ActionImport()).Disabled(busy).Clicked() {
-					a.importNetwork()
+			ui.Divider(c)
+			ui.Column(c.Key("create-body")).FillWidth().Padding(16, 20, 20, 20).Children(func() {
+				ui.Text(c, L.CreateBody()).TextColor(t.TextMuted)
+				var r rows
+				field := func(key string, v *string, placeholder string) ui.Element {
+					return ui.TextInput(c.Key(key), v).Placeholder(placeholder).Width(rowControlW - 20)
 				}
-				ui.Spacer(c)
-				if ui.Button(c, L.ActionCancel()).Clicked() {
-					a.update(func() { a.createDlg = nil })
+				r.section(c, "create-fields", L.EditSectionBasic(), nil, func(r *rows) {
+					r.row(c, "c-name", nil, L.FieldDisplayName(), L.EditNameAbout(), func() {
+						field("c-name-in", &d.name, L.CreateNamePlaceholder()).AutoFocus()
+					})
+					r.row(c, "c-net", nil, L.FieldNetworkName(), L.FieldSecretHint(), func() { field("c-net-in", &d.netName, "") })
+					r.row(c, "c-secret", nil, L.FieldNetworkSecret(), L.EditSecretAbout(), func() { field("c-secret-in", &d.secret, "").Password() })
+					r.row(c, "c-peer", nil, L.CreatePeer(), L.CreatePeerAbout(), func() {
+						field("c-peer-in", &d.peer, "tcp://public.easytier.cn:11010")
+					})
+					device := !d.noTun
+					r.row(c, "c-device", nil, L.SummaryDevice(), L.EditDeviceAbout(), func() {
+						if ui.Switch(c.Key("c-device-sw"), &device).Label(L.SummaryDevice()).Changed() {
+							d.noTun = !device
+						}
+					})
+				})
+				if d.err != "" {
+					ui.Text(c, d.err).FontSize(sizeSmall).TextColor(tok(c).bad).Margin(10, 4, 0, 4)
 				}
-				if ui.PrimaryButton(c, L.ActionCreate()).Disabled(busy).Clicked() {
-					a.createNetwork()
-				}
+				ui.Row(c.Key("create-foot")).FillWidth().Gap(8).AlignItems(ui.Center).Margin(18, 0, 0, 0).Children(func() {
+					if ui.Button(c.Key("c-import"), L.ActionImport()).Disabled(busy).Clicked() {
+						a.importNetwork()
+					}
+					ui.Spacer(c)
+					if ui.Button(c.Key("c-cancel"), L.ActionCancel()).Clicked() {
+						open = false
+					}
+					if ui.PrimaryButton(c.Key("c-create"), L.ActionCreate()).Disabled(busy).MinWidth(88).Clicked() {
+						a.createNetwork()
+					}
+				})
 			})
 		})
 	})
+	if ownWindowButtons {
+		ui.Overlay(c, func() {
+			ui.Row(c.Key("create-win")).Absolute().Top(paneMargin + (paneHeaderH-winButtonH)/2).Right(2 * paneMargin).Gap(8).Children(func() {
+				a.windowButtons(c, "create-win", true)
+			})
+		})
+	}
 }
 
 // createNetwork builds a document from the template and the fields.

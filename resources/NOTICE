@@ -12,7 +12,7 @@ use artwork from EasyTier-iOS:
 
 The maintainer chose this artwork for the app icon (2026-10-16).
 
-The interface icons drawn in internal/gui/shell.go are from Lucide:
+The interface icons drawn in internal/gui/icons.go are from Lucide:
 
   https://lucide.dev
   Copyright (c) Lucide Contributors 2022 (portions Copyright (c) 2013-2022 Cole Bemis)

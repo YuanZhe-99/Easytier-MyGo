@@ -29,7 +29,6 @@
       }
     }
   },
-  "ActionEdit": "Edit",
   "ActionExportDiagnostics": "Export diagnostics…",
   "ActionHide": "Hide",
   "ActionImport": "Import file…",
@@ -44,7 +43,6 @@
   "ActionUninstallHelper": "Remove helper",
   "ActionUpdateHelper": "Update helper",
   "ActionUseCore": "Use",
-  "ActionUseMode": "Use this mode",
   "ActionCheckAppUpdate": "Check for updates",
   "ActionInstallUpdate": "Install and restart",
   "AppUpToDate": "EasyTier MyGo is up to date.",
@@ -203,14 +201,6 @@
   "EditSectionRouting": "Routing",
   "EditTabForm": "Form",
   "EditTabToml": "TOML",
-  "EditTitle": "Edit {name}",
-  "@EditTitle": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "EditTomlHint": "Comments and options the form does not show are kept as written.",
   "EditTomlLabel": "Network configuration (TOML)",
   "EmptyBody": "Create a network or import an EasyTier configuration to get started.",
@@ -282,7 +272,6 @@
   "FieldMTU": "MTU",
   "FieldNetworkName": "Network name",
   "FieldNetworkSecret": "Network secret",
-  "FieldNoTun": "No virtual device",
   "FieldNoTunHint": "Works without privileges. Other nodes can reach this device, but this device cannot open connections to them.",
   "FieldPeers": "Peers",
   "FieldPeersHint": "Addresses of nodes to connect to, one per line, such as a public server.",
@@ -314,14 +303,6 @@
   "FlagPrivateHint": "Do not relay traffic of other networks.",
   "FlagQUIC": "QUIC acceleration",
   "FlagQUICHint": "Carry TCP over QUIC.",
-  "HeaderNetworkName": "Network {name}",
-  "@HeaderNetworkName": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "HeaderNoTun": "No virtual device",
   "HeaderPendingChanges": "Saved changes are not applied yet.",
   "HelperInstalled": "Privileged helper {version} installed",
@@ -400,8 +381,6 @@
   "ReasonStopped": "stopped",
   "ReasonTimeout": "EasyTier is not responding",
   "ReasonUnreachable": "EasyTier cannot be reached",
-  "SettingsAbout": "About",
-  "SettingsAdvanced": "Advanced",
   "SettingsAdvancedHint": "The diagnostics file holds versions, states and recent activity; never configurations or secrets.",
   "SettingsCheckUpdates": "Check for new EasyTier releases daily",
   "SettingsCheckUpdatesHint": "Only reads the release list from GitHub; nothing is downloaded automatically.",
@@ -420,7 +399,7 @@
   "SettingsStartHidden": "Start in the tray when opened at login",
   "SettingsTheme": "Appearance",
   "SidebarEmpty": "No networks",
-  "SidebarNetworks": "NETWORKS",
+  "SidebarNetworks": "Networks",
   "StateConnected": "Connected",
   "StateConnecting": "Connecting",
   "StateDegraded": "Limited",
@@ -468,5 +447,132 @@
   "TrayShow": "Show EasyTier MyGo",
   "WelcomeBody": "Choose how your networks run. You can change this later in Settings.",
   "WelcomeLater": "Tip: start with No privileges if your networks do not need a virtual device.",
-  "WelcomeTitle": "Welcome to EasyTier MyGo"
+  "WelcomeTitle": "Welcome to EasyTier MyGo",
+  "SidebarHide": "Hide sidebar",
+  "SidebarShow": "Show sidebar",
+  "AppearanceSystem": "Appearance: follow the system",
+  "AppearanceLight": "Appearance: light",
+  "AppearanceDark": "Appearance: dark",
+  "WindowMinimize": "Minimize",
+  "WindowMaximize": "Maximize",
+  "WindowRestore": "Restore",
+  "WindowClose": "Close",
+  "RunHelperMissing": "Helper not installed",
+  "RunHelperStopped": "Helper not running",
+  "RunServiceDown": "Service not running",
+  "RunConnecting": "Connecting…",
+  "NoDataTitle": "No current data",
+  "NoDataBody": "Traffic, nodes and activity show again as soon as the background service answers. Until then nothing here would be up to date.",
+  "EditConfiguration": "Edit configuration",
+  "StoppedTitle": "{name} is not connected",
+  "@StoppedTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "SummaryTitle": "Configuration",
+  "SummaryUnavailable": "This configuration has parts the summary cannot show. See Edit configuration.",
+  "SummaryPeersAbout": "Where this device meets the other nodes.",
+  "SummaryAddress": "Address",
+  "SummaryAddressAbout": "This device's address in the network.",
+  "SummaryAddressAuto": "Assigned automatically",
+  "SummaryDevice": "Virtual device",
+  "SummaryDeviceOn": "This device can open connections to other nodes.",
+  "SummaryListenersAbout": "Other nodes can connect to this device here.",
+  "StateOn": "On",
+  "StateOff": "Off",
+  "PeersHint": "Right-click a node to copy its address",
+  "ActivitySub": "All networks · newest first",
+  "DayToday": "Today",
+  "DayYesterday": "Yesterday",
+  "ActionClose": "Close",
+  "EditNameAbout": "Only this app uses it.",
+  "EditSecretAbout": "Anyone who has it can join. Keep it private.",
+  "EditHostnameAbout": "How other nodes see this device.",
+  "EditSectionAddress": "Address",
+  "EditDHCPAbout": "The network picks a free address for this device.",
+  "EditIPv4About": "Used while the address is not assigned automatically.",
+  "EditDeviceAbout": "Needed to open connections to other nodes. Off works without privileges.",
+  "EditSectionDelete": "Remove",
+  "EditDeleteAbout": "Removes the network and its configuration from this device.",
+  "CreatePeerAbout": "Where the nodes meet. Add more later in Edit configuration.",
+  "SettingsGroupPreferences": "Preferences",
+  "SettingsGroupComputer": "This computer",
+  "SettingsAboutTitle": "About & updates",
+  "SettingsSearch": "Search",
+  "SettingsSearchNone": "No setting matches.",
+  "SettingsLanguageAbout": "Follows the system unless you choose one.",
+  "SettingsThemeAbout": "The sidebar's button switches it too.",
+  "SettingsStartHiddenAbout": "Only the tray icon shows; the window opens from it.",
+  "SettingsCloseAbout": "What closing the window does. Networks then run as the run mode says.",
+  "NotifyConnections": "Connection changes",
+  "NotifyConnectionsAbout": "A notification when a network connects, runs into a problem or recovers.",
+  "SettingsGeneralAbout": "How EasyTier MyGo looks, starts and tells you about changes.",
+  "SectionLook": "Language and look",
+  "SectionStart": "Start and close",
+  "SectionHelper": "Privileged helper",
+  "SectionRunModes": "How your networks run",
+  "SectionInstalled": "Installed",
+  "SectionUpdates": "Updates",
+  "SectionDiagnostics": "Diagnostics",
+  "ActionSwitch": "Switch",
+  "RunModeSwitchNote": "Switching moves your networks along and reconnects the ones that were connected.",
+  "HelperNotInstalled": "Not installed",
+  "HelperNotInstalledAbout": "It is installed when you switch to Follow GUI or Background service.",
+  "HelperAbout": "Runs the networks for Follow GUI and Background service, and updates itself with the app.",
+  "CoreUpdateFound": "EasyTier {tag} is available. It is downloaded only when you choose to.",
+  "@CoreUpdateFound": {
+    "placeholders": {
+      "tag": {
+        "type": "String"
+      }
+    }
+  },
+  "CoreBundledAbout": "Bundled with this app.",
+  "CoreDownloadedAbout": "Downloaded. Checked before every start.",
+  "CoresUnchecked": "Check for releases to see what is available.",
+  "CorePublished": "Published {date}",
+  "@CorePublished": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "SettingsAboutAbout": "This app's version and updates, and what to send when something goes wrong.",
+  "AboutVersion": "Version {version}",
+  "@AboutVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "AboutLicenseTitle": "License",
+  "AboutDesignTitle": "Design and icon",
+  "AboutDesign": "Colors, node rows and the timeline follow EasyTier-iOS, whose artwork the icon uses.",
+  "AppUpdateInstallingAbout": "In No privileges mode the networks pause until the new version starts.",
+  "AppUpdateAvailableAbout": "Signed, and installed only when you choose. The app restarts.",
+  "AppUpdateNeverChecked": "Not checked yet.",
+  "AppUpdateLastChecked": "Last checked {when}",
+  "@AppUpdateLastChecked": {
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
+  },
+  "DiagFile": "Diagnostics file",
+  "DiagLogs": "Logs",
+  "DiagLogsAbout": "This app's and its background service's logs.",
+  "WelcomeContinue": "Continue with {mode}",
+  "@WelcomeContinue": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  }
 }

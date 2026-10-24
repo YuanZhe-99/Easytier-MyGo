@@ -193,7 +193,7 @@ func (t *Tray) menu(m trayModel) *mygo.Menu {
 	items = append(items,
 		&mygo.MenuItem{Label: L.TrayShow(), Click: func(*mygo.MenuItem, *mygo.Window) { a.Focus() }},
 		&mygo.MenuItem{Label: L.PageSettings(), Click: func(*mygo.MenuItem, *mygo.Window) {
-			a.update(func() { a.page = pageSettings })
+			a.openSettings(setGeneral)
 			a.Focus()
 		}},
 		mygo.Separator(),

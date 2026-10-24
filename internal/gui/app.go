@@ -69,6 +69,17 @@ type App struct {
 	editor    *configEditor
 	createDlg *createDialog
 	coresView coresState
+	// summaries are the disconnected networks' configuration summaries,
+	// read once per saved revision (stoppedView).
+	summaries map[string]netSummary
+	// The Settings sheet: whether it is open, its page, the search's words
+	// and the setting a search hit leads to.
+	settingsOpen  bool
+	settingsAt    settingsPage
+	settingsQuery string
+	settingsFocus settingsFocus
+	// welcomeChoice is the run mode chosen on the welcome page.
+	welcomeChoice runChoice
 	// coreUpdate is a newer stable EasyTier found by the daily check.
 	coreUpdate string
 	// appUpdate is a newer signed version of the app; updating pauses the
@@ -93,13 +104,12 @@ type App struct {
 	wake   chan struct{}
 }
 
-// page is the main area's content.
+// page is the pane's content.
 type page int
 
 const (
 	pageNetwork page = iota
 	pageWelcome
-	pageSettings
 	pageLogs
 	pageEdit
 )
@@ -109,6 +119,7 @@ func New() *App {
 	ctx, cancel := context.WithCancel(context.Background())
 	a := &App{
 		prefs: loadPrefs(), traffic: map[string][]localapi.TrafficPoint{}, details: map[string]*localapi.NetworkDetail{},
+		summaries: map[string]netSummary{},
 		busy: map[string]bool{}, expanded: map[string]bool{}, chartSel: -1, window5m: 1, ctx: ctx, cancel: cancel, wake: make(chan struct{}, 1),
 		visible: true,
 	}
@@ -278,6 +289,11 @@ func (a *App) applyPush(p *localapi.Push) {
 		if !slices.ContainsFunc(a.networks, func(n localapi.NetworkStatus) bool { return n.ID == id }) {
 			delete(a.traffic, id)
 			delete(a.details, id)
+		}
+	}
+	for id := range a.summaries {
+		if !slices.ContainsFunc(a.networks, func(n localapi.NetworkStatus) bool { return n.ID == id }) {
+			delete(a.summaries, id)
 		}
 	}
 	a.events = append(a.events, p.Events...)

@@ -10,7 +10,7 @@ EasyTier MyGo 是 [EasyTier](https://github.com/EasyTier/EasyTier) 的原生桌�
 | [run-modes.md](run-modes.md) | 三种运行方式、特权助手、授权 |
 | [health-monitoring.md](health-monitoring.md) | 健康状态术语、策略、有限恢复 |
 | [configuration.md](configuration.md) | 原文配置、表单投影、保存与应用 |
-| [gui.md](gui.md) | 界面结构、节点行、文案规则、图表、托盘、语言 |
+| [gui.md](gui.md) | 窗口、侧边栏、网络小窗、编辑、设置、首次运行、节点行、文案、图表、托盘、语言 |
 | [easytier-upstream.md](easytier-upstream.md) | EasyTier CLI 契约、发布资产与已验证的怪癖 |
 | [platform-notes.md](platform-notes.md) | 各平台的实现与验证情况 |
 | [development.md](development.md) | 环境、命令、开发循环 |

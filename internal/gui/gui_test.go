@@ -5,6 +5,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"slices"
 	"testing"
 	"time"
 
@@ -14,6 +15,7 @@ import (
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/health"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/helper"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/localapi"
+	L "github.com/YuanZhe-99/Easytier-MyGo/locales"
 )
 
 // demoApp is an App with the state a connected daemon would push: one
@@ -65,11 +67,27 @@ func demoApp(t *testing.T) *App {
 func TestViewsRender(t *testing.T) {
 	dir := os.Getenv("SCREENSHOT_DIR")
 	pages := map[string]func(a *App){
-		"network":  func(a *App) {},
-		"stopped":  func(a *App) { a.selected = "n2" },
-		"settings": func(a *App) { a.page = pageSettings },
-		"logs":     func(a *App) { a.page = pageLogs },
-		"welcome":  func(a *App) { a.page, a.prefs.Mode = pageWelcome, ModeUnset },
+		"network": func(a *App) {},
+		"stopped": func(a *App) {
+			a.selected = "n2"
+			a.summaries["n2"] = summaryOf("dhcp = true\nlisteners = [\"tcp://0.0.0.0:11010\"]\n\n[network_identity]\nnetwork_name = \"lab\"\n\n[[peer]]\nuri = \"tcp://public.easytier.cn:11010\"\n", "")
+		},
+		"rail":             func(a *App) { a.prefs.SidebarRail = true },
+		"stale":            func(a *App) { a.lastPush = time.Now().Add(-time.Minute) },
+		"empty":            func(a *App) { a.networks, a.selected = nil, "" },
+		"settings":         func(a *App) { a.settingsOpen, a.settingsAt = true, setGeneral },
+		"settings-mode":    func(a *App) { a.settingsOpen, a.settingsAt = true, setRunMode },
+		"settings-core":    func(a *App) { a.settingsOpen, a.settingsAt = true, setCore },
+		"settings-about":   func(a *App) { a.settingsOpen, a.settingsAt = true, setAbout },
+		"settings-search":  func(a *App) { a.settingsOpen, a.settingsQuery = true, "update" },
+		"logs":             func(a *App) { a.page = pageLogs },
+		"welcome":          func(a *App) { a.page, a.prefs.Mode = pageWelcome, ModeUnset },
+		"edit-toml": func(a *App) {
+			a.page = pageEdit
+			a.editor = &configEditor{id: "n1", name: "Home"}
+			a.editor.load("instance_name = \"home\"\n", "rev1")
+			a.editor.tab = 1
+		},
 		"edit": func(a *App) {
 			a.page = pageEdit
 			a.editor = &configEditor{id: "n1", name: "Home"}
@@ -115,47 +133,113 @@ func TestViewsRender(t *testing.T) {
 	i18n.SetLocaleFunc(nil)
 }
 
-// TestTitleBarClearsWindowButtons checks that the title-bar chip sits in the
-// strip, past the room the system's window buttons take, and that the
-// strip goes away in full screen. With SCREENSHOT_DIR set it writes PNGs.
-func TestTitleBarClearsWindowButtons(t *testing.T) {
-	dir := os.Getenv("SCREENSHOT_DIR")
+// TestHeaderClearsWindowButtons checks that the system's window buttons
+// cover nothing: the sidebar's top row (and the rail's) starts past the
+// traffic lights, the pane header's actions end before buttons on the
+// right, and in full screen the sidebar keeps no room for them.
+func TestHeaderClearsWindowButtons(t *testing.T) {
+	const w = 1100
 	cases := map[string]ui.TitleBar{
-		"mac":     {Height: titleBarH, Left: 76},
-		"windows": {Height: titleBarH, Right: 138},
+		"mac":   {Height: 60, Left: 76},
+		"linux": {Height: 60, Right: 120},
 	}
 	for name, bar := range cases {
-		for _, welcome := range []bool{false, true} {
+		for _, rail := range []bool{false, true} {
 			a := demoApp(t)
-			if welcome {
-				a.page, a.prefs.Mode = pageWelcome, ModeUnset
-			}
-			tt := ui.NewTester(a.view, 1100, 720)
+			a.prefs.SidebarRail = rail
+			tt := ui.NewTester(a.view, w, 720)
 			tt.SetTitleBar(bar)
 			tt.Frame()
-			r, ok := tt.Find(appName)
+			first := L.SidebarHide()
+			if rail {
+				first = L.SidebarShow()
+			}
+			r, ok := tt.Find(first)
 			if !ok {
-				t.Fatalf("%s welcome=%v: no title-bar chip", name, welcome)
+				t.Fatalf("%s rail=%v: no %q", name, rail, first)
 			}
-			if r.X < bar.Left || r.X+r.W > 1100-bar.Right || r.Y+r.H > titleBarH {
-				t.Errorf("%s welcome=%v: chip %+v overlaps the window buttons %+v", name, welcome, r, bar)
+			if r.X < bar.Left && r.Y < bar.Height {
+				t.Errorf("%s rail=%v: %q at %+v under the window buttons %+v", name, rail, first, r, bar)
 			}
-			if dir != "" && !welcome {
-				f, err := os.Create(filepath.Join(dir, "titlebar-"+name+".png"))
-				if err != nil {
-					t.Fatal(err)
-				}
-				_ = png.Encode(f, tt.Image())
-				f.Close()
+			d, ok := tt.Find(L.ActionDisconnect())
+			if !ok {
+				t.Fatalf("%s rail=%v: no Disconnect in the header", name, rail)
+			}
+			if d.X+d.W > w-bar.Right || d.Y+d.H > paneMargin+paneHeaderH {
+				t.Errorf("%s rail=%v: Disconnect %+v under the window buttons %+v", name, rail, d, bar)
 			}
 		}
 	}
 	a := demoApp(t)
 	a.fullScreen = true
-	tt := ui.NewTester(a.view, 1100, 720)
+	tt := ui.NewTester(a.view, w, 720)
+	tt.SetTitleBar(ui.TitleBar{Height: 60, Left: 76})
 	tt.Frame()
-	if tt.HasText(appName) {
-		t.Error("the title-bar strip shows in full screen")
+	if r, _ := tt.Find(L.SidebarHide()); r.X > 40 {
+		t.Errorf("full screen: the sidebar keeps the traffic lights' room (%+v)", r)
+	}
+}
+
+// TestSettingsHitsShow: every setting the Settings search finds shows on
+// the page it leads to, in each language.
+func TestSettingsHitsShow(t *testing.T) {
+	for _, lang := range []string{"en", "zh-Hans", "zh-Hant", "ja"} {
+		i18n.SetLocaleFunc(func() string { return lang })
+		for _, h := range settingsHits() {
+			a := demoApp(t)
+			a.settingsOpen, a.settingsAt = true, h.page
+			tt := ui.NewTester(a.view, 1280, 4000)
+			tt.Frame()
+			if !tt.HasText(h.title) {
+				t.Errorf("%s: %q is not on %s", lang, h.title, pageName(h.page))
+			}
+		}
+	}
+	i18n.SetLocaleFunc(nil)
+}
+
+// TestSearchSettings: every word must match, and titles that match come
+// before settings found by their other words.
+func TestSearchSettings(t *testing.T) {
+	all := []settingsHit{
+		{setAbout, "Logs", "open the log folder"},
+		{setCore, "Check for releases daily", "nothing is downloaded"},
+		{setGeneral, "Language", "follows the system"},
+	}
+	for _, tc := range []struct {
+		q    string
+		want []string
+	}{
+		{"log", []string{"Logs"}},
+		{"SYSTEM", []string{"Language"}},
+		{"check daily", []string{"Check for releases daily"}},
+		{"daily folder", nil},
+		{"o", []string{"Logs", "Check for releases daily", "Language"}},
+	} {
+		var got []string
+		for _, h := range searchSettings(all, tc.q) {
+			got = append(got, h.title)
+		}
+		if !slices.Equal(got, tc.want) {
+			t.Errorf("%q: got %v, want %v", tc.q, got, tc.want)
+		}
+	}
+}
+
+// TestDayName: Activity's days are Today, Yesterday, else the date.
+func TestDayName(t *testing.T) {
+	now := time.Date(2026, 10, 24, 0, 30, 0, 0, time.Local)
+	for _, tc := range []struct {
+		at   time.Time
+		want string
+	}{
+		{now.Add(-10 * time.Minute), L.DayToday()},
+		{now.Add(-40 * time.Minute), L.DayYesterday()},
+		{now.Add(-25 * time.Hour), "2026-10-22"},
+	} {
+		if got := dayName(tc.at, now); got != tc.want {
+			t.Errorf("%v: %q, want %q", tc.at, got, tc.want)
+		}
 	}
 }
 

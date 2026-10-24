@@ -186,16 +186,6 @@ func (msgs Messages) ActionDownload(size string) string {
 	return Catalog.Format(msgs.locale, "ActionDownload", map[string]any{"size": size})
 }
 
-// ActionEdit says "Edit"
-// in the language the app shows.
-func ActionEdit() string { return In(i18n.Locale()).ActionEdit() }
-
-// ActionEdit says "Edit"
-// in the language of msgs.
-func (msgs Messages) ActionEdit() string {
-	return Catalog.Format(msgs.locale, "ActionEdit", nil)
-}
-
 // ActionExportDiagnostics says "Export diagnostics…"
 // in the language the app shows.
 func ActionExportDiagnostics() string { return In(i18n.Locale()).ActionExportDiagnostics() }
@@ -334,16 +324,6 @@ func ActionUseCore() string { return In(i18n.Locale()).ActionUseCore() }
 // in the language of msgs.
 func (msgs Messages) ActionUseCore() string {
 	return Catalog.Format(msgs.locale, "ActionUseCore", nil)
-}
-
-// ActionUseMode says "Use this mode"
-// in the language the app shows.
-func ActionUseMode() string { return In(i18n.Locale()).ActionUseMode() }
-
-// ActionUseMode says "Use this mode"
-// in the language of msgs.
-func (msgs Messages) ActionUseMode() string {
-	return Catalog.Format(msgs.locale, "ActionUseMode", nil)
 }
 
 // ActionCheckAppUpdate says "Check for updates"
@@ -1000,16 +980,6 @@ func (msgs Messages) EditTabToml() string {
 	return Catalog.Format(msgs.locale, "EditTabToml", nil)
 }
 
-// EditTitle says "Edit {name}"
-// in the language the app shows.
-func EditTitle(name string) string { return In(i18n.Locale()).EditTitle(name) }
-
-// EditTitle says "Edit {name}"
-// in the language of msgs.
-func (msgs Messages) EditTitle(name string) string {
-	return Catalog.Format(msgs.locale, "EditTitle", map[string]any{"name": name})
-}
-
 // EditTomlHint says "Comments and options the form does not show are kept as written."
 // in the language the app shows.
 func EditTomlHint() string { return In(i18n.Locale()).EditTomlHint() }
@@ -1370,16 +1340,6 @@ func (msgs Messages) FieldNetworkSecret() string {
 	return Catalog.Format(msgs.locale, "FieldNetworkSecret", nil)
 }
 
-// FieldNoTun says "No virtual device"
-// in the language the app shows.
-func FieldNoTun() string { return In(i18n.Locale()).FieldNoTun() }
-
-// FieldNoTun says "No virtual device"
-// in the language of msgs.
-func (msgs Messages) FieldNoTun() string {
-	return Catalog.Format(msgs.locale, "FieldNoTun", nil)
-}
-
 // FieldNoTunHint says "Works without privileges. Other nodes can reach this device, but this device cannot open connections to them."
 // in the language the app shows.
 func FieldNoTunHint() string { return In(i18n.Locale()).FieldNoTunHint() }
@@ -1688,16 +1648,6 @@ func FlagQUICHint() string { return In(i18n.Locale()).FlagQUICHint() }
 // in the language of msgs.
 func (msgs Messages) FlagQUICHint() string {
 	return Catalog.Format(msgs.locale, "FlagQUICHint", nil)
-}
-
-// HeaderNetworkName says "Network {name}"
-// in the language the app shows.
-func HeaderNetworkName(name string) string { return In(i18n.Locale()).HeaderNetworkName(name) }
-
-// HeaderNetworkName says "Network {name}"
-// in the language of msgs.
-func (msgs Messages) HeaderNetworkName(name string) string {
-	return Catalog.Format(msgs.locale, "HeaderNetworkName", map[string]any{"name": name})
 }
 
 // HeaderNoTun says "No virtual device"
@@ -2200,26 +2150,6 @@ func (msgs Messages) ReasonUnreachable() string {
 	return Catalog.Format(msgs.locale, "ReasonUnreachable", nil)
 }
 
-// SettingsAbout says "About"
-// in the language the app shows.
-func SettingsAbout() string { return In(i18n.Locale()).SettingsAbout() }
-
-// SettingsAbout says "About"
-// in the language of msgs.
-func (msgs Messages) SettingsAbout() string {
-	return Catalog.Format(msgs.locale, "SettingsAbout", nil)
-}
-
-// SettingsAdvanced says "Advanced"
-// in the language the app shows.
-func SettingsAdvanced() string { return In(i18n.Locale()).SettingsAdvanced() }
-
-// SettingsAdvanced says "Advanced"
-// in the language of msgs.
-func (msgs Messages) SettingsAdvanced() string {
-	return Catalog.Format(msgs.locale, "SettingsAdvanced", nil)
-}
-
 // SettingsAdvancedHint says "The diagnostics file holds versions, states and recent activity; never configurations or secrets."
 // in the language the app shows.
 func SettingsAdvancedHint() string { return In(i18n.Locale()).SettingsAdvancedHint() }
@@ -2400,11 +2330,11 @@ func (msgs Messages) SidebarEmpty() string {
 	return Catalog.Format(msgs.locale, "SidebarEmpty", nil)
 }
 
-// SidebarNetworks says "NETWORKS"
+// SidebarNetworks says "Networks"
 // in the language the app shows.
 func SidebarNetworks() string { return In(i18n.Locale()).SidebarNetworks() }
 
-// SidebarNetworks says "NETWORKS"
+// SidebarNetworks says "Networks"
 // in the language of msgs.
 func (msgs Messages) SidebarNetworks() string {
 	return Catalog.Format(msgs.locale, "SidebarNetworks", nil)
@@ -2818,4 +2748,854 @@ func WelcomeTitle() string { return In(i18n.Locale()).WelcomeTitle() }
 // in the language of msgs.
 func (msgs Messages) WelcomeTitle() string {
 	return Catalog.Format(msgs.locale, "WelcomeTitle", nil)
+}
+
+// SidebarHide says "Hide sidebar"
+// in the language the app shows.
+func SidebarHide() string { return In(i18n.Locale()).SidebarHide() }
+
+// SidebarHide says "Hide sidebar"
+// in the language of msgs.
+func (msgs Messages) SidebarHide() string {
+	return Catalog.Format(msgs.locale, "SidebarHide", nil)
+}
+
+// SidebarShow says "Show sidebar"
+// in the language the app shows.
+func SidebarShow() string { return In(i18n.Locale()).SidebarShow() }
+
+// SidebarShow says "Show sidebar"
+// in the language of msgs.
+func (msgs Messages) SidebarShow() string {
+	return Catalog.Format(msgs.locale, "SidebarShow", nil)
+}
+
+// AppearanceSystem says "Appearance: follow the system"
+// in the language the app shows.
+func AppearanceSystem() string { return In(i18n.Locale()).AppearanceSystem() }
+
+// AppearanceSystem says "Appearance: follow the system"
+// in the language of msgs.
+func (msgs Messages) AppearanceSystem() string {
+	return Catalog.Format(msgs.locale, "AppearanceSystem", nil)
+}
+
+// AppearanceLight says "Appearance: light"
+// in the language the app shows.
+func AppearanceLight() string { return In(i18n.Locale()).AppearanceLight() }
+
+// AppearanceLight says "Appearance: light"
+// in the language of msgs.
+func (msgs Messages) AppearanceLight() string {
+	return Catalog.Format(msgs.locale, "AppearanceLight", nil)
+}
+
+// AppearanceDark says "Appearance: dark"
+// in the language the app shows.
+func AppearanceDark() string { return In(i18n.Locale()).AppearanceDark() }
+
+// AppearanceDark says "Appearance: dark"
+// in the language of msgs.
+func (msgs Messages) AppearanceDark() string {
+	return Catalog.Format(msgs.locale, "AppearanceDark", nil)
+}
+
+// WindowMinimize says "Minimize"
+// in the language the app shows.
+func WindowMinimize() string { return In(i18n.Locale()).WindowMinimize() }
+
+// WindowMinimize says "Minimize"
+// in the language of msgs.
+func (msgs Messages) WindowMinimize() string {
+	return Catalog.Format(msgs.locale, "WindowMinimize", nil)
+}
+
+// WindowMaximize says "Maximize"
+// in the language the app shows.
+func WindowMaximize() string { return In(i18n.Locale()).WindowMaximize() }
+
+// WindowMaximize says "Maximize"
+// in the language of msgs.
+func (msgs Messages) WindowMaximize() string {
+	return Catalog.Format(msgs.locale, "WindowMaximize", nil)
+}
+
+// WindowRestore says "Restore"
+// in the language the app shows.
+func WindowRestore() string { return In(i18n.Locale()).WindowRestore() }
+
+// WindowRestore says "Restore"
+// in the language of msgs.
+func (msgs Messages) WindowRestore() string {
+	return Catalog.Format(msgs.locale, "WindowRestore", nil)
+}
+
+// WindowClose says "Close"
+// in the language the app shows.
+func WindowClose() string { return In(i18n.Locale()).WindowClose() }
+
+// WindowClose says "Close"
+// in the language of msgs.
+func (msgs Messages) WindowClose() string {
+	return Catalog.Format(msgs.locale, "WindowClose", nil)
+}
+
+// RunHelperMissing says "Helper not installed"
+// in the language the app shows.
+func RunHelperMissing() string { return In(i18n.Locale()).RunHelperMissing() }
+
+// RunHelperMissing says "Helper not installed"
+// in the language of msgs.
+func (msgs Messages) RunHelperMissing() string {
+	return Catalog.Format(msgs.locale, "RunHelperMissing", nil)
+}
+
+// RunHelperStopped says "Helper not running"
+// in the language the app shows.
+func RunHelperStopped() string { return In(i18n.Locale()).RunHelperStopped() }
+
+// RunHelperStopped says "Helper not running"
+// in the language of msgs.
+func (msgs Messages) RunHelperStopped() string {
+	return Catalog.Format(msgs.locale, "RunHelperStopped", nil)
+}
+
+// RunServiceDown says "Service not running"
+// in the language the app shows.
+func RunServiceDown() string { return In(i18n.Locale()).RunServiceDown() }
+
+// RunServiceDown says "Service not running"
+// in the language of msgs.
+func (msgs Messages) RunServiceDown() string {
+	return Catalog.Format(msgs.locale, "RunServiceDown", nil)
+}
+
+// RunConnecting says "Connecting…"
+// in the language the app shows.
+func RunConnecting() string { return In(i18n.Locale()).RunConnecting() }
+
+// RunConnecting says "Connecting…"
+// in the language of msgs.
+func (msgs Messages) RunConnecting() string {
+	return Catalog.Format(msgs.locale, "RunConnecting", nil)
+}
+
+// NoDataTitle says "No current data"
+// in the language the app shows.
+func NoDataTitle() string { return In(i18n.Locale()).NoDataTitle() }
+
+// NoDataTitle says "No current data"
+// in the language of msgs.
+func (msgs Messages) NoDataTitle() string {
+	return Catalog.Format(msgs.locale, "NoDataTitle", nil)
+}
+
+// NoDataBody says "Traffic, nodes and activity show again as soon as the background service answers. Until then nothing here would be up…"
+// in the language the app shows.
+func NoDataBody() string { return In(i18n.Locale()).NoDataBody() }
+
+// NoDataBody says "Traffic, nodes and activity show again as soon as the background service answers. Until then nothing here would be up…"
+// in the language of msgs.
+func (msgs Messages) NoDataBody() string {
+	return Catalog.Format(msgs.locale, "NoDataBody", nil)
+}
+
+// EditConfiguration says "Edit configuration"
+// in the language the app shows.
+func EditConfiguration() string { return In(i18n.Locale()).EditConfiguration() }
+
+// EditConfiguration says "Edit configuration"
+// in the language of msgs.
+func (msgs Messages) EditConfiguration() string {
+	return Catalog.Format(msgs.locale, "EditConfiguration", nil)
+}
+
+// StoppedTitle says "{name} is not connected"
+// in the language the app shows.
+func StoppedTitle(name string) string { return In(i18n.Locale()).StoppedTitle(name) }
+
+// StoppedTitle says "{name} is not connected"
+// in the language of msgs.
+func (msgs Messages) StoppedTitle(name string) string {
+	return Catalog.Format(msgs.locale, "StoppedTitle", map[string]any{"name": name})
+}
+
+// SummaryTitle says "Configuration"
+// in the language the app shows.
+func SummaryTitle() string { return In(i18n.Locale()).SummaryTitle() }
+
+// SummaryTitle says "Configuration"
+// in the language of msgs.
+func (msgs Messages) SummaryTitle() string {
+	return Catalog.Format(msgs.locale, "SummaryTitle", nil)
+}
+
+// SummaryUnavailable says "This configuration has parts the summary cannot show. See Edit configuration."
+// in the language the app shows.
+func SummaryUnavailable() string { return In(i18n.Locale()).SummaryUnavailable() }
+
+// SummaryUnavailable says "This configuration has parts the summary cannot show. See Edit configuration."
+// in the language of msgs.
+func (msgs Messages) SummaryUnavailable() string {
+	return Catalog.Format(msgs.locale, "SummaryUnavailable", nil)
+}
+
+// SummaryPeersAbout says "Where this device meets the other nodes."
+// in the language the app shows.
+func SummaryPeersAbout() string { return In(i18n.Locale()).SummaryPeersAbout() }
+
+// SummaryPeersAbout says "Where this device meets the other nodes."
+// in the language of msgs.
+func (msgs Messages) SummaryPeersAbout() string {
+	return Catalog.Format(msgs.locale, "SummaryPeersAbout", nil)
+}
+
+// SummaryAddress says "Address"
+// in the language the app shows.
+func SummaryAddress() string { return In(i18n.Locale()).SummaryAddress() }
+
+// SummaryAddress says "Address"
+// in the language of msgs.
+func (msgs Messages) SummaryAddress() string {
+	return Catalog.Format(msgs.locale, "SummaryAddress", nil)
+}
+
+// SummaryAddressAbout says "This device's address in the network."
+// in the language the app shows.
+func SummaryAddressAbout() string { return In(i18n.Locale()).SummaryAddressAbout() }
+
+// SummaryAddressAbout says "This device's address in the network."
+// in the language of msgs.
+func (msgs Messages) SummaryAddressAbout() string {
+	return Catalog.Format(msgs.locale, "SummaryAddressAbout", nil)
+}
+
+// SummaryAddressAuto says "Assigned automatically"
+// in the language the app shows.
+func SummaryAddressAuto() string { return In(i18n.Locale()).SummaryAddressAuto() }
+
+// SummaryAddressAuto says "Assigned automatically"
+// in the language of msgs.
+func (msgs Messages) SummaryAddressAuto() string {
+	return Catalog.Format(msgs.locale, "SummaryAddressAuto", nil)
+}
+
+// SummaryDevice says "Virtual device"
+// in the language the app shows.
+func SummaryDevice() string { return In(i18n.Locale()).SummaryDevice() }
+
+// SummaryDevice says "Virtual device"
+// in the language of msgs.
+func (msgs Messages) SummaryDevice() string {
+	return Catalog.Format(msgs.locale, "SummaryDevice", nil)
+}
+
+// SummaryDeviceOn says "This device can open connections to other nodes."
+// in the language the app shows.
+func SummaryDeviceOn() string { return In(i18n.Locale()).SummaryDeviceOn() }
+
+// SummaryDeviceOn says "This device can open connections to other nodes."
+// in the language of msgs.
+func (msgs Messages) SummaryDeviceOn() string {
+	return Catalog.Format(msgs.locale, "SummaryDeviceOn", nil)
+}
+
+// SummaryListenersAbout says "Other nodes can connect to this device here."
+// in the language the app shows.
+func SummaryListenersAbout() string { return In(i18n.Locale()).SummaryListenersAbout() }
+
+// SummaryListenersAbout says "Other nodes can connect to this device here."
+// in the language of msgs.
+func (msgs Messages) SummaryListenersAbout() string {
+	return Catalog.Format(msgs.locale, "SummaryListenersAbout", nil)
+}
+
+// StateOn says "On"
+// in the language the app shows.
+func StateOn() string { return In(i18n.Locale()).StateOn() }
+
+// StateOn says "On"
+// in the language of msgs.
+func (msgs Messages) StateOn() string {
+	return Catalog.Format(msgs.locale, "StateOn", nil)
+}
+
+// StateOff says "Off"
+// in the language the app shows.
+func StateOff() string { return In(i18n.Locale()).StateOff() }
+
+// StateOff says "Off"
+// in the language of msgs.
+func (msgs Messages) StateOff() string {
+	return Catalog.Format(msgs.locale, "StateOff", nil)
+}
+
+// PeersHint says "Right-click a node to copy its address"
+// in the language the app shows.
+func PeersHint() string { return In(i18n.Locale()).PeersHint() }
+
+// PeersHint says "Right-click a node to copy its address"
+// in the language of msgs.
+func (msgs Messages) PeersHint() string {
+	return Catalog.Format(msgs.locale, "PeersHint", nil)
+}
+
+// ActivitySub says "All networks · newest first"
+// in the language the app shows.
+func ActivitySub() string { return In(i18n.Locale()).ActivitySub() }
+
+// ActivitySub says "All networks · newest first"
+// in the language of msgs.
+func (msgs Messages) ActivitySub() string {
+	return Catalog.Format(msgs.locale, "ActivitySub", nil)
+}
+
+// DayToday says "Today"
+// in the language the app shows.
+func DayToday() string { return In(i18n.Locale()).DayToday() }
+
+// DayToday says "Today"
+// in the language of msgs.
+func (msgs Messages) DayToday() string {
+	return Catalog.Format(msgs.locale, "DayToday", nil)
+}
+
+// DayYesterday says "Yesterday"
+// in the language the app shows.
+func DayYesterday() string { return In(i18n.Locale()).DayYesterday() }
+
+// DayYesterday says "Yesterday"
+// in the language of msgs.
+func (msgs Messages) DayYesterday() string {
+	return Catalog.Format(msgs.locale, "DayYesterday", nil)
+}
+
+// ActionClose says "Close"
+// in the language the app shows.
+func ActionClose() string { return In(i18n.Locale()).ActionClose() }
+
+// ActionClose says "Close"
+// in the language of msgs.
+func (msgs Messages) ActionClose() string {
+	return Catalog.Format(msgs.locale, "ActionClose", nil)
+}
+
+// EditNameAbout says "Only this app uses it."
+// in the language the app shows.
+func EditNameAbout() string { return In(i18n.Locale()).EditNameAbout() }
+
+// EditNameAbout says "Only this app uses it."
+// in the language of msgs.
+func (msgs Messages) EditNameAbout() string {
+	return Catalog.Format(msgs.locale, "EditNameAbout", nil)
+}
+
+// EditSecretAbout says "Anyone who has it can join. Keep it private."
+// in the language the app shows.
+func EditSecretAbout() string { return In(i18n.Locale()).EditSecretAbout() }
+
+// EditSecretAbout says "Anyone who has it can join. Keep it private."
+// in the language of msgs.
+func (msgs Messages) EditSecretAbout() string {
+	return Catalog.Format(msgs.locale, "EditSecretAbout", nil)
+}
+
+// EditHostnameAbout says "How other nodes see this device."
+// in the language the app shows.
+func EditHostnameAbout() string { return In(i18n.Locale()).EditHostnameAbout() }
+
+// EditHostnameAbout says "How other nodes see this device."
+// in the language of msgs.
+func (msgs Messages) EditHostnameAbout() string {
+	return Catalog.Format(msgs.locale, "EditHostnameAbout", nil)
+}
+
+// EditSectionAddress says "Address"
+// in the language the app shows.
+func EditSectionAddress() string { return In(i18n.Locale()).EditSectionAddress() }
+
+// EditSectionAddress says "Address"
+// in the language of msgs.
+func (msgs Messages) EditSectionAddress() string {
+	return Catalog.Format(msgs.locale, "EditSectionAddress", nil)
+}
+
+// EditDHCPAbout says "The network picks a free address for this device."
+// in the language the app shows.
+func EditDHCPAbout() string { return In(i18n.Locale()).EditDHCPAbout() }
+
+// EditDHCPAbout says "The network picks a free address for this device."
+// in the language of msgs.
+func (msgs Messages) EditDHCPAbout() string {
+	return Catalog.Format(msgs.locale, "EditDHCPAbout", nil)
+}
+
+// EditIPv4About says "Used while the address is not assigned automatically."
+// in the language the app shows.
+func EditIPv4About() string { return In(i18n.Locale()).EditIPv4About() }
+
+// EditIPv4About says "Used while the address is not assigned automatically."
+// in the language of msgs.
+func (msgs Messages) EditIPv4About() string {
+	return Catalog.Format(msgs.locale, "EditIPv4About", nil)
+}
+
+// EditDeviceAbout says "Needed to open connections to other nodes. Off works without privileges."
+// in the language the app shows.
+func EditDeviceAbout() string { return In(i18n.Locale()).EditDeviceAbout() }
+
+// EditDeviceAbout says "Needed to open connections to other nodes. Off works without privileges."
+// in the language of msgs.
+func (msgs Messages) EditDeviceAbout() string {
+	return Catalog.Format(msgs.locale, "EditDeviceAbout", nil)
+}
+
+// EditSectionDelete says "Remove"
+// in the language the app shows.
+func EditSectionDelete() string { return In(i18n.Locale()).EditSectionDelete() }
+
+// EditSectionDelete says "Remove"
+// in the language of msgs.
+func (msgs Messages) EditSectionDelete() string {
+	return Catalog.Format(msgs.locale, "EditSectionDelete", nil)
+}
+
+// EditDeleteAbout says "Removes the network and its configuration from this device."
+// in the language the app shows.
+func EditDeleteAbout() string { return In(i18n.Locale()).EditDeleteAbout() }
+
+// EditDeleteAbout says "Removes the network and its configuration from this device."
+// in the language of msgs.
+func (msgs Messages) EditDeleteAbout() string {
+	return Catalog.Format(msgs.locale, "EditDeleteAbout", nil)
+}
+
+// CreatePeerAbout says "Where the nodes meet. Add more later in Edit configuration."
+// in the language the app shows.
+func CreatePeerAbout() string { return In(i18n.Locale()).CreatePeerAbout() }
+
+// CreatePeerAbout says "Where the nodes meet. Add more later in Edit configuration."
+// in the language of msgs.
+func (msgs Messages) CreatePeerAbout() string {
+	return Catalog.Format(msgs.locale, "CreatePeerAbout", nil)
+}
+
+// SettingsGroupPreferences says "Preferences"
+// in the language the app shows.
+func SettingsGroupPreferences() string { return In(i18n.Locale()).SettingsGroupPreferences() }
+
+// SettingsGroupPreferences says "Preferences"
+// in the language of msgs.
+func (msgs Messages) SettingsGroupPreferences() string {
+	return Catalog.Format(msgs.locale, "SettingsGroupPreferences", nil)
+}
+
+// SettingsGroupComputer says "This computer"
+// in the language the app shows.
+func SettingsGroupComputer() string { return In(i18n.Locale()).SettingsGroupComputer() }
+
+// SettingsGroupComputer says "This computer"
+// in the language of msgs.
+func (msgs Messages) SettingsGroupComputer() string {
+	return Catalog.Format(msgs.locale, "SettingsGroupComputer", nil)
+}
+
+// SettingsAboutTitle says "About & updates"
+// in the language the app shows.
+func SettingsAboutTitle() string { return In(i18n.Locale()).SettingsAboutTitle() }
+
+// SettingsAboutTitle says "About & updates"
+// in the language of msgs.
+func (msgs Messages) SettingsAboutTitle() string {
+	return Catalog.Format(msgs.locale, "SettingsAboutTitle", nil)
+}
+
+// SettingsSearch says "Search"
+// in the language the app shows.
+func SettingsSearch() string { return In(i18n.Locale()).SettingsSearch() }
+
+// SettingsSearch says "Search"
+// in the language of msgs.
+func (msgs Messages) SettingsSearch() string {
+	return Catalog.Format(msgs.locale, "SettingsSearch", nil)
+}
+
+// SettingsSearchNone says "No setting matches."
+// in the language the app shows.
+func SettingsSearchNone() string { return In(i18n.Locale()).SettingsSearchNone() }
+
+// SettingsSearchNone says "No setting matches."
+// in the language of msgs.
+func (msgs Messages) SettingsSearchNone() string {
+	return Catalog.Format(msgs.locale, "SettingsSearchNone", nil)
+}
+
+// SettingsLanguageAbout says "Follows the system unless you choose one."
+// in the language the app shows.
+func SettingsLanguageAbout() string { return In(i18n.Locale()).SettingsLanguageAbout() }
+
+// SettingsLanguageAbout says "Follows the system unless you choose one."
+// in the language of msgs.
+func (msgs Messages) SettingsLanguageAbout() string {
+	return Catalog.Format(msgs.locale, "SettingsLanguageAbout", nil)
+}
+
+// SettingsThemeAbout says "The sidebar's button switches it too."
+// in the language the app shows.
+func SettingsThemeAbout() string { return In(i18n.Locale()).SettingsThemeAbout() }
+
+// SettingsThemeAbout says "The sidebar's button switches it too."
+// in the language of msgs.
+func (msgs Messages) SettingsThemeAbout() string {
+	return Catalog.Format(msgs.locale, "SettingsThemeAbout", nil)
+}
+
+// SettingsStartHiddenAbout says "Only the tray icon shows; the window opens from it."
+// in the language the app shows.
+func SettingsStartHiddenAbout() string { return In(i18n.Locale()).SettingsStartHiddenAbout() }
+
+// SettingsStartHiddenAbout says "Only the tray icon shows; the window opens from it."
+// in the language of msgs.
+func (msgs Messages) SettingsStartHiddenAbout() string {
+	return Catalog.Format(msgs.locale, "SettingsStartHiddenAbout", nil)
+}
+
+// SettingsCloseAbout says "What closing the window does. Networks then run as the run mode says."
+// in the language the app shows.
+func SettingsCloseAbout() string { return In(i18n.Locale()).SettingsCloseAbout() }
+
+// SettingsCloseAbout says "What closing the window does. Networks then run as the run mode says."
+// in the language of msgs.
+func (msgs Messages) SettingsCloseAbout() string {
+	return Catalog.Format(msgs.locale, "SettingsCloseAbout", nil)
+}
+
+// NotifyConnections says "Connection changes"
+// in the language the app shows.
+func NotifyConnections() string { return In(i18n.Locale()).NotifyConnections() }
+
+// NotifyConnections says "Connection changes"
+// in the language of msgs.
+func (msgs Messages) NotifyConnections() string {
+	return Catalog.Format(msgs.locale, "NotifyConnections", nil)
+}
+
+// NotifyConnectionsAbout says "A notification when a network connects, runs into a problem or recovers."
+// in the language the app shows.
+func NotifyConnectionsAbout() string { return In(i18n.Locale()).NotifyConnectionsAbout() }
+
+// NotifyConnectionsAbout says "A notification when a network connects, runs into a problem or recovers."
+// in the language of msgs.
+func (msgs Messages) NotifyConnectionsAbout() string {
+	return Catalog.Format(msgs.locale, "NotifyConnectionsAbout", nil)
+}
+
+// SettingsGeneralAbout says "How EasyTier MyGo looks, starts and tells you about changes."
+// in the language the app shows.
+func SettingsGeneralAbout() string { return In(i18n.Locale()).SettingsGeneralAbout() }
+
+// SettingsGeneralAbout says "How EasyTier MyGo looks, starts and tells you about changes."
+// in the language of msgs.
+func (msgs Messages) SettingsGeneralAbout() string {
+	return Catalog.Format(msgs.locale, "SettingsGeneralAbout", nil)
+}
+
+// SectionLook says "Language and look"
+// in the language the app shows.
+func SectionLook() string { return In(i18n.Locale()).SectionLook() }
+
+// SectionLook says "Language and look"
+// in the language of msgs.
+func (msgs Messages) SectionLook() string {
+	return Catalog.Format(msgs.locale, "SectionLook", nil)
+}
+
+// SectionStart says "Start and close"
+// in the language the app shows.
+func SectionStart() string { return In(i18n.Locale()).SectionStart() }
+
+// SectionStart says "Start and close"
+// in the language of msgs.
+func (msgs Messages) SectionStart() string {
+	return Catalog.Format(msgs.locale, "SectionStart", nil)
+}
+
+// SectionHelper says "Privileged helper"
+// in the language the app shows.
+func SectionHelper() string { return In(i18n.Locale()).SectionHelper() }
+
+// SectionHelper says "Privileged helper"
+// in the language of msgs.
+func (msgs Messages) SectionHelper() string {
+	return Catalog.Format(msgs.locale, "SectionHelper", nil)
+}
+
+// SectionRunModes says "How your networks run"
+// in the language the app shows.
+func SectionRunModes() string { return In(i18n.Locale()).SectionRunModes() }
+
+// SectionRunModes says "How your networks run"
+// in the language of msgs.
+func (msgs Messages) SectionRunModes() string {
+	return Catalog.Format(msgs.locale, "SectionRunModes", nil)
+}
+
+// SectionInstalled says "Installed"
+// in the language the app shows.
+func SectionInstalled() string { return In(i18n.Locale()).SectionInstalled() }
+
+// SectionInstalled says "Installed"
+// in the language of msgs.
+func (msgs Messages) SectionInstalled() string {
+	return Catalog.Format(msgs.locale, "SectionInstalled", nil)
+}
+
+// SectionUpdates says "Updates"
+// in the language the app shows.
+func SectionUpdates() string { return In(i18n.Locale()).SectionUpdates() }
+
+// SectionUpdates says "Updates"
+// in the language of msgs.
+func (msgs Messages) SectionUpdates() string {
+	return Catalog.Format(msgs.locale, "SectionUpdates", nil)
+}
+
+// SectionDiagnostics says "Diagnostics"
+// in the language the app shows.
+func SectionDiagnostics() string { return In(i18n.Locale()).SectionDiagnostics() }
+
+// SectionDiagnostics says "Diagnostics"
+// in the language of msgs.
+func (msgs Messages) SectionDiagnostics() string {
+	return Catalog.Format(msgs.locale, "SectionDiagnostics", nil)
+}
+
+// ActionSwitch says "Switch"
+// in the language the app shows.
+func ActionSwitch() string { return In(i18n.Locale()).ActionSwitch() }
+
+// ActionSwitch says "Switch"
+// in the language of msgs.
+func (msgs Messages) ActionSwitch() string {
+	return Catalog.Format(msgs.locale, "ActionSwitch", nil)
+}
+
+// RunModeSwitchNote says "Switching moves your networks along and reconnects the ones that were connected."
+// in the language the app shows.
+func RunModeSwitchNote() string { return In(i18n.Locale()).RunModeSwitchNote() }
+
+// RunModeSwitchNote says "Switching moves your networks along and reconnects the ones that were connected."
+// in the language of msgs.
+func (msgs Messages) RunModeSwitchNote() string {
+	return Catalog.Format(msgs.locale, "RunModeSwitchNote", nil)
+}
+
+// HelperNotInstalled says "Not installed"
+// in the language the app shows.
+func HelperNotInstalled() string { return In(i18n.Locale()).HelperNotInstalled() }
+
+// HelperNotInstalled says "Not installed"
+// in the language of msgs.
+func (msgs Messages) HelperNotInstalled() string {
+	return Catalog.Format(msgs.locale, "HelperNotInstalled", nil)
+}
+
+// HelperNotInstalledAbout says "It is installed when you switch to Follow GUI or Background service."
+// in the language the app shows.
+func HelperNotInstalledAbout() string { return In(i18n.Locale()).HelperNotInstalledAbout() }
+
+// HelperNotInstalledAbout says "It is installed when you switch to Follow GUI or Background service."
+// in the language of msgs.
+func (msgs Messages) HelperNotInstalledAbout() string {
+	return Catalog.Format(msgs.locale, "HelperNotInstalledAbout", nil)
+}
+
+// HelperAbout says "Runs the networks for Follow GUI and Background service, and updates itself with the app."
+// in the language the app shows.
+func HelperAbout() string { return In(i18n.Locale()).HelperAbout() }
+
+// HelperAbout says "Runs the networks for Follow GUI and Background service, and updates itself with the app."
+// in the language of msgs.
+func (msgs Messages) HelperAbout() string {
+	return Catalog.Format(msgs.locale, "HelperAbout", nil)
+}
+
+// CoreUpdateFound says "EasyTier {tag} is available. It is downloaded only when you choose to."
+// in the language the app shows.
+func CoreUpdateFound(tag string) string { return In(i18n.Locale()).CoreUpdateFound(tag) }
+
+// CoreUpdateFound says "EasyTier {tag} is available. It is downloaded only when you choose to."
+// in the language of msgs.
+func (msgs Messages) CoreUpdateFound(tag string) string {
+	return Catalog.Format(msgs.locale, "CoreUpdateFound", map[string]any{"tag": tag})
+}
+
+// CoreBundledAbout says "Bundled with this app."
+// in the language the app shows.
+func CoreBundledAbout() string { return In(i18n.Locale()).CoreBundledAbout() }
+
+// CoreBundledAbout says "Bundled with this app."
+// in the language of msgs.
+func (msgs Messages) CoreBundledAbout() string {
+	return Catalog.Format(msgs.locale, "CoreBundledAbout", nil)
+}
+
+// CoreDownloadedAbout says "Downloaded. Checked before every start."
+// in the language the app shows.
+func CoreDownloadedAbout() string { return In(i18n.Locale()).CoreDownloadedAbout() }
+
+// CoreDownloadedAbout says "Downloaded. Checked before every start."
+// in the language of msgs.
+func (msgs Messages) CoreDownloadedAbout() string {
+	return Catalog.Format(msgs.locale, "CoreDownloadedAbout", nil)
+}
+
+// CoresUnchecked says "Check for releases to see what is available."
+// in the language the app shows.
+func CoresUnchecked() string { return In(i18n.Locale()).CoresUnchecked() }
+
+// CoresUnchecked says "Check for releases to see what is available."
+// in the language of msgs.
+func (msgs Messages) CoresUnchecked() string {
+	return Catalog.Format(msgs.locale, "CoresUnchecked", nil)
+}
+
+// CorePublished says "Published {date}"
+// in the language the app shows.
+func CorePublished(date string) string { return In(i18n.Locale()).CorePublished(date) }
+
+// CorePublished says "Published {date}"
+// in the language of msgs.
+func (msgs Messages) CorePublished(date string) string {
+	return Catalog.Format(msgs.locale, "CorePublished", map[string]any{"date": date})
+}
+
+// SettingsAboutAbout says "This app's version and updates, and what to send when something goes wrong."
+// in the language the app shows.
+func SettingsAboutAbout() string { return In(i18n.Locale()).SettingsAboutAbout() }
+
+// SettingsAboutAbout says "This app's version and updates, and what to send when something goes wrong."
+// in the language of msgs.
+func (msgs Messages) SettingsAboutAbout() string {
+	return Catalog.Format(msgs.locale, "SettingsAboutAbout", nil)
+}
+
+// AboutVersion says "Version {version}"
+// in the language the app shows.
+func AboutVersion(version string) string { return In(i18n.Locale()).AboutVersion(version) }
+
+// AboutVersion says "Version {version}"
+// in the language of msgs.
+func (msgs Messages) AboutVersion(version string) string {
+	return Catalog.Format(msgs.locale, "AboutVersion", map[string]any{"version": version})
+}
+
+// AboutLicenseTitle says "License"
+// in the language the app shows.
+func AboutLicenseTitle() string { return In(i18n.Locale()).AboutLicenseTitle() }
+
+// AboutLicenseTitle says "License"
+// in the language of msgs.
+func (msgs Messages) AboutLicenseTitle() string {
+	return Catalog.Format(msgs.locale, "AboutLicenseTitle", nil)
+}
+
+// AboutDesignTitle says "Design and icon"
+// in the language the app shows.
+func AboutDesignTitle() string { return In(i18n.Locale()).AboutDesignTitle() }
+
+// AboutDesignTitle says "Design and icon"
+// in the language of msgs.
+func (msgs Messages) AboutDesignTitle() string {
+	return Catalog.Format(msgs.locale, "AboutDesignTitle", nil)
+}
+
+// AboutDesign says "Colors, node rows and the timeline follow EasyTier-iOS, whose artwork the icon uses."
+// in the language the app shows.
+func AboutDesign() string { return In(i18n.Locale()).AboutDesign() }
+
+// AboutDesign says "Colors, node rows and the timeline follow EasyTier-iOS, whose artwork the icon uses."
+// in the language of msgs.
+func (msgs Messages) AboutDesign() string {
+	return Catalog.Format(msgs.locale, "AboutDesign", nil)
+}
+
+// AppUpdateInstallingAbout says "In No privileges mode the networks pause until the new version starts."
+// in the language the app shows.
+func AppUpdateInstallingAbout() string { return In(i18n.Locale()).AppUpdateInstallingAbout() }
+
+// AppUpdateInstallingAbout says "In No privileges mode the networks pause until the new version starts."
+// in the language of msgs.
+func (msgs Messages) AppUpdateInstallingAbout() string {
+	return Catalog.Format(msgs.locale, "AppUpdateInstallingAbout", nil)
+}
+
+// AppUpdateAvailableAbout says "Signed, and installed only when you choose. The app restarts."
+// in the language the app shows.
+func AppUpdateAvailableAbout() string { return In(i18n.Locale()).AppUpdateAvailableAbout() }
+
+// AppUpdateAvailableAbout says "Signed, and installed only when you choose. The app restarts."
+// in the language of msgs.
+func (msgs Messages) AppUpdateAvailableAbout() string {
+	return Catalog.Format(msgs.locale, "AppUpdateAvailableAbout", nil)
+}
+
+// AppUpdateNeverChecked says "Not checked yet."
+// in the language the app shows.
+func AppUpdateNeverChecked() string { return In(i18n.Locale()).AppUpdateNeverChecked() }
+
+// AppUpdateNeverChecked says "Not checked yet."
+// in the language of msgs.
+func (msgs Messages) AppUpdateNeverChecked() string {
+	return Catalog.Format(msgs.locale, "AppUpdateNeverChecked", nil)
+}
+
+// AppUpdateLastChecked says "Last checked {when}"
+// in the language the app shows.
+func AppUpdateLastChecked(when string) string { return In(i18n.Locale()).AppUpdateLastChecked(when) }
+
+// AppUpdateLastChecked says "Last checked {when}"
+// in the language of msgs.
+func (msgs Messages) AppUpdateLastChecked(when string) string {
+	return Catalog.Format(msgs.locale, "AppUpdateLastChecked", map[string]any{"when": when})
+}
+
+// DiagFile says "Diagnostics file"
+// in the language the app shows.
+func DiagFile() string { return In(i18n.Locale()).DiagFile() }
+
+// DiagFile says "Diagnostics file"
+// in the language of msgs.
+func (msgs Messages) DiagFile() string {
+	return Catalog.Format(msgs.locale, "DiagFile", nil)
+}
+
+// DiagLogs says "Logs"
+// in the language the app shows.
+func DiagLogs() string { return In(i18n.Locale()).DiagLogs() }
+
+// DiagLogs says "Logs"
+// in the language of msgs.
+func (msgs Messages) DiagLogs() string {
+	return Catalog.Format(msgs.locale, "DiagLogs", nil)
+}
+
+// DiagLogsAbout says "This app's and its background service's logs."
+// in the language the app shows.
+func DiagLogsAbout() string { return In(i18n.Locale()).DiagLogsAbout() }
+
+// DiagLogsAbout says "This app's and its background service's logs."
+// in the language of msgs.
+func (msgs Messages) DiagLogsAbout() string {
+	return Catalog.Format(msgs.locale, "DiagLogsAbout", nil)
+}
+
+// WelcomeContinue says "Continue with {mode}"
+// in the language the app shows.
+func WelcomeContinue(mode string) string { return In(i18n.Locale()).WelcomeContinue(mode) }
+
+// WelcomeContinue says "Continue with {mode}"
+// in the language of msgs.
+func (msgs Messages) WelcomeContinue(mode string) string {
+	return Catalog.Format(msgs.locale, "WelcomeContinue", map[string]any{"mode": mode})
 }

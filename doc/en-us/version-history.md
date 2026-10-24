@@ -3,9 +3,24 @@
 The project restarted from 0.1.0 on 2026-10-16. The earlier, inherited history (versions up to
 0.10.80) is preserved under the git tag `archive/v0.10.80` and is not continued.
 
-## Unreleased
+## 0.2.0 (2026-10-24)
 
-- MyGo v0.6.3 (updated from v0.6.2) / EasyTier v2.6.4 (checked 2026-10-23, unchanged).
+- A new interface after Kyokai's: the sidebar sits on the window's material (Mica on Windows 11,
+  the sidebar material on macOS) and the content is one floating pane whose header is the
+  window's title bar. The 0.1.7 title strip is gone; Windows' window buttons are drawn in the
+  header, macOS' traffic lights sit over the sidebar, Linux keeps the desktop's buttons.
+- Sidebar: networks with a tile and a status dot, Activity, a light/dark toggle, Settings and the
+  run mode at the foot; it folds to a rail of icons.
+- Network pane: Edit and Connect/Disconnect in the header; a disconnected network shows its
+  configuration (never its secret); without current data only "No current data" shows. Problems
+  with the background service are cards under the header.
+- Editor and Add network: fields as rows with one sentence each, Form | TOML and Save / Save and
+  apply in the header, Delete network last. Logs became Activity, grouped by day.
+- Settings is a sheet over the window with search, regrouped: Preferences › General; This
+  computer › Run mode, EasyTier core; EasyTier MyGo › About & updates (Advanced moved into its
+  Diagnostics).
+- First run: the run modes are tiles to choose from, with one Continue button.
+- MyGo v0.6.3 (updated from v0.6.2) / EasyTier v2.6.4 (checked 2026-10-24, unchanged).
 
 ## 0.1.7 (2026-10-22)
 

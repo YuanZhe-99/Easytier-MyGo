@@ -15,7 +15,7 @@ Windows and macOS backends are experimental and partly verified on real machines
 | [run-modes.md](run-modes.md) | The three run modes, the privileged helper, authorization |
 | [health-monitoring.md](health-monitoring.md) | Health vocabulary, policy, bounded recovery |
 | [configuration.md](configuration.md) | Raw config documents, form projection, save vs. apply |
-| [gui.md](gui.md) | Interface structure, peer rows, wording rules, charts, tray, languages |
+| [gui.md](gui.md) | Window, sidebar, network pane, editing, Settings, first run, peer rows, wording, charts, tray, languages |
 | [easytier-upstream.md](easytier-upstream.md) | The EasyTier CLI contract, release assets and verified quirks |
 | [platform-notes.md](platform-notes.md) | What is implemented and verified on each platform |
 | [development.md](development.md) | Environment, commands, the dev loop |

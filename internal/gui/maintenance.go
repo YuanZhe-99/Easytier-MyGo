@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/egoist/mygo"
-	"github.com/egoist/mygo/ui"
 
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/localapi"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/version"
@@ -73,24 +72,6 @@ func (a *App) maybeCheckCores(c *localapi.Client) {
 			a.update(func() {})
 		}
 	}()
-}
-
-// advancedSettings: diagnostics export and the log folder.
-func (a *App) advancedSettings(c *ui.Context) {
-	t := c.Theme()
-	card(c).Children(func() {
-		ui.Text(c, L.SettingsAdvanced()).FontSize(sizeHeading).Bold()
-		ui.Text(c, L.SettingsAdvancedHint()).FontSize(sizeSmall).TextColor(t.TextMuted)
-		ui.Row(c).Gap(8).Children(func() {
-			if ui.Button(c, L.ActionExportDiagnostics()).Clicked() {
-				a.exportDiagnostics()
-			}
-			if ui.Button(c, L.ActionOpenLogs()).Clicked() {
-				dir := userStateDir()
-				go func() { _ = mygo.Shell.OpenPath(dir) }()
-			}
-		})
-	})
 }
 
 // userStateDir is where the GUI and the user daemon keep logs and state.
