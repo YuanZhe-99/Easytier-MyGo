@@ -164,7 +164,7 @@ func (d artPainter) chip(x, y float32, s string, face, ink ui.Color, centred boo
 	d.p.RichText(x+10, y-h/2, 0, span)
 }
 
-// computer draws this computer in perspective with its top's centre at
+// computer draws this computer with its top's centre at
 // (x, y), and its light, lit or asleep.
 func (d artPainter) computer(x, y float32, asleep float32) {
 	m := computerModel(artPlatform)
@@ -195,26 +195,26 @@ func (d artPainter) networkScene(ready bool) {
 	}
 	d.computer(160, 330+bob, 0)
 	if !ready {
-		d.text(160, 432, L.TourArtThis(), 13, 600, c.text, 1, 0)
+		d.text(160, 446, L.TourArtThis(), 13, 600, c.text, 1, 0)
 		return
 	}
 	if d.st.pop > 0 {
 		k := d.st.pop
-		d.p.Transform(ui.Scaling(k, k), 214, 300, func() {
-			badge := (&ui.Path{}).Circle(214, 300, 17)
+		d.p.Transform(ui.Scaling(k, k), 222, 300, func() {
+			badge := (&ui.Path{}).Circle(222, 300, 17)
 			d.p.FillPath(badge, c.good)
 			d.p.StrokePath(badge, 3, c.card)
-			check := (&ui.Path{}).MoveTo(207, 300).LineTo(212, 305).LineTo(221, 295)
+			check := (&ui.Path{}).MoveTo(215, 300).LineTo(220, 305).LineTo(229, 295)
 			d.p.StrokePath(check, 2.6, artWhite)
 		})
 	}
 	mode := modeTitle(d.st.mode0)
-	d.text(160, 432, mode, 13, 600, c.text, 1, 0)
+	d.text(160, 446, mode, 13, 600, c.text, 1, 0)
 	when := L.TourArtWhenOpen()
 	if d.st.mode0 == choiceBackground {
 		when = L.TourArtFromStartup()
 	}
-	d.text(160, 452, when, sizeSmall, 400, c.muted, 1, 0)
+	d.text(160, 466, when, sizeSmall, 400, c.muted, 1, 0)
 }
 
 // deviceScene is the virtual device step: apps on this computer reach the
@@ -245,8 +245,8 @@ func (d artPainter) deviceScene() {
 	}
 	d.computer(160, 310, 0)
 	if tun > 0.01 {
-		d.p.Line(214, 354, 236, 354, 1.5, c.accent.Alpha(tun))
-		d.chip(236, 354, L.TourArtDevice(), c.accent.Alpha(tun), artWhite.Alpha(tun), false)
+		d.p.Line(174, 427, 186, 427, 1.5, c.accent.Alpha(tun))
+		d.chip(186, 427, L.TourArtDevice(), c.accent.Alpha(tun), artWhite.Alpha(tun), false)
 	}
 	d.flow(150, 402, 150, 452, c.flow.Alpha(tun), true)
 	d.flow(170, 452, 170, 402, c.inbound, true)
@@ -372,11 +372,13 @@ func (d artPainter) awakeScene() {
 	d.text(160, 486, L.TourArtScreenOK(), sizeSmall, 400, c.muted, 1, 300)
 }
 
-// boxModel is a rounded box seen through a camera from the front left,
-// above: a computer, or a layer of the run-mode illustration. Sizes are in
-// the illustration's units, angles in degrees.
+// boxModel is a rounded box seen from the front left, above: a computer,
+// in the fixed view without perspective (ortho), or a layer of the run-mode
+// illustration, through a camera at yaw and pitch. Sizes are in the
+// model's units, angles in degrees; the front is at -z, the top at y = 0.
 type boxModel struct {
 	w, d, h, r float64
+	ortho      bool
 	yaw, pitch float64
 	zoom       float64
 	top        [2]ui.Color // the top, from its back to its front
@@ -385,47 +387,51 @@ type boxModel struct {
 	logo       string      // the system's mark on the top (assets/logos), or ""
 	logoColor  ui.Color
 	logoSize   float32
-	detail     ui.Color // ports and grooves
+	detail     ui.Color // the mini PC's grooves
 	detailW    float32
-	ports      [][4]float64 // on the front face: x0, y0, x1, y1, the heights as fractions of h
 	shadow     bool
 }
 
+// The view of every computer: a point (x, y, z) shows at
+// (viewX·(x, z), viewY·(x, z) − y), the right side rising and the front
+// coming down toward the viewer.
+var (
+	viewX = [2]float64{0.906, -0.423}
+	viewY = [2]float64{-0.211, -0.453}
+)
+
 // computerModel is the computer the illustrations show for a system: a
-// Windows Dev Kit, a Mac mini, or a mini PC.
+// Windows Dev Kit, a Mac mini, or a mini PC. The system's mark lies square
+// on its top, its top edge toward the back.
 func computerModel(goos string) projectedBox {
 	var m boxModel
 	led := [2]float64{-30, -20} // the light, on the front face: x and height
 	switch goos {
 	case "windows":
-		m = boxModel{w: 112, d: 86, h: 12, r: 10, yaw: 28, pitch: 30, zoom: 1.12,
+		m = boxModel{w: 150, d: 110, h: 12, r: 10,
 			top: [2]ui.Color{ui.Hex("#6E6E72"), ui.Hex("#3A3A3D")}, side: ui.RGB(58, 58, 61), edge: ui.RGBA(255, 255, 255, 0.18),
-			logo: "windows", logoColor: ui.RGBA(18, 18, 20, 0.5), logoSize: 20, detail: ui.Hex("#0B0B0C"), detailW: 2.2,
-			ports: [][4]float64{{-46, 0.5, -42, 0.5}, {-37, 0.5, -33, 0.5}, {-26, 0.5, -19, 0.5}, {10, 0.5, 14, 0.5}}}
-		led = [2]float64{40, -6}
+			logo: "windows", logoColor: ui.RGBA(18, 18, 20, 0.5), logoSize: 20}
+		led = [2]float64{55, -6}
 	case "darwin":
-		m = boxModel{w: 78, d: 78, h: 30, r: 15, yaw: 36, pitch: 28, zoom: 1.12,
+		m = boxModel{w: 110, d: 110, h: 34, r: 20,
 			top: [2]ui.Color{ui.Hex("#FBFBFC"), ui.Hex("#D2D2D6")}, side: ui.RGB(230, 230, 234), edge: ui.RGBA(0, 0, 0, 0.1),
-			logo: "apple", logoColor: ui.Hex("#1D1D1F"), logoSize: 26, detail: ui.Hex("#4A4A4F"), detailW: 2.2,
-			ports: [][4]float64{{-22, 0.36, -22, 0.64}, {-15, 0.36, -15, 0.64}}}
-		led = [2]float64{29, -15}
+			logo: "apple", logoColor: ui.Hex("#1D1D1F"), logoSize: 30}
+		led = [2]float64{38, -19}
 	default:
-		m = boxModel{w: 84, d: 84, h: 40, r: 6, yaw: 34, pitch: 30, zoom: 1.08,
+		m = boxModel{w: 84, d: 84, h: 40, r: 6,
 			top: [2]ui.Color{ui.Hex("#55565C"), ui.Hex("#2F3035")}, side: ui.RGB(54, 55, 60), edge: ui.RGBA(255, 255, 255, 0.14),
 			logo: "linux", logoColor: ui.Hex("#ECECEF"), logoSize: 30, detail: ui.Hex("#1C1D20"), detailW: 1.2}
-		// Two grooves around the front and the right side.
-		for _, y := range []float64{1.0 / 3, 2.0 / 3} {
-			m.ports = append(m.ports, [4]float64{-36, y, 36, y})
-		}
 	}
-	m.shadow = true
+	m.ortho, m.zoom, m.shadow = true, 1.25, true
 	pb := m.project()
 	pb.led = pb.at(led[0], led[1], -m.d/2-0.3)
-	if goos != "windows" && goos != "darwin" {
-		// The right side's grooves.
+	if m.detailW > 0 {
+		// Two grooves around the front and the left side, the faces in view.
+		hw, hd := m.w/2, m.d/2
 		for _, y := range []float64{-m.h / 3, -m.h * 2 / 3} {
-			a, b := pb.at(m.w/2+0.3, y, -m.d/2+m.r), pb.at(m.w/2+0.3, y, m.d/2-m.r)
-			pb.details = append(pb.details, [2][2]float32{a, b})
+			pb.details = append(pb.details,
+				[2][2]float32{pb.at(-hw+m.r, y, -hd-0.3), pb.at(hw-m.r, y, -hd-0.3)},
+				[2][2]float32{pb.at(-hw-0.3, y, -hd+m.r), pb.at(-hw-0.3, y, hd-m.r)})
 		}
 	}
 	return pb
@@ -438,8 +444,8 @@ func layerModel(face ui.Color) projectedBox {
 		top: [2]ui.Color{face, face.Mix(ui.RGB(0, 0, 0), 0.05)}, side: side, edge: ui.RGBA(0, 0, 0, 0.08)}.project()
 }
 
-// projectedBox is a boxModel seen through its camera, in the
-// illustration's units around the top's centre.
+// projectedBox is a boxModel as seen, in the illustration's units around
+// the top's centre.
 type projectedBox struct {
 	m       boxModel
 	top     [][2]float32
@@ -452,9 +458,9 @@ type projectedBox struct {
 	at      func(x, y, z float64) [2]float32
 }
 
-// project sees m through its camera: the top's outline, the sides that face
-// the camera as quads with their shading as a gradient from left to right,
-// its ports, and the transform that lays the logo on the top.
+// project sees m: the top's outline, the sides that face the viewer as
+// quads with their shading as a gradient from left to right, and the
+// transform that lays the logo on the top.
 func (m boxModel) project() projectedBox {
 	ya, pa := m.yaw*math.Pi/180, m.pitch*math.Pi/180
 	ca, sa, cb, sb := math.Cos(ya), math.Sin(ya), math.Cos(pa), math.Sin(pa)
@@ -463,6 +469,15 @@ func (m boxModel) project() projectedBox {
 		y2, z2 := y*cb+z1*sb, z1*cb-y*sb
 		s := artCamera / (artCamera + z2) * m.zoom
 		return [2]float32{float32(x1 * s), float32(-y2 * s)}
+	}
+	// A side faces the viewer when its outward normal points toward the
+	// camera, or, in the fixed view, down the picture.
+	facing := func(nx, nz float64) bool { return -nx*sa+nz*ca < 0 }
+	if m.ortho {
+		at = func(x, y, z float64) [2]float32 {
+			return [2]float32{float32((viewX[0]*x + viewX[1]*z) * m.zoom), float32((viewY[0]*x + viewY[1]*z - y) * m.zoom)}
+		}
+		facing = func(nx, nz float64) bool { return viewY[0]*nx+viewY[1]*nz > 0 }
 	}
 	// The outline, around four quarter circles.
 	const n = 6
@@ -479,7 +494,7 @@ func (m boxModel) project() projectedBox {
 		pb.top = append(pb.top, at(q[0], 0, q[1]))
 		pb.bottom = append(pb.bottom, at(q[0], -m.h, q[1]))
 	}
-	// The sides facing the camera, lit from the front left.
+	// The sides facing the viewer, lit from the front left.
 	type lit struct {
 		x float32
 		c ui.Color
@@ -498,7 +513,7 @@ func (m boxModel) project() projectedBox {
 		if nx*(p[0]+q[0])+nz*(p[1]+q[1]) < 0 {
 			nx, nz = -nx, -nz
 		}
-		if -nx*sa+nz*ca >= 0 {
+		if !facing(nx, nz) {
 			continue
 		}
 		quad := [4][2]float32{at(p[0], 0, p[1]), at(q[0], 0, q[1]), at(q[0], -m.h, q[1]), at(p[0], -m.h, p[1])}
@@ -522,14 +537,9 @@ func (m boxModel) project() projectedBox {
 			pb.stops = append(pb.stops, ui.GradientStop{Color: s.c, At: (s.x - minX) / span})
 		}
 	}
-	// Ports on the front face: from (x0, y0·h) to (x1, y1·h).
-	zf := -hd - 0.3
-	for _, pt := range m.ports {
-		pb.details = append(pb.details, [2][2]float32{at(pt[0], -pt[1]*m.h, zf), at(pt[2], -pt[3]*m.h, zf)})
-	}
 	// The logo: the top's plane around its centre, as an affine transform
-	// (scale, then slant, then turn), which is what perspective looks like
-	// over so small a mark.
+	// (scale, then slant, then turn), which is also what perspective looks
+	// like over so small a mark; its top edge toward the back.
 	o, ux, dv := at(0, 0, 0), at(10, 0, 0), at(0, 0, -10)
 	sx, sy, skew, turn := affineParts(float64(ux[0]-o[0])/10, float64(ux[1]-o[1])/10, float64(dv[0]-o[0])/10, float64(dv[1]-o[1])/10)
 	pb.logoT = ui.Scaling(float32(sx), float32(sy)).Then(ui.Skewing(float32(skew), 0)).Then(ui.Rotation(float32(turn)))
@@ -571,7 +581,7 @@ func poly(pts [][2]float32, x, y float32) *ui.Path {
 func (pb projectedBox) draw(p *ui.Painter, x, y float32) { pb.drawAlpha(p, x, y, 1) }
 
 // drawAlpha paints the box at an opacity: its shadow, its sides, its top,
-// the logo on it, then its ports.
+// the logo on it, then its grooves.
 func (pb projectedBox) drawAlpha(p *ui.Painter, x, y float32, alpha float32) {
 	m := pb.m
 	if m.shadow {
@@ -579,12 +589,11 @@ func (pb projectedBox) drawAlpha(p *ui.Painter, x, y float32, alpha float32) {
 		for _, v := range pb.bottom {
 			x0, x1, y1 = min(x0, v[0]), max(x1, v[0]), max(y1, v[1])
 		}
-		// A soft oval on the ground: rings growing and fading, for a blur.
-		cx, cy, rx := x+(x0+x1)/2, y+y1+2, (x1-x0)/2
-		p.Transform(ui.Scaling(1, 0.16), cx, cy, func() {
-			for i := range 5 {
-				p.FillPath((&ui.Path{}).Circle(cx, cy, rx*(0.7+0.09*float32(i))), ui.RGBA(0, 0, 0, 0.07*alpha))
-			}
+		// A soft oval on the ground, two of them for a blur.
+		cx, cy, rx := x+(x0+x1)/2, y+y1+3, (x1-x0)/2
+		p.Transform(ui.Scaling(1, 0.13), cx, cy, func() {
+			p.FillPath((&ui.Path{}).Circle(cx, cy, rx*1.02), ui.RGBA(0, 0, 0, 0.07*alpha))
+			p.FillPath((&ui.Path{}).Circle(cx, cy, rx*0.82), ui.RGBA(0, 0, 0, 0.08*alpha))
 		})
 	}
 	var sides ui.Path

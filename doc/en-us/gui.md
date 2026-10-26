@@ -128,12 +128,12 @@ screenshots (`SCREENSHOT_DIR`).
   choices; finishing installs the helper when the run mode needs it, one administrator prompt).
 - Skip asks first, then starts in No privileges, which needs no approval. A failed finish (a
   cancelled prompt, a failed install) is said beside the buttons until the next attempt.
-- The illustrations (`tourart.go`) are drawn, not pictures: this computer in perspective as the
-  system it runs on — a Windows Dev Kit, a Mac mini, a mini PC on Linux — with the system's
-  logo on its top (`computerModel`, the logos of `assets/logos`); the network's devices with
-  data moving as dashes; the run modes as layers of the computer, the running network on the one
-  that runs it; the startup timeline with the stretch that is online; the computer awake and
-  asleep in turn. With Reduce Motion nothing moves by itself.
+- The illustrations (`tourart.go`) are drawn, not pictures: this computer, seen from the front
+  left above, as the system it runs on — a Windows Dev Kit, a Mac mini, a mini PC on Linux —
+  with the system's logo on its top (`computerModel`, the logos of `assets/logos`); the network's
+  devices with data moving as dashes; the run modes as layers of the computer, the running
+  network on the one that runs it; the startup timeline with the stretch that is online; the
+  computer awake and asleep in turn. With Reduce Motion nothing moves by itself.
 - Watch tour in Settings › Run mode shows the tour again as a sheet over the window
   (`tourSheet`), the run mode in use looked at first. Close, Escape or a click outside go back
   to Settings and change nothing; the last step offers to switch to a run mode looked at.

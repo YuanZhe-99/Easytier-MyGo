@@ -3,6 +3,15 @@
 The project restarted from 0.1.0 on 2026-10-16. The earlier, inherited history (versions up to
 0.10.80) is preserved under the git tag `archive/v0.10.80` and is not continued.
 
+## 0.2.2 (2026-10-25)
+
+- First-run tour: the computers are drawn as Kyokai's tour draws them — one fixed view from the
+  front left above, without perspective, larger, the system's logo lying square on the top (the
+  Apple logo a little larger), and a softer shadow. The Windows Dev Kit and the Mac mini lose
+  their ports; the Linux mini PC keeps its grooves, now on the faces in view. Labels under the
+  computer and the virtual-device tag moved to make room.
+- MyGo v0.6.4 / EasyTier v2.6.4 (checked 2026-10-25, unchanged).
+
 ## 0.2.1 (2026-10-25)
 
 - First run: a tour of six steps replaces the welcome page — the virtual device, the three run
