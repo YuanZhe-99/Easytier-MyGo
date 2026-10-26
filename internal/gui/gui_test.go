@@ -62,9 +62,20 @@ func demoApp(t *testing.T) *App {
 	return a
 }
 
+// tourPage shows the first-run tour at a step, with the computer of a
+// system in its illustrations.
+func tourPage(tr tour, goos string) func(a *App) {
+	return func(a *App) {
+		artPlatform = goos
+		a.page, a.prefs.Mode = pageWelcome, ModeUnset
+		a.tour = &tr
+	}
+}
+
 // TestViewsRender renders every page in each language and theme; it fails
 // on a panic. With SCREENSHOT_DIR set it writes PNGs for review.
 func TestViewsRender(t *testing.T) {
+	defer func(goos string) { artPlatform = goos }(artPlatform)
 	dir := os.Getenv("SCREENSHOT_DIR")
 	pages := map[string]func(a *App){
 		"network": func(a *App) {},
@@ -72,16 +83,30 @@ func TestViewsRender(t *testing.T) {
 			a.selected = "n2"
 			a.summaries["n2"] = summaryOf("dhcp = true\nlisteners = [\"tcp://0.0.0.0:11010\"]\n\n[network_identity]\nnetwork_name = \"lab\"\n\n[[peer]]\nuri = \"tcp://public.easytier.cn:11010\"\n", "")
 		},
-		"rail":            func(a *App) { a.prefs.SidebarRail = true },
-		"stale":           func(a *App) { a.lastPush = time.Now().Add(-time.Minute) },
-		"empty":           func(a *App) { a.networks, a.selected = nil, "" },
-		"settings":        func(a *App) { a.settingsOpen, a.settingsAt = true, setGeneral },
-		"settings-mode":   func(a *App) { a.settingsOpen, a.settingsAt = true, setRunMode },
-		"settings-core":   func(a *App) { a.settingsOpen, a.settingsAt = true, setCore },
-		"settings-about":  func(a *App) { a.settingsOpen, a.settingsAt = true, setAbout },
-		"settings-search": func(a *App) { a.settingsOpen, a.settingsQuery = true, "update" },
-		"logs":            func(a *App) { a.page = pageLogs },
-		"welcome":         func(a *App) { a.page, a.prefs.Mode = pageWelcome, ModeUnset },
+		"rail":             func(a *App) { a.prefs.SidebarRail = true },
+		"stale":            func(a *App) { a.lastPush = time.Now().Add(-time.Minute) },
+		"empty":            func(a *App) { a.networks, a.selected = nil, "" },
+		"settings":         func(a *App) { a.settingsOpen, a.settingsAt = true, setGeneral },
+		"settings-mode":    func(a *App) { a.settingsOpen, a.settingsAt = true, setRunMode },
+		"settings-core":    func(a *App) { a.settingsOpen, a.settingsAt = true, setCore },
+		"settings-about":   func(a *App) { a.settingsOpen, a.settingsAt = true, setAbout },
+		"settings-search":  func(a *App) { a.settingsOpen, a.settingsQuery = true, "update" },
+		"logs":             func(a *App) { a.page = pageLogs },
+		"welcome":          func(a *App) { a.page, a.prefs.Mode = pageWelcome, ModeUnset },
+		"tour-device":      tourPage(tour{step: tourDevice}, "linux"),
+		"tour-device-off":  tourPage(tour{step: tourDevice, noTUN: true}, "linux"),
+		"tour-modes":       tourPage(tour{step: tourModes, mode: choiceFollow}, "linux"),
+		"tour-startup":     tourPage(tour{step: tourStartup}, "linux"),
+		"tour-startup-svc": tourPage(tour{step: tourStartup, mode: choiceBackground}, "linux"),
+		"tour-awake":       tourPage(tour{step: tourAwake}, "linux"),
+		"tour-ready":       tourPage(tour{step: tourReady, mode: choiceFollow}, "linux"),
+		"tour-skip":        tourPage(tour{step: tourModes, askSkip: true}, "linux"),
+		"tour-windows":     tourPage(tour{}, "windows"),
+		"tour-macos":       tourPage(tour{}, "darwin"),
+		"tour-replay": func(a *App) {
+			artPlatform = "linux"
+			a.tour = &tour{replay: true, step: tourReady, mode: choiceBackground}
+		},
 		"edit-toml": func(a *App) {
 			a.page = pageEdit
 			a.editor = &configEditor{id: "n1", name: "Home"}

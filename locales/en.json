@@ -445,8 +445,6 @@
   "TrayQuitDisconnect": "Disconnect all and quit",
   "TrayQuitKeep": "Quit (networks keep running)",
   "TrayShow": "Show EasyTier MyGo",
-  "WelcomeBody": "Choose how your networks run. You can change this later in Settings.",
-  "WelcomeLater": "Tip: start with No privileges if your networks do not need a virtual device.",
   "WelcomeTitle": "Welcome to EasyTier MyGo",
   "SidebarHide": "Hide sidebar",
   "SidebarShow": "Show sidebar",
@@ -567,12 +565,151 @@
   "DiagFile": "Diagnostics file",
   "DiagLogs": "Logs",
   "DiagLogsAbout": "This app's and its background service's logs.",
-  "WelcomeContinue": "Continue with {mode}",
-  "@WelcomeContinue": {
+  "TourSkip": "Skip",
+  "TourBack": "Back",
+  "TourStart": "Get started",
+  "TourNext": "Continue",
+  "TourFinish": "Finish",
+  "TourInstallFinish": "Install helper and finish",
+  "TourDone": "Done",
+  "TourSkipTitle": "Skip the tour?",
+  "TourSkipBody": "You will start in No privileges, which needs no administrator approval. You can change the run mode, or watch this tour again, in Settings › Run mode.",
+  "TourSkipKeep": "Keep watching",
+  "TourWelcomeBody": "Connect your computers, servers and phones into one private network. First, a minute on a few things that shape everyday use.",
+  "TourTopicDevice": "Virtual device",
+  "TourTopicModes": "Run modes",
+  "TourTopicStartup": "Startup and sign-in",
+  "TourTopicAwake": "Staying online",
+  "TourWelcomeNote": "About a minute. You can skip it, and watch it again in Settings › Run mode.",
+  "TourDeviceTitle": "First, the virtual device",
+  "TourDeviceBody": "With a virtual device, an EasyTier network is like another network adapter in this computer: any app reaches the other devices' virtual addresses, with nothing to set up.",
+  "TourWithDevice": "With a virtual device",
+  "TourWithoutDevice": "Without",
+  "TourDeviceAppsYes": "Browsers, remote desktop, SSH and games on this computer reach the other devices' virtual addresses.",
+  "TourDeviceInbound": "Other devices reach this computer.",
+  "TourDeviceNeedsHelper": "Needs the privileged helper, installed once with administrator approval.",
+  "TourDeviceAppsNo": "Other apps on this computer cannot open connections to the devices in the network.",
+  "TourDeviceInboundNo": "Other devices still reach this computer by its virtual address, and through it the local network it shares as a subnet.",
+  "TourDeviceNoApproval": "No administrator approval needed.",
+  "TourArtApps": "Apps on this computer",
+  "TourArtOther": "Another device in the network",
+  "TourArtOut": "This computer reaching others",
+  "TourArtIn": "Others reaching this computer",
+  "TourArtDevice": "Virtual device",
+  "TourArtLaptop": "Laptop",
+  "TourArtPhone": "Phone",
+  "TourArtNAS": "NAS at home",
+  "TourArtThis": "This computer",
+  "TourModesTitle": "Three run modes",
+  "TourModesBody": "They differ in whether there is a virtual device and in what runs the networks. Pick one to start; you can switch any time in Settings.",
+  "TourModeUserLine": "Nothing to install",
+  "TourModeFollowLine": "Helper installed once",
+  "TourModeBackgroundLine": "Runs from startup",
+  "TourRowDevice": "Virtual device",
+  "TourRowApps": "Apps here reach the network",
+  "TourRowWhen": "Networks run",
+  "TourRowApproval": "Administrator approval",
+  "TourDeviceYes": "Yes",
+  "TourDeviceNo": "No",
+  "TourAppsYes": "Yes",
+  "TourAppsNo": "No",
+  "TourWhenOpen": "While the app is open",
+  "TourWhenStartup": "From startup",
+  "TourApprovalNone": "Not needed",
+  "TourApprovalOnce": "Once, to install",
+  "TourModeUserNote": "Good for a first try, or when other devices only need to reach this computer.",
+  "TourModeFollowNote": "Good for everyday use: open the app when you need it, quit it when you don't.",
+  "TourModeBackgroundNote": "Good for a NAS or a small box that must stay online, perhaps with nobody signed in.",
+  "TourArtApp": "App",
+  "TourArtHelper": "Helper",
+  "TourArtSystem": "System",
+  "TourArtSession": "Session",
+  "TourArtStartup": "Runs at startup",
+  "TourArtLegend": "A running network",
+  "TourArtUserCaption": "Networks run in the app, with no virtual device",
+  "TourArtFollowCaption": "Networks run in the helper, while the app is open",
+  "TourArtBackgroundCaption": "Networks run in the helper, from startup",
+  "TourStartupSvcTitle": "Online from startup, no sign-in needed",
+  "TourStartupSvcBody": "The background service starts with the system: once the computer starts, networks connect even at the sign-in screen with nobody signed in, and they keep running when you quit the app. Good for a box in the corner, or a computer you reach remotely before signing in.",
+  "TourStartupAppTitle": "Online after you sign in",
+  "TourStartupAppBody": "In {mode}, networks run with the app. With the switch below on, they connect once the computer starts and you sign in to your account; at the sign-in screen this computer is offline.",
+  "@TourStartupAppBody": {
     "placeholders": {
       "mode": {
         "type": "String"
       }
     }
-  }
+  },
+  "TourLoginSvc": "Only the window and the tray icon; networks run either way.",
+  "TourLoginOn": "Starts in the tray after you sign in, and connects.",
+  "TourLoginOff": "Connects only once you open the app yourself.",
+  "TourUseBackgroundAsk": "Need it online without signing in?",
+  "TourUseBackground": "Use Background service",
+  "TourArtAfterStart": "After the computer starts",
+  "TourArtPower": "Power on",
+  "TourArtSignInScreen": "Sign-in screen",
+  "TourArtNobody": "Nobody signed in",
+  "TourArtSignIn": "You sign in",
+  "TourArtOpenApp": "You open the app",
+  "TourArtQuit": "Quit the app",
+  "TourArtAlways": "Always online",
+  "TourArtAfterSignIn": "Online after sign-in",
+  "TourArtAfterOpen": "Online once opened",
+  "TourArtAlwaysCaption": "Online from startup, no sign-in needed",
+  "TourArtAfterSignInCaption": "Online only after you sign in",
+  "TourArtAfterOpenCaption": "Online only after you open the app",
+  "TourAwakeTitle": "To stay online, keep the computer awake",
+  "TourAwakeBody": "While the computer sleeps or hibernates it is offline in every run mode, and the other devices cannot reach it. For a computer that should stay online:",
+  "TourAwakeWin1": "Settings › System › Power & battery › Screen, sleep & hibernate timeouts: set sleep when plugged in to Never.",
+  "TourAwakeWin2": "Closing a laptop's lid puts it to sleep; change that under “Lid, power & sleep button controls”.",
+  "TourAwakeMac1": "System Settings › Battery › Options: turn on “Prevent automatic sleeping on power adapter when the display is off”. On a desktop Mac, it is under Energy.",
+  "TourAwakeMac2": "Closing a MacBook's lid puts it to sleep unless it has power and an external display.",
+  "TourAwakeLinux1": "Turn off automatic suspend in your desktop's power settings.",
+  "TourAwakeLinux2": "Closing a laptop's lid suspends it; change the lid action in the same settings.",
+  "TourAwakeScreen": "Turning off only the display keeps it online.",
+  "TourOpenPower": "Open power settings",
+  "TourArtAwake": "Awake · online",
+  "TourArtAsleep": "Asleep · offline",
+  "TourArtScreenOK": "The display may turn off; sleep takes it offline",
+  "TourReadyTitle": "Ready",
+  "TourReadyAuthWin": "When you finish, Windows asks once for administrator approval to install the privileged helper. Opening the app never asks again.",
+  "TourReadyAuthMac": "When you finish, macOS asks once for an administrator password to install the privileged helper. Opening the app never asks again.",
+  "TourReadyAuthLinux": "When you finish, the system asks once for authorization to install the privileged helper. Opening the app never asks again.",
+  "TourReadyUser": "No administrator approval needed. To use a virtual device later, switch the run mode in Settings › Run mode.",
+  "TourReplayTitle": "That's all",
+  "TourReplayCurrent": "Your run mode is {mode}. You can switch any time in Settings › Run mode.",
+  "@TourReplayCurrent": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "TourReplayOther": "Your run mode is {mode}. You looked at {other}; you can switch to it now.",
+  "@TourReplayOther": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      },
+      "other": {
+        "type": "String"
+      }
+    }
+  },
+  "TourSwitchTo": "Switch to {mode}",
+  "@TourSwitchTo": {
+    "placeholders": {
+      "mode": {
+        "type": "String"
+      }
+    }
+  },
+  "TourSummary": "Your setup",
+  "TourOn": "On",
+  "TourOff": "Off",
+  "TourArtWhenOpen": "Online while the app is open",
+  "TourArtFromStartup": "Online from startup",
+  "TourRewatchTitle": "What is the difference between the modes?",
+  "TourRewatchAbout": "Watch the first-run tour again: the virtual device, startup and sign-in, staying online.",
+  "TourRewatch": "Watch tour"
 }

@@ -57,7 +57,7 @@ func (a *App) chooseMode(to runChoice) {
 				return
 			}
 			if a.page == pageWelcome {
-				a.page = pageNetwork
+				a.page, a.tour = pageNetwork, nil
 			}
 		})
 	}()

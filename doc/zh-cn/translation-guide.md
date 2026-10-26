@@ -49,6 +49,8 @@
 | designated requirement (macOS) | 指定要求 |
 | notarization / notarized | 公证 / 经过公证 |
 | quarantine (macOS) | 隔离属性 |
+| first-run tour / Watch tour | 首次启动引导 / 重看引导 |
+| sign in (to the computer) | 登录 |
 
 ## 6. 审阅清单
 

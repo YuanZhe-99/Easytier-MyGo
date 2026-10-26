@@ -2,7 +2,7 @@
 
 ## Requirements
 
-- Go 1.27.2 (`go.mod`); MyGo is a Go tool dependency (`go tool mygo …`).
+- Go 1.27.3 (`go.mod`); MyGo is a Go tool dependency (`go tool mygo …`).
 - Linux desktop for the GUI; `libayatana-appindicator3-1` for the tray. macOS hosts build and run
   the app too; install Go there with Homebrew (`brew install go`).
 - `upx` to unpack the bundled EasyTier binaries on Linux and Windows (see

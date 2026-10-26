@@ -8,6 +8,7 @@ import (
 	"github.com/egoist/mygo/i18n"
 
 	// MyGo's own strings in the app's languages.
+	_ "github.com/egoist/mygo/locales/ja"
 	_ "github.com/egoist/mygo/locales/zh-Hans"
 	_ "github.com/egoist/mygo/locales/zh-Hant"
 )
@@ -2720,26 +2721,6 @@ func (msgs Messages) TrayShow() string {
 	return Catalog.Format(msgs.locale, "TrayShow", nil)
 }
 
-// WelcomeBody says "Choose how your networks run. You can change this later in Settings."
-// in the language the app shows.
-func WelcomeBody() string { return In(i18n.Locale()).WelcomeBody() }
-
-// WelcomeBody says "Choose how your networks run. You can change this later in Settings."
-// in the language of msgs.
-func (msgs Messages) WelcomeBody() string {
-	return Catalog.Format(msgs.locale, "WelcomeBody", nil)
-}
-
-// WelcomeLater says "Tip: start with No privileges if your networks do not need a virtual device."
-// in the language the app shows.
-func WelcomeLater() string { return In(i18n.Locale()).WelcomeLater() }
-
-// WelcomeLater says "Tip: start with No privileges if your networks do not need a virtual device."
-// in the language of msgs.
-func (msgs Messages) WelcomeLater() string {
-	return Catalog.Format(msgs.locale, "WelcomeLater", nil)
-}
-
 // WelcomeTitle says "Welcome to EasyTier MyGo"
 // in the language the app shows.
 func WelcomeTitle() string { return In(i18n.Locale()).WelcomeTitle() }
@@ -3590,12 +3571,1164 @@ func (msgs Messages) DiagLogsAbout() string {
 	return Catalog.Format(msgs.locale, "DiagLogsAbout", nil)
 }
 
-// WelcomeContinue says "Continue with {mode}"
+// TourSkip says "Skip"
 // in the language the app shows.
-func WelcomeContinue(mode string) string { return In(i18n.Locale()).WelcomeContinue(mode) }
+func TourSkip() string { return In(i18n.Locale()).TourSkip() }
 
-// WelcomeContinue says "Continue with {mode}"
+// TourSkip says "Skip"
 // in the language of msgs.
-func (msgs Messages) WelcomeContinue(mode string) string {
-	return Catalog.Format(msgs.locale, "WelcomeContinue", map[string]any{"mode": mode})
+func (msgs Messages) TourSkip() string {
+	return Catalog.Format(msgs.locale, "TourSkip", nil)
+}
+
+// TourBack says "Back"
+// in the language the app shows.
+func TourBack() string { return In(i18n.Locale()).TourBack() }
+
+// TourBack says "Back"
+// in the language of msgs.
+func (msgs Messages) TourBack() string {
+	return Catalog.Format(msgs.locale, "TourBack", nil)
+}
+
+// TourStart says "Get started"
+// in the language the app shows.
+func TourStart() string { return In(i18n.Locale()).TourStart() }
+
+// TourStart says "Get started"
+// in the language of msgs.
+func (msgs Messages) TourStart() string {
+	return Catalog.Format(msgs.locale, "TourStart", nil)
+}
+
+// TourNext says "Continue"
+// in the language the app shows.
+func TourNext() string { return In(i18n.Locale()).TourNext() }
+
+// TourNext says "Continue"
+// in the language of msgs.
+func (msgs Messages) TourNext() string {
+	return Catalog.Format(msgs.locale, "TourNext", nil)
+}
+
+// TourFinish says "Finish"
+// in the language the app shows.
+func TourFinish() string { return In(i18n.Locale()).TourFinish() }
+
+// TourFinish says "Finish"
+// in the language of msgs.
+func (msgs Messages) TourFinish() string {
+	return Catalog.Format(msgs.locale, "TourFinish", nil)
+}
+
+// TourInstallFinish says "Install helper and finish"
+// in the language the app shows.
+func TourInstallFinish() string { return In(i18n.Locale()).TourInstallFinish() }
+
+// TourInstallFinish says "Install helper and finish"
+// in the language of msgs.
+func (msgs Messages) TourInstallFinish() string {
+	return Catalog.Format(msgs.locale, "TourInstallFinish", nil)
+}
+
+// TourDone says "Done"
+// in the language the app shows.
+func TourDone() string { return In(i18n.Locale()).TourDone() }
+
+// TourDone says "Done"
+// in the language of msgs.
+func (msgs Messages) TourDone() string {
+	return Catalog.Format(msgs.locale, "TourDone", nil)
+}
+
+// TourSkipTitle says "Skip the tour?"
+// in the language the app shows.
+func TourSkipTitle() string { return In(i18n.Locale()).TourSkipTitle() }
+
+// TourSkipTitle says "Skip the tour?"
+// in the language of msgs.
+func (msgs Messages) TourSkipTitle() string {
+	return Catalog.Format(msgs.locale, "TourSkipTitle", nil)
+}
+
+// TourSkipBody says "You will start in No privileges, which needs no administrator approval. You can change the run mode, or watch this to…"
+// in the language the app shows.
+func TourSkipBody() string { return In(i18n.Locale()).TourSkipBody() }
+
+// TourSkipBody says "You will start in No privileges, which needs no administrator approval. You can change the run mode, or watch this to…"
+// in the language of msgs.
+func (msgs Messages) TourSkipBody() string {
+	return Catalog.Format(msgs.locale, "TourSkipBody", nil)
+}
+
+// TourSkipKeep says "Keep watching"
+// in the language the app shows.
+func TourSkipKeep() string { return In(i18n.Locale()).TourSkipKeep() }
+
+// TourSkipKeep says "Keep watching"
+// in the language of msgs.
+func (msgs Messages) TourSkipKeep() string {
+	return Catalog.Format(msgs.locale, "TourSkipKeep", nil)
+}
+
+// TourWelcomeBody says "Connect your computers, servers and phones into one private network. First, a minute on a few things that shape every…"
+// in the language the app shows.
+func TourWelcomeBody() string { return In(i18n.Locale()).TourWelcomeBody() }
+
+// TourWelcomeBody says "Connect your computers, servers and phones into one private network. First, a minute on a few things that shape every…"
+// in the language of msgs.
+func (msgs Messages) TourWelcomeBody() string {
+	return Catalog.Format(msgs.locale, "TourWelcomeBody", nil)
+}
+
+// TourTopicDevice says "Virtual device"
+// in the language the app shows.
+func TourTopicDevice() string { return In(i18n.Locale()).TourTopicDevice() }
+
+// TourTopicDevice says "Virtual device"
+// in the language of msgs.
+func (msgs Messages) TourTopicDevice() string {
+	return Catalog.Format(msgs.locale, "TourTopicDevice", nil)
+}
+
+// TourTopicModes says "Run modes"
+// in the language the app shows.
+func TourTopicModes() string { return In(i18n.Locale()).TourTopicModes() }
+
+// TourTopicModes says "Run modes"
+// in the language of msgs.
+func (msgs Messages) TourTopicModes() string {
+	return Catalog.Format(msgs.locale, "TourTopicModes", nil)
+}
+
+// TourTopicStartup says "Startup and sign-in"
+// in the language the app shows.
+func TourTopicStartup() string { return In(i18n.Locale()).TourTopicStartup() }
+
+// TourTopicStartup says "Startup and sign-in"
+// in the language of msgs.
+func (msgs Messages) TourTopicStartup() string {
+	return Catalog.Format(msgs.locale, "TourTopicStartup", nil)
+}
+
+// TourTopicAwake says "Staying online"
+// in the language the app shows.
+func TourTopicAwake() string { return In(i18n.Locale()).TourTopicAwake() }
+
+// TourTopicAwake says "Staying online"
+// in the language of msgs.
+func (msgs Messages) TourTopicAwake() string {
+	return Catalog.Format(msgs.locale, "TourTopicAwake", nil)
+}
+
+// TourWelcomeNote says "About a minute. You can skip it, and watch it again in Settings › Run mode."
+// in the language the app shows.
+func TourWelcomeNote() string { return In(i18n.Locale()).TourWelcomeNote() }
+
+// TourWelcomeNote says "About a minute. You can skip it, and watch it again in Settings › Run mode."
+// in the language of msgs.
+func (msgs Messages) TourWelcomeNote() string {
+	return Catalog.Format(msgs.locale, "TourWelcomeNote", nil)
+}
+
+// TourDeviceTitle says "First, the virtual device"
+// in the language the app shows.
+func TourDeviceTitle() string { return In(i18n.Locale()).TourDeviceTitle() }
+
+// TourDeviceTitle says "First, the virtual device"
+// in the language of msgs.
+func (msgs Messages) TourDeviceTitle() string {
+	return Catalog.Format(msgs.locale, "TourDeviceTitle", nil)
+}
+
+// TourDeviceBody says "With a virtual device, an EasyTier network is like another network adapter in this computer: any app reaches the othe…"
+// in the language the app shows.
+func TourDeviceBody() string { return In(i18n.Locale()).TourDeviceBody() }
+
+// TourDeviceBody says "With a virtual device, an EasyTier network is like another network adapter in this computer: any app reaches the othe…"
+// in the language of msgs.
+func (msgs Messages) TourDeviceBody() string {
+	return Catalog.Format(msgs.locale, "TourDeviceBody", nil)
+}
+
+// TourWithDevice says "With a virtual device"
+// in the language the app shows.
+func TourWithDevice() string { return In(i18n.Locale()).TourWithDevice() }
+
+// TourWithDevice says "With a virtual device"
+// in the language of msgs.
+func (msgs Messages) TourWithDevice() string {
+	return Catalog.Format(msgs.locale, "TourWithDevice", nil)
+}
+
+// TourWithoutDevice says "Without"
+// in the language the app shows.
+func TourWithoutDevice() string { return In(i18n.Locale()).TourWithoutDevice() }
+
+// TourWithoutDevice says "Without"
+// in the language of msgs.
+func (msgs Messages) TourWithoutDevice() string {
+	return Catalog.Format(msgs.locale, "TourWithoutDevice", nil)
+}
+
+// TourDeviceAppsYes says "Browsers, remote desktop, SSH and games on this computer reach the other devices' virtual addresses."
+// in the language the app shows.
+func TourDeviceAppsYes() string { return In(i18n.Locale()).TourDeviceAppsYes() }
+
+// TourDeviceAppsYes says "Browsers, remote desktop, SSH and games on this computer reach the other devices' virtual addresses."
+// in the language of msgs.
+func (msgs Messages) TourDeviceAppsYes() string {
+	return Catalog.Format(msgs.locale, "TourDeviceAppsYes", nil)
+}
+
+// TourDeviceInbound says "Other devices reach this computer."
+// in the language the app shows.
+func TourDeviceInbound() string { return In(i18n.Locale()).TourDeviceInbound() }
+
+// TourDeviceInbound says "Other devices reach this computer."
+// in the language of msgs.
+func (msgs Messages) TourDeviceInbound() string {
+	return Catalog.Format(msgs.locale, "TourDeviceInbound", nil)
+}
+
+// TourDeviceNeedsHelper says "Needs the privileged helper, installed once with administrator approval."
+// in the language the app shows.
+func TourDeviceNeedsHelper() string { return In(i18n.Locale()).TourDeviceNeedsHelper() }
+
+// TourDeviceNeedsHelper says "Needs the privileged helper, installed once with administrator approval."
+// in the language of msgs.
+func (msgs Messages) TourDeviceNeedsHelper() string {
+	return Catalog.Format(msgs.locale, "TourDeviceNeedsHelper", nil)
+}
+
+// TourDeviceAppsNo says "Other apps on this computer cannot open connections to the devices in the network."
+// in the language the app shows.
+func TourDeviceAppsNo() string { return In(i18n.Locale()).TourDeviceAppsNo() }
+
+// TourDeviceAppsNo says "Other apps on this computer cannot open connections to the devices in the network."
+// in the language of msgs.
+func (msgs Messages) TourDeviceAppsNo() string {
+	return Catalog.Format(msgs.locale, "TourDeviceAppsNo", nil)
+}
+
+// TourDeviceInboundNo says "Other devices still reach this computer by its virtual address, and through it the local network it shares as a subnet."
+// in the language the app shows.
+func TourDeviceInboundNo() string { return In(i18n.Locale()).TourDeviceInboundNo() }
+
+// TourDeviceInboundNo says "Other devices still reach this computer by its virtual address, and through it the local network it shares as a subnet."
+// in the language of msgs.
+func (msgs Messages) TourDeviceInboundNo() string {
+	return Catalog.Format(msgs.locale, "TourDeviceInboundNo", nil)
+}
+
+// TourDeviceNoApproval says "No administrator approval needed."
+// in the language the app shows.
+func TourDeviceNoApproval() string { return In(i18n.Locale()).TourDeviceNoApproval() }
+
+// TourDeviceNoApproval says "No administrator approval needed."
+// in the language of msgs.
+func (msgs Messages) TourDeviceNoApproval() string {
+	return Catalog.Format(msgs.locale, "TourDeviceNoApproval", nil)
+}
+
+// TourArtApps says "Apps on this computer"
+// in the language the app shows.
+func TourArtApps() string { return In(i18n.Locale()).TourArtApps() }
+
+// TourArtApps says "Apps on this computer"
+// in the language of msgs.
+func (msgs Messages) TourArtApps() string {
+	return Catalog.Format(msgs.locale, "TourArtApps", nil)
+}
+
+// TourArtOther says "Another device in the network"
+// in the language the app shows.
+func TourArtOther() string { return In(i18n.Locale()).TourArtOther() }
+
+// TourArtOther says "Another device in the network"
+// in the language of msgs.
+func (msgs Messages) TourArtOther() string {
+	return Catalog.Format(msgs.locale, "TourArtOther", nil)
+}
+
+// TourArtOut says "This computer reaching others"
+// in the language the app shows.
+func TourArtOut() string { return In(i18n.Locale()).TourArtOut() }
+
+// TourArtOut says "This computer reaching others"
+// in the language of msgs.
+func (msgs Messages) TourArtOut() string {
+	return Catalog.Format(msgs.locale, "TourArtOut", nil)
+}
+
+// TourArtIn says "Others reaching this computer"
+// in the language the app shows.
+func TourArtIn() string { return In(i18n.Locale()).TourArtIn() }
+
+// TourArtIn says "Others reaching this computer"
+// in the language of msgs.
+func (msgs Messages) TourArtIn() string {
+	return Catalog.Format(msgs.locale, "TourArtIn", nil)
+}
+
+// TourArtDevice says "Virtual device"
+// in the language the app shows.
+func TourArtDevice() string { return In(i18n.Locale()).TourArtDevice() }
+
+// TourArtDevice says "Virtual device"
+// in the language of msgs.
+func (msgs Messages) TourArtDevice() string {
+	return Catalog.Format(msgs.locale, "TourArtDevice", nil)
+}
+
+// TourArtLaptop says "Laptop"
+// in the language the app shows.
+func TourArtLaptop() string { return In(i18n.Locale()).TourArtLaptop() }
+
+// TourArtLaptop says "Laptop"
+// in the language of msgs.
+func (msgs Messages) TourArtLaptop() string {
+	return Catalog.Format(msgs.locale, "TourArtLaptop", nil)
+}
+
+// TourArtPhone says "Phone"
+// in the language the app shows.
+func TourArtPhone() string { return In(i18n.Locale()).TourArtPhone() }
+
+// TourArtPhone says "Phone"
+// in the language of msgs.
+func (msgs Messages) TourArtPhone() string {
+	return Catalog.Format(msgs.locale, "TourArtPhone", nil)
+}
+
+// TourArtNAS says "NAS at home"
+// in the language the app shows.
+func TourArtNAS() string { return In(i18n.Locale()).TourArtNAS() }
+
+// TourArtNAS says "NAS at home"
+// in the language of msgs.
+func (msgs Messages) TourArtNAS() string {
+	return Catalog.Format(msgs.locale, "TourArtNAS", nil)
+}
+
+// TourArtThis says "This computer"
+// in the language the app shows.
+func TourArtThis() string { return In(i18n.Locale()).TourArtThis() }
+
+// TourArtThis says "This computer"
+// in the language of msgs.
+func (msgs Messages) TourArtThis() string {
+	return Catalog.Format(msgs.locale, "TourArtThis", nil)
+}
+
+// TourModesTitle says "Three run modes"
+// in the language the app shows.
+func TourModesTitle() string { return In(i18n.Locale()).TourModesTitle() }
+
+// TourModesTitle says "Three run modes"
+// in the language of msgs.
+func (msgs Messages) TourModesTitle() string {
+	return Catalog.Format(msgs.locale, "TourModesTitle", nil)
+}
+
+// TourModesBody says "They differ in whether there is a virtual device and in what runs the networks. Pick one to start; you can switch any…"
+// in the language the app shows.
+func TourModesBody() string { return In(i18n.Locale()).TourModesBody() }
+
+// TourModesBody says "They differ in whether there is a virtual device and in what runs the networks. Pick one to start; you can switch any…"
+// in the language of msgs.
+func (msgs Messages) TourModesBody() string {
+	return Catalog.Format(msgs.locale, "TourModesBody", nil)
+}
+
+// TourModeUserLine says "Nothing to install"
+// in the language the app shows.
+func TourModeUserLine() string { return In(i18n.Locale()).TourModeUserLine() }
+
+// TourModeUserLine says "Nothing to install"
+// in the language of msgs.
+func (msgs Messages) TourModeUserLine() string {
+	return Catalog.Format(msgs.locale, "TourModeUserLine", nil)
+}
+
+// TourModeFollowLine says "Helper installed once"
+// in the language the app shows.
+func TourModeFollowLine() string { return In(i18n.Locale()).TourModeFollowLine() }
+
+// TourModeFollowLine says "Helper installed once"
+// in the language of msgs.
+func (msgs Messages) TourModeFollowLine() string {
+	return Catalog.Format(msgs.locale, "TourModeFollowLine", nil)
+}
+
+// TourModeBackgroundLine says "Runs from startup"
+// in the language the app shows.
+func TourModeBackgroundLine() string { return In(i18n.Locale()).TourModeBackgroundLine() }
+
+// TourModeBackgroundLine says "Runs from startup"
+// in the language of msgs.
+func (msgs Messages) TourModeBackgroundLine() string {
+	return Catalog.Format(msgs.locale, "TourModeBackgroundLine", nil)
+}
+
+// TourRowDevice says "Virtual device"
+// in the language the app shows.
+func TourRowDevice() string { return In(i18n.Locale()).TourRowDevice() }
+
+// TourRowDevice says "Virtual device"
+// in the language of msgs.
+func (msgs Messages) TourRowDevice() string {
+	return Catalog.Format(msgs.locale, "TourRowDevice", nil)
+}
+
+// TourRowApps says "Apps here reach the network"
+// in the language the app shows.
+func TourRowApps() string { return In(i18n.Locale()).TourRowApps() }
+
+// TourRowApps says "Apps here reach the network"
+// in the language of msgs.
+func (msgs Messages) TourRowApps() string {
+	return Catalog.Format(msgs.locale, "TourRowApps", nil)
+}
+
+// TourRowWhen says "Networks run"
+// in the language the app shows.
+func TourRowWhen() string { return In(i18n.Locale()).TourRowWhen() }
+
+// TourRowWhen says "Networks run"
+// in the language of msgs.
+func (msgs Messages) TourRowWhen() string {
+	return Catalog.Format(msgs.locale, "TourRowWhen", nil)
+}
+
+// TourRowApproval says "Administrator approval"
+// in the language the app shows.
+func TourRowApproval() string { return In(i18n.Locale()).TourRowApproval() }
+
+// TourRowApproval says "Administrator approval"
+// in the language of msgs.
+func (msgs Messages) TourRowApproval() string {
+	return Catalog.Format(msgs.locale, "TourRowApproval", nil)
+}
+
+// TourDeviceYes says "Yes"
+// in the language the app shows.
+func TourDeviceYes() string { return In(i18n.Locale()).TourDeviceYes() }
+
+// TourDeviceYes says "Yes"
+// in the language of msgs.
+func (msgs Messages) TourDeviceYes() string {
+	return Catalog.Format(msgs.locale, "TourDeviceYes", nil)
+}
+
+// TourDeviceNo says "No"
+// in the language the app shows.
+func TourDeviceNo() string { return In(i18n.Locale()).TourDeviceNo() }
+
+// TourDeviceNo says "No"
+// in the language of msgs.
+func (msgs Messages) TourDeviceNo() string {
+	return Catalog.Format(msgs.locale, "TourDeviceNo", nil)
+}
+
+// TourAppsYes says "Yes"
+// in the language the app shows.
+func TourAppsYes() string { return In(i18n.Locale()).TourAppsYes() }
+
+// TourAppsYes says "Yes"
+// in the language of msgs.
+func (msgs Messages) TourAppsYes() string {
+	return Catalog.Format(msgs.locale, "TourAppsYes", nil)
+}
+
+// TourAppsNo says "No"
+// in the language the app shows.
+func TourAppsNo() string { return In(i18n.Locale()).TourAppsNo() }
+
+// TourAppsNo says "No"
+// in the language of msgs.
+func (msgs Messages) TourAppsNo() string {
+	return Catalog.Format(msgs.locale, "TourAppsNo", nil)
+}
+
+// TourWhenOpen says "While the app is open"
+// in the language the app shows.
+func TourWhenOpen() string { return In(i18n.Locale()).TourWhenOpen() }
+
+// TourWhenOpen says "While the app is open"
+// in the language of msgs.
+func (msgs Messages) TourWhenOpen() string {
+	return Catalog.Format(msgs.locale, "TourWhenOpen", nil)
+}
+
+// TourWhenStartup says "From startup"
+// in the language the app shows.
+func TourWhenStartup() string { return In(i18n.Locale()).TourWhenStartup() }
+
+// TourWhenStartup says "From startup"
+// in the language of msgs.
+func (msgs Messages) TourWhenStartup() string {
+	return Catalog.Format(msgs.locale, "TourWhenStartup", nil)
+}
+
+// TourApprovalNone says "Not needed"
+// in the language the app shows.
+func TourApprovalNone() string { return In(i18n.Locale()).TourApprovalNone() }
+
+// TourApprovalNone says "Not needed"
+// in the language of msgs.
+func (msgs Messages) TourApprovalNone() string {
+	return Catalog.Format(msgs.locale, "TourApprovalNone", nil)
+}
+
+// TourApprovalOnce says "Once, to install"
+// in the language the app shows.
+func TourApprovalOnce() string { return In(i18n.Locale()).TourApprovalOnce() }
+
+// TourApprovalOnce says "Once, to install"
+// in the language of msgs.
+func (msgs Messages) TourApprovalOnce() string {
+	return Catalog.Format(msgs.locale, "TourApprovalOnce", nil)
+}
+
+// TourModeUserNote says "Good for a first try, or when other devices only need to reach this computer."
+// in the language the app shows.
+func TourModeUserNote() string { return In(i18n.Locale()).TourModeUserNote() }
+
+// TourModeUserNote says "Good for a first try, or when other devices only need to reach this computer."
+// in the language of msgs.
+func (msgs Messages) TourModeUserNote() string {
+	return Catalog.Format(msgs.locale, "TourModeUserNote", nil)
+}
+
+// TourModeFollowNote says "Good for everyday use: open the app when you need it, quit it when you don't."
+// in the language the app shows.
+func TourModeFollowNote() string { return In(i18n.Locale()).TourModeFollowNote() }
+
+// TourModeFollowNote says "Good for everyday use: open the app when you need it, quit it when you don't."
+// in the language of msgs.
+func (msgs Messages) TourModeFollowNote() string {
+	return Catalog.Format(msgs.locale, "TourModeFollowNote", nil)
+}
+
+// TourModeBackgroundNote says "Good for a NAS or a small box that must stay online, perhaps with nobody signed in."
+// in the language the app shows.
+func TourModeBackgroundNote() string { return In(i18n.Locale()).TourModeBackgroundNote() }
+
+// TourModeBackgroundNote says "Good for a NAS or a small box that must stay online, perhaps with nobody signed in."
+// in the language of msgs.
+func (msgs Messages) TourModeBackgroundNote() string {
+	return Catalog.Format(msgs.locale, "TourModeBackgroundNote", nil)
+}
+
+// TourArtApp says "App"
+// in the language the app shows.
+func TourArtApp() string { return In(i18n.Locale()).TourArtApp() }
+
+// TourArtApp says "App"
+// in the language of msgs.
+func (msgs Messages) TourArtApp() string {
+	return Catalog.Format(msgs.locale, "TourArtApp", nil)
+}
+
+// TourArtHelper says "Helper"
+// in the language the app shows.
+func TourArtHelper() string { return In(i18n.Locale()).TourArtHelper() }
+
+// TourArtHelper says "Helper"
+// in the language of msgs.
+func (msgs Messages) TourArtHelper() string {
+	return Catalog.Format(msgs.locale, "TourArtHelper", nil)
+}
+
+// TourArtSystem says "System"
+// in the language the app shows.
+func TourArtSystem() string { return In(i18n.Locale()).TourArtSystem() }
+
+// TourArtSystem says "System"
+// in the language of msgs.
+func (msgs Messages) TourArtSystem() string {
+	return Catalog.Format(msgs.locale, "TourArtSystem", nil)
+}
+
+// TourArtSession says "Session"
+// in the language the app shows.
+func TourArtSession() string { return In(i18n.Locale()).TourArtSession() }
+
+// TourArtSession says "Session"
+// in the language of msgs.
+func (msgs Messages) TourArtSession() string {
+	return Catalog.Format(msgs.locale, "TourArtSession", nil)
+}
+
+// TourArtStartup says "Runs at startup"
+// in the language the app shows.
+func TourArtStartup() string { return In(i18n.Locale()).TourArtStartup() }
+
+// TourArtStartup says "Runs at startup"
+// in the language of msgs.
+func (msgs Messages) TourArtStartup() string {
+	return Catalog.Format(msgs.locale, "TourArtStartup", nil)
+}
+
+// TourArtLegend says "A running network"
+// in the language the app shows.
+func TourArtLegend() string { return In(i18n.Locale()).TourArtLegend() }
+
+// TourArtLegend says "A running network"
+// in the language of msgs.
+func (msgs Messages) TourArtLegend() string {
+	return Catalog.Format(msgs.locale, "TourArtLegend", nil)
+}
+
+// TourArtUserCaption says "Networks run in the app, with no virtual device"
+// in the language the app shows.
+func TourArtUserCaption() string { return In(i18n.Locale()).TourArtUserCaption() }
+
+// TourArtUserCaption says "Networks run in the app, with no virtual device"
+// in the language of msgs.
+func (msgs Messages) TourArtUserCaption() string {
+	return Catalog.Format(msgs.locale, "TourArtUserCaption", nil)
+}
+
+// TourArtFollowCaption says "Networks run in the helper, while the app is open"
+// in the language the app shows.
+func TourArtFollowCaption() string { return In(i18n.Locale()).TourArtFollowCaption() }
+
+// TourArtFollowCaption says "Networks run in the helper, while the app is open"
+// in the language of msgs.
+func (msgs Messages) TourArtFollowCaption() string {
+	return Catalog.Format(msgs.locale, "TourArtFollowCaption", nil)
+}
+
+// TourArtBackgroundCaption says "Networks run in the helper, from startup"
+// in the language the app shows.
+func TourArtBackgroundCaption() string { return In(i18n.Locale()).TourArtBackgroundCaption() }
+
+// TourArtBackgroundCaption says "Networks run in the helper, from startup"
+// in the language of msgs.
+func (msgs Messages) TourArtBackgroundCaption() string {
+	return Catalog.Format(msgs.locale, "TourArtBackgroundCaption", nil)
+}
+
+// TourStartupSvcTitle says "Online from startup, no sign-in needed"
+// in the language the app shows.
+func TourStartupSvcTitle() string { return In(i18n.Locale()).TourStartupSvcTitle() }
+
+// TourStartupSvcTitle says "Online from startup, no sign-in needed"
+// in the language of msgs.
+func (msgs Messages) TourStartupSvcTitle() string {
+	return Catalog.Format(msgs.locale, "TourStartupSvcTitle", nil)
+}
+
+// TourStartupSvcBody says "The background service starts with the system: once the computer starts, networks connect even at the sign-in screen …"
+// in the language the app shows.
+func TourStartupSvcBody() string { return In(i18n.Locale()).TourStartupSvcBody() }
+
+// TourStartupSvcBody says "The background service starts with the system: once the computer starts, networks connect even at the sign-in screen …"
+// in the language of msgs.
+func (msgs Messages) TourStartupSvcBody() string {
+	return Catalog.Format(msgs.locale, "TourStartupSvcBody", nil)
+}
+
+// TourStartupAppTitle says "Online after you sign in"
+// in the language the app shows.
+func TourStartupAppTitle() string { return In(i18n.Locale()).TourStartupAppTitle() }
+
+// TourStartupAppTitle says "Online after you sign in"
+// in the language of msgs.
+func (msgs Messages) TourStartupAppTitle() string {
+	return Catalog.Format(msgs.locale, "TourStartupAppTitle", nil)
+}
+
+// TourStartupAppBody says "In {mode}, networks run with the app. With the switch below on, they connect once the computer starts and you sign in…"
+// in the language the app shows.
+func TourStartupAppBody(mode string) string { return In(i18n.Locale()).TourStartupAppBody(mode) }
+
+// TourStartupAppBody says "In {mode}, networks run with the app. With the switch below on, they connect once the computer starts and you sign in…"
+// in the language of msgs.
+func (msgs Messages) TourStartupAppBody(mode string) string {
+	return Catalog.Format(msgs.locale, "TourStartupAppBody", map[string]any{"mode": mode})
+}
+
+// TourLoginSvc says "Only the window and the tray icon; networks run either way."
+// in the language the app shows.
+func TourLoginSvc() string { return In(i18n.Locale()).TourLoginSvc() }
+
+// TourLoginSvc says "Only the window and the tray icon; networks run either way."
+// in the language of msgs.
+func (msgs Messages) TourLoginSvc() string {
+	return Catalog.Format(msgs.locale, "TourLoginSvc", nil)
+}
+
+// TourLoginOn says "Starts in the tray after you sign in, and connects."
+// in the language the app shows.
+func TourLoginOn() string { return In(i18n.Locale()).TourLoginOn() }
+
+// TourLoginOn says "Starts in the tray after you sign in, and connects."
+// in the language of msgs.
+func (msgs Messages) TourLoginOn() string {
+	return Catalog.Format(msgs.locale, "TourLoginOn", nil)
+}
+
+// TourLoginOff says "Connects only once you open the app yourself."
+// in the language the app shows.
+func TourLoginOff() string { return In(i18n.Locale()).TourLoginOff() }
+
+// TourLoginOff says "Connects only once you open the app yourself."
+// in the language of msgs.
+func (msgs Messages) TourLoginOff() string {
+	return Catalog.Format(msgs.locale, "TourLoginOff", nil)
+}
+
+// TourUseBackgroundAsk says "Need it online without signing in?"
+// in the language the app shows.
+func TourUseBackgroundAsk() string { return In(i18n.Locale()).TourUseBackgroundAsk() }
+
+// TourUseBackgroundAsk says "Need it online without signing in?"
+// in the language of msgs.
+func (msgs Messages) TourUseBackgroundAsk() string {
+	return Catalog.Format(msgs.locale, "TourUseBackgroundAsk", nil)
+}
+
+// TourUseBackground says "Use Background service"
+// in the language the app shows.
+func TourUseBackground() string { return In(i18n.Locale()).TourUseBackground() }
+
+// TourUseBackground says "Use Background service"
+// in the language of msgs.
+func (msgs Messages) TourUseBackground() string {
+	return Catalog.Format(msgs.locale, "TourUseBackground", nil)
+}
+
+// TourArtAfterStart says "After the computer starts"
+// in the language the app shows.
+func TourArtAfterStart() string { return In(i18n.Locale()).TourArtAfterStart() }
+
+// TourArtAfterStart says "After the computer starts"
+// in the language of msgs.
+func (msgs Messages) TourArtAfterStart() string {
+	return Catalog.Format(msgs.locale, "TourArtAfterStart", nil)
+}
+
+// TourArtPower says "Power on"
+// in the language the app shows.
+func TourArtPower() string { return In(i18n.Locale()).TourArtPower() }
+
+// TourArtPower says "Power on"
+// in the language of msgs.
+func (msgs Messages) TourArtPower() string {
+	return Catalog.Format(msgs.locale, "TourArtPower", nil)
+}
+
+// TourArtSignInScreen says "Sign-in screen"
+// in the language the app shows.
+func TourArtSignInScreen() string { return In(i18n.Locale()).TourArtSignInScreen() }
+
+// TourArtSignInScreen says "Sign-in screen"
+// in the language of msgs.
+func (msgs Messages) TourArtSignInScreen() string {
+	return Catalog.Format(msgs.locale, "TourArtSignInScreen", nil)
+}
+
+// TourArtNobody says "Nobody signed in"
+// in the language the app shows.
+func TourArtNobody() string { return In(i18n.Locale()).TourArtNobody() }
+
+// TourArtNobody says "Nobody signed in"
+// in the language of msgs.
+func (msgs Messages) TourArtNobody() string {
+	return Catalog.Format(msgs.locale, "TourArtNobody", nil)
+}
+
+// TourArtSignIn says "You sign in"
+// in the language the app shows.
+func TourArtSignIn() string { return In(i18n.Locale()).TourArtSignIn() }
+
+// TourArtSignIn says "You sign in"
+// in the language of msgs.
+func (msgs Messages) TourArtSignIn() string {
+	return Catalog.Format(msgs.locale, "TourArtSignIn", nil)
+}
+
+// TourArtOpenApp says "You open the app"
+// in the language the app shows.
+func TourArtOpenApp() string { return In(i18n.Locale()).TourArtOpenApp() }
+
+// TourArtOpenApp says "You open the app"
+// in the language of msgs.
+func (msgs Messages) TourArtOpenApp() string {
+	return Catalog.Format(msgs.locale, "TourArtOpenApp", nil)
+}
+
+// TourArtQuit says "Quit the app"
+// in the language the app shows.
+func TourArtQuit() string { return In(i18n.Locale()).TourArtQuit() }
+
+// TourArtQuit says "Quit the app"
+// in the language of msgs.
+func (msgs Messages) TourArtQuit() string {
+	return Catalog.Format(msgs.locale, "TourArtQuit", nil)
+}
+
+// TourArtAlways says "Always online"
+// in the language the app shows.
+func TourArtAlways() string { return In(i18n.Locale()).TourArtAlways() }
+
+// TourArtAlways says "Always online"
+// in the language of msgs.
+func (msgs Messages) TourArtAlways() string {
+	return Catalog.Format(msgs.locale, "TourArtAlways", nil)
+}
+
+// TourArtAfterSignIn says "Online after sign-in"
+// in the language the app shows.
+func TourArtAfterSignIn() string { return In(i18n.Locale()).TourArtAfterSignIn() }
+
+// TourArtAfterSignIn says "Online after sign-in"
+// in the language of msgs.
+func (msgs Messages) TourArtAfterSignIn() string {
+	return Catalog.Format(msgs.locale, "TourArtAfterSignIn", nil)
+}
+
+// TourArtAfterOpen says "Online once opened"
+// in the language the app shows.
+func TourArtAfterOpen() string { return In(i18n.Locale()).TourArtAfterOpen() }
+
+// TourArtAfterOpen says "Online once opened"
+// in the language of msgs.
+func (msgs Messages) TourArtAfterOpen() string {
+	return Catalog.Format(msgs.locale, "TourArtAfterOpen", nil)
+}
+
+// TourArtAlwaysCaption says "Online from startup, no sign-in needed"
+// in the language the app shows.
+func TourArtAlwaysCaption() string { return In(i18n.Locale()).TourArtAlwaysCaption() }
+
+// TourArtAlwaysCaption says "Online from startup, no sign-in needed"
+// in the language of msgs.
+func (msgs Messages) TourArtAlwaysCaption() string {
+	return Catalog.Format(msgs.locale, "TourArtAlwaysCaption", nil)
+}
+
+// TourArtAfterSignInCaption says "Online only after you sign in"
+// in the language the app shows.
+func TourArtAfterSignInCaption() string { return In(i18n.Locale()).TourArtAfterSignInCaption() }
+
+// TourArtAfterSignInCaption says "Online only after you sign in"
+// in the language of msgs.
+func (msgs Messages) TourArtAfterSignInCaption() string {
+	return Catalog.Format(msgs.locale, "TourArtAfterSignInCaption", nil)
+}
+
+// TourArtAfterOpenCaption says "Online only after you open the app"
+// in the language the app shows.
+func TourArtAfterOpenCaption() string { return In(i18n.Locale()).TourArtAfterOpenCaption() }
+
+// TourArtAfterOpenCaption says "Online only after you open the app"
+// in the language of msgs.
+func (msgs Messages) TourArtAfterOpenCaption() string {
+	return Catalog.Format(msgs.locale, "TourArtAfterOpenCaption", nil)
+}
+
+// TourAwakeTitle says "To stay online, keep the computer awake"
+// in the language the app shows.
+func TourAwakeTitle() string { return In(i18n.Locale()).TourAwakeTitle() }
+
+// TourAwakeTitle says "To stay online, keep the computer awake"
+// in the language of msgs.
+func (msgs Messages) TourAwakeTitle() string {
+	return Catalog.Format(msgs.locale, "TourAwakeTitle", nil)
+}
+
+// TourAwakeBody says "While the computer sleeps or hibernates it is offline in every run mode, and the other devices cannot reach it. For a…"
+// in the language the app shows.
+func TourAwakeBody() string { return In(i18n.Locale()).TourAwakeBody() }
+
+// TourAwakeBody says "While the computer sleeps or hibernates it is offline in every run mode, and the other devices cannot reach it. For a…"
+// in the language of msgs.
+func (msgs Messages) TourAwakeBody() string {
+	return Catalog.Format(msgs.locale, "TourAwakeBody", nil)
+}
+
+// TourAwakeWin1 says "Settings › System › Power & battery › Screen, sleep & hibernate timeouts: set sleep when plugged in to Never."
+// in the language the app shows.
+func TourAwakeWin1() string { return In(i18n.Locale()).TourAwakeWin1() }
+
+// TourAwakeWin1 says "Settings › System › Power & battery › Screen, sleep & hibernate timeouts: set sleep when plugged in to Never."
+// in the language of msgs.
+func (msgs Messages) TourAwakeWin1() string {
+	return Catalog.Format(msgs.locale, "TourAwakeWin1", nil)
+}
+
+// TourAwakeWin2 says "Closing a laptop's lid puts it to sleep; change that under “Lid, power & sleep button controls”."
+// in the language the app shows.
+func TourAwakeWin2() string { return In(i18n.Locale()).TourAwakeWin2() }
+
+// TourAwakeWin2 says "Closing a laptop's lid puts it to sleep; change that under “Lid, power & sleep button controls”."
+// in the language of msgs.
+func (msgs Messages) TourAwakeWin2() string {
+	return Catalog.Format(msgs.locale, "TourAwakeWin2", nil)
+}
+
+// TourAwakeMac1 says "System Settings › Battery › Options: turn on “Prevent automatic sleeping on power adapter when the display is o…"
+// in the language the app shows.
+func TourAwakeMac1() string { return In(i18n.Locale()).TourAwakeMac1() }
+
+// TourAwakeMac1 says "System Settings › Battery › Options: turn on “Prevent automatic sleeping on power adapter when the display is o…"
+// in the language of msgs.
+func (msgs Messages) TourAwakeMac1() string {
+	return Catalog.Format(msgs.locale, "TourAwakeMac1", nil)
+}
+
+// TourAwakeMac2 says "Closing a MacBook's lid puts it to sleep unless it has power and an external display."
+// in the language the app shows.
+func TourAwakeMac2() string { return In(i18n.Locale()).TourAwakeMac2() }
+
+// TourAwakeMac2 says "Closing a MacBook's lid puts it to sleep unless it has power and an external display."
+// in the language of msgs.
+func (msgs Messages) TourAwakeMac2() string {
+	return Catalog.Format(msgs.locale, "TourAwakeMac2", nil)
+}
+
+// TourAwakeLinux1 says "Turn off automatic suspend in your desktop's power settings."
+// in the language the app shows.
+func TourAwakeLinux1() string { return In(i18n.Locale()).TourAwakeLinux1() }
+
+// TourAwakeLinux1 says "Turn off automatic suspend in your desktop's power settings."
+// in the language of msgs.
+func (msgs Messages) TourAwakeLinux1() string {
+	return Catalog.Format(msgs.locale, "TourAwakeLinux1", nil)
+}
+
+// TourAwakeLinux2 says "Closing a laptop's lid suspends it; change the lid action in the same settings."
+// in the language the app shows.
+func TourAwakeLinux2() string { return In(i18n.Locale()).TourAwakeLinux2() }
+
+// TourAwakeLinux2 says "Closing a laptop's lid suspends it; change the lid action in the same settings."
+// in the language of msgs.
+func (msgs Messages) TourAwakeLinux2() string {
+	return Catalog.Format(msgs.locale, "TourAwakeLinux2", nil)
+}
+
+// TourAwakeScreen says "Turning off only the display keeps it online."
+// in the language the app shows.
+func TourAwakeScreen() string { return In(i18n.Locale()).TourAwakeScreen() }
+
+// TourAwakeScreen says "Turning off only the display keeps it online."
+// in the language of msgs.
+func (msgs Messages) TourAwakeScreen() string {
+	return Catalog.Format(msgs.locale, "TourAwakeScreen", nil)
+}
+
+// TourOpenPower says "Open power settings"
+// in the language the app shows.
+func TourOpenPower() string { return In(i18n.Locale()).TourOpenPower() }
+
+// TourOpenPower says "Open power settings"
+// in the language of msgs.
+func (msgs Messages) TourOpenPower() string {
+	return Catalog.Format(msgs.locale, "TourOpenPower", nil)
+}
+
+// TourArtAwake says "Awake · online"
+// in the language the app shows.
+func TourArtAwake() string { return In(i18n.Locale()).TourArtAwake() }
+
+// TourArtAwake says "Awake · online"
+// in the language of msgs.
+func (msgs Messages) TourArtAwake() string {
+	return Catalog.Format(msgs.locale, "TourArtAwake", nil)
+}
+
+// TourArtAsleep says "Asleep · offline"
+// in the language the app shows.
+func TourArtAsleep() string { return In(i18n.Locale()).TourArtAsleep() }
+
+// TourArtAsleep says "Asleep · offline"
+// in the language of msgs.
+func (msgs Messages) TourArtAsleep() string {
+	return Catalog.Format(msgs.locale, "TourArtAsleep", nil)
+}
+
+// TourArtScreenOK says "The display may turn off; sleep takes it offline"
+// in the language the app shows.
+func TourArtScreenOK() string { return In(i18n.Locale()).TourArtScreenOK() }
+
+// TourArtScreenOK says "The display may turn off; sleep takes it offline"
+// in the language of msgs.
+func (msgs Messages) TourArtScreenOK() string {
+	return Catalog.Format(msgs.locale, "TourArtScreenOK", nil)
+}
+
+// TourReadyTitle says "Ready"
+// in the language the app shows.
+func TourReadyTitle() string { return In(i18n.Locale()).TourReadyTitle() }
+
+// TourReadyTitle says "Ready"
+// in the language of msgs.
+func (msgs Messages) TourReadyTitle() string {
+	return Catalog.Format(msgs.locale, "TourReadyTitle", nil)
+}
+
+// TourReadyAuthWin says "When you finish, Windows asks once for administrator approval to install the privileged helper. Opening the app never…"
+// in the language the app shows.
+func TourReadyAuthWin() string { return In(i18n.Locale()).TourReadyAuthWin() }
+
+// TourReadyAuthWin says "When you finish, Windows asks once for administrator approval to install the privileged helper. Opening the app never…"
+// in the language of msgs.
+func (msgs Messages) TourReadyAuthWin() string {
+	return Catalog.Format(msgs.locale, "TourReadyAuthWin", nil)
+}
+
+// TourReadyAuthMac says "When you finish, macOS asks once for an administrator password to install the privileged helper. Opening the app neve…"
+// in the language the app shows.
+func TourReadyAuthMac() string { return In(i18n.Locale()).TourReadyAuthMac() }
+
+// TourReadyAuthMac says "When you finish, macOS asks once for an administrator password to install the privileged helper. Opening the app neve…"
+// in the language of msgs.
+func (msgs Messages) TourReadyAuthMac() string {
+	return Catalog.Format(msgs.locale, "TourReadyAuthMac", nil)
+}
+
+// TourReadyAuthLinux says "When you finish, the system asks once for authorization to install the privileged helper. Opening the app never asks …"
+// in the language the app shows.
+func TourReadyAuthLinux() string { return In(i18n.Locale()).TourReadyAuthLinux() }
+
+// TourReadyAuthLinux says "When you finish, the system asks once for authorization to install the privileged helper. Opening the app never asks …"
+// in the language of msgs.
+func (msgs Messages) TourReadyAuthLinux() string {
+	return Catalog.Format(msgs.locale, "TourReadyAuthLinux", nil)
+}
+
+// TourReadyUser says "No administrator approval needed. To use a virtual device later, switch the run mode in Settings › Run mode."
+// in the language the app shows.
+func TourReadyUser() string { return In(i18n.Locale()).TourReadyUser() }
+
+// TourReadyUser says "No administrator approval needed. To use a virtual device later, switch the run mode in Settings › Run mode."
+// in the language of msgs.
+func (msgs Messages) TourReadyUser() string {
+	return Catalog.Format(msgs.locale, "TourReadyUser", nil)
+}
+
+// TourReplayTitle says "That's all"
+// in the language the app shows.
+func TourReplayTitle() string { return In(i18n.Locale()).TourReplayTitle() }
+
+// TourReplayTitle says "That's all"
+// in the language of msgs.
+func (msgs Messages) TourReplayTitle() string {
+	return Catalog.Format(msgs.locale, "TourReplayTitle", nil)
+}
+
+// TourReplayCurrent says "Your run mode is {mode}. You can switch any time in Settings › Run mode."
+// in the language the app shows.
+func TourReplayCurrent(mode string) string { return In(i18n.Locale()).TourReplayCurrent(mode) }
+
+// TourReplayCurrent says "Your run mode is {mode}. You can switch any time in Settings › Run mode."
+// in the language of msgs.
+func (msgs Messages) TourReplayCurrent(mode string) string {
+	return Catalog.Format(msgs.locale, "TourReplayCurrent", map[string]any{"mode": mode})
+}
+
+// TourReplayOther says "Your run mode is {mode}. You looked at {other}; you can switch to it now."
+// in the language the app shows.
+func TourReplayOther(mode string, other string) string {
+	return In(i18n.Locale()).TourReplayOther(mode, other)
+}
+
+// TourReplayOther says "Your run mode is {mode}. You looked at {other}; you can switch to it now."
+// in the language of msgs.
+func (msgs Messages) TourReplayOther(mode string, other string) string {
+	return Catalog.Format(msgs.locale, "TourReplayOther", map[string]any{"mode": mode, "other": other})
+}
+
+// TourSwitchTo says "Switch to {mode}"
+// in the language the app shows.
+func TourSwitchTo(mode string) string { return In(i18n.Locale()).TourSwitchTo(mode) }
+
+// TourSwitchTo says "Switch to {mode}"
+// in the language of msgs.
+func (msgs Messages) TourSwitchTo(mode string) string {
+	return Catalog.Format(msgs.locale, "TourSwitchTo", map[string]any{"mode": mode})
+}
+
+// TourSummary says "Your setup"
+// in the language the app shows.
+func TourSummary() string { return In(i18n.Locale()).TourSummary() }
+
+// TourSummary says "Your setup"
+// in the language of msgs.
+func (msgs Messages) TourSummary() string {
+	return Catalog.Format(msgs.locale, "TourSummary", nil)
+}
+
+// TourOn says "On"
+// in the language the app shows.
+func TourOn() string { return In(i18n.Locale()).TourOn() }
+
+// TourOn says "On"
+// in the language of msgs.
+func (msgs Messages) TourOn() string {
+	return Catalog.Format(msgs.locale, "TourOn", nil)
+}
+
+// TourOff says "Off"
+// in the language the app shows.
+func TourOff() string { return In(i18n.Locale()).TourOff() }
+
+// TourOff says "Off"
+// in the language of msgs.
+func (msgs Messages) TourOff() string {
+	return Catalog.Format(msgs.locale, "TourOff", nil)
+}
+
+// TourArtWhenOpen says "Online while the app is open"
+// in the language the app shows.
+func TourArtWhenOpen() string { return In(i18n.Locale()).TourArtWhenOpen() }
+
+// TourArtWhenOpen says "Online while the app is open"
+// in the language of msgs.
+func (msgs Messages) TourArtWhenOpen() string {
+	return Catalog.Format(msgs.locale, "TourArtWhenOpen", nil)
+}
+
+// TourArtFromStartup says "Online from startup"
+// in the language the app shows.
+func TourArtFromStartup() string { return In(i18n.Locale()).TourArtFromStartup() }
+
+// TourArtFromStartup says "Online from startup"
+// in the language of msgs.
+func (msgs Messages) TourArtFromStartup() string {
+	return Catalog.Format(msgs.locale, "TourArtFromStartup", nil)
+}
+
+// TourRewatchTitle says "What is the difference between the modes?"
+// in the language the app shows.
+func TourRewatchTitle() string { return In(i18n.Locale()).TourRewatchTitle() }
+
+// TourRewatchTitle says "What is the difference between the modes?"
+// in the language of msgs.
+func (msgs Messages) TourRewatchTitle() string {
+	return Catalog.Format(msgs.locale, "TourRewatchTitle", nil)
+}
+
+// TourRewatchAbout says "Watch the first-run tour again: the virtual device, startup and sign-in, staying online."
+// in the language the app shows.
+func TourRewatchAbout() string { return In(i18n.Locale()).TourRewatchAbout() }
+
+// TourRewatchAbout says "Watch the first-run tour again: the virtual device, startup and sign-in, staying online."
+// in the language of msgs.
+func (msgs Messages) TourRewatchAbout() string {
+	return Catalog.Format(msgs.locale, "TourRewatchAbout", nil)
+}
+
+// TourRewatch says "Watch tour"
+// in the language the app shows.
+func TourRewatch() string { return In(i18n.Locale()).TourRewatch() }
+
+// TourRewatch says "Watch tour"
+// in the language of msgs.
+func (msgs Messages) TourRewatch() string {
+	return Catalog.Format(msgs.locale, "TourRewatch", nil)
 }

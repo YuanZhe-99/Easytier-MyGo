@@ -43,6 +43,7 @@ func (a *App) view(c *ui.Context) {
 		})
 	})
 	a.settingsSheet(c)
+	a.tourSheet(c)
 	a.createDialogView(c)
 }
 
@@ -50,6 +51,11 @@ func (a *App) view(c *ui.Context) {
 // of the window's material as wide as the rail keeps the traffic lights,
 // which MyGo places only as the window opens, off the pane.
 func (a *App) welcomeShell(c *ui.Context) {
+	a.mu.Lock()
+	if a.tour == nil { // the welcome is the tour's first step
+		a.tour = &tour{}
+	}
+	a.mu.Unlock()
 	room := a.titleRoom(c)
 	ui.Row(c.Key("welcome-shell")).Fill().AlignItems(ui.Stretch).Children(func() {
 		left := paneMargin
@@ -58,7 +64,7 @@ func (a *App) welcomeShell(c *ui.Context) {
 			left = 0
 		}
 		ui.Column(c.Key("welcome-main")).Grow(1).MinWidth(0).Padding(paneMargin, paneMargin, paneMargin, left).Children(func() {
-			a.pane(c, paneHead{}, func() { a.welcomeView(c) })
+			a.pane(c, paneHead{}, func() { a.tourView(c) })
 		})
 	})
 }

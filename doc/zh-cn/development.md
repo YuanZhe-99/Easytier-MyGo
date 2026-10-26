@@ -2,7 +2,7 @@
 
 ## 要求
 
-- Go 1.27.2（`go.mod`）；MyGo 是 Go 工具依赖（`go tool mygo …`）。
+- Go 1.27.3（`go.mod`）；MyGo 是 Go 工具依赖（`go tool mygo …`）。
 - 运行 GUI 需要 Linux 桌面；托盘需要 `libayatana-appindicator3-1`。macOS 主机同样可以构建和运行本应用；
   在 macOS 上用 Homebrew 安装 Go（`brew install go`）。
 - 在 Linux 和 Windows 上用 `upx` 解压内置的 EasyTier 二进制（见

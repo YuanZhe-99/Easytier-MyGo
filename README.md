@@ -4,7 +4,7 @@ A native desktop client for [EasyTier](https://github.com/EasyTier/EasyTier), bu
 [MyGo](https://github.com/egoist/mygo). A small daemon runs the EasyTier core, watches its health,
 and recovers local faults without ever overriding what you asked for.
 
-> **Status:** 0.1.6. Linux is fully tested; Windows (x64, ARM64) and macOS pass CI smoke tests and
+> **Status:** 0.2.1. Linux is fully tested; Windows (x64, ARM64) and macOS pass CI smoke tests and
 > are partly verified on real machines. See the [platform notes](doc/en-us/platform-notes.md) and
 > the [version history](doc/en-us/version-history.md).
 
@@ -16,6 +16,9 @@ and recovers local faults without ever overriding what you asked for.
 - Three run modes: **No privileges** (`no_tun` networks), **Follow GUI** (networks run while the app
   runs) and **Background service** (networks run from boot). Administrator authorization happens
   once, when the privileged helper is installed — never when the app starts.
+- A first-run tour that shows what each run mode means for this computer — the virtual device,
+  startup and sign-in, staying awake — with animated illustrations; it can be skipped and watched
+  again from Settings.
 - Choose your EasyTier core: the bundled stable release, another official release, or your own
   build, without updating the app.
 - Lossless configuration editing (form or raw TOML) with conflict checks, backups and rollback.
@@ -27,7 +30,7 @@ and recovers local faults without ever overriding what you asked for.
 
 ## Build
 
-Requirements: Go 1.27.2; on Linux a graphical desktop and `libayatana-appindicator3-1` for the tray.
+Requirements: Go 1.27.3; on Linux a graphical desktop and `libayatana-appindicator3-1` for the tray.
 
 ```bash
 scripts/build.sh               # this platform: core, daemon, control CLI, then `mygo build`
@@ -58,6 +61,8 @@ configure connect wherever their EasyTier configuration says.
 - **[MyGo](https://github.com/egoist/mygo)** provides the native Go UI framework and tooling.
 - **[EasyTier-iOS](https://github.com/EasyTier/EasyTier-iOS)** inspired the interface design; the app
   icon uses its artwork (see [resources/NOTICE](resources/NOTICE)).
+- **[Arion](https://github.com/AstraFoundry/Arion)** inspired the first-run tour: its onboarding's
+  layout of an illustration beside each step. No code is taken from it.
 - **[Lucide](https://lucide.dev)** provides the interface icons (ISC).
 - **Vendor logos** come mostly from [Simple Icons](https://simpleicons.org/) (CC0) and Wikimedia
   Commons; each is a trademark of its owner, used only to identify a device's maker (see

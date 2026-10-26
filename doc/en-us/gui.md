@@ -94,7 +94,8 @@ screenshots (`SCREENSHOT_DIR`).
   in the tray when opened at login, the close button, on macOS hiding the Dock icon);
   Notifications (connection changes).
 - **Run mode:** the three run modes as rows, the one in use marked Current and the others with
-  Switch, a loading indicator while switching ([run-modes.md](run-modes.md)); the privileged
+  Switch, a loading indicator while switching ([run-modes.md](run-modes.md)), then "What is the
+  difference between the modes?" with Watch tour ([First run](#first-run)); the privileged
   helper, installed with its version (Update helper when it is older, Remove helper) or not.
 - **EasyTier core:** a callout when the daily check found a newer stable release; the cores
   installed (tested or untested, In use, Use, Remove); the daily check; the official releases
@@ -112,12 +113,30 @@ screenshots (`SCREENSHOT_DIR`).
 
 ## First run
 
-- The welcome page is one pane, no sidebar (`welcomeShell`); on macOS a strip of the window's
-  material as wide as the rail keeps the traffic lights off it. It shows the app's icon, the
-  welcome, and the three run modes as tiles — each its icon, name, what it does and what it
-  needs —, No privileges chosen at first, then Continue with the one chosen
-  (`welcomeView`), which installs the helper if needed. A failed choice (a cancelled prompt, a
-  failed install) is said above Continue until the next attempt.
+- The first run is a tour of six steps in one pane, no sidebar (`welcomeShell`, `tourView`); on
+  macOS a strip of the window's material as wide as the rail keeps the traffic lights off it. On
+  the left the step's illustration; beside it the steps as dots, the language and Skip, the
+  step, then Back and Continue. A step slides in from the side it is moved to.
+- The steps: **Welcome** (what the app does, what the tour covers); **Virtual device** (with and
+  without, a switch to compare: apps on this computer reach the network only with one, other
+  devices reach this computer either way); **Run modes** (the three as columns to choose from,
+  No privileges at first: virtual device, apps reaching the network, when networks run,
+  administrator approval); **Startup and sign-in** (Background service is online from startup
+  with nobody signed in; the other two only once you sign in with Open at login on, which the
+  step switches); **Staying online** (sleep takes the computer offline in every run mode; where
+  this system keeps it awake, with Open power settings on Windows and macOS); **Ready** (the
+  choices; finishing installs the helper when the run mode needs it, one administrator prompt).
+- Skip asks first, then starts in No privileges, which needs no approval. A failed finish (a
+  cancelled prompt, a failed install) is said beside the buttons until the next attempt.
+- The illustrations (`tourart.go`) are drawn, not pictures: this computer in perspective as the
+  system it runs on — a Windows Dev Kit, a Mac mini, a mini PC on Linux — with the system's
+  logo on its top (`computerModel`, the logos of `assets/logos`); the network's devices with
+  data moving as dashes; the run modes as layers of the computer, the running network on the one
+  that runs it; the startup timeline with the stretch that is online; the computer awake and
+  asleep in turn. With Reduce Motion nothing moves by itself.
+- Watch tour in Settings › Run mode shows the tour again as a sheet over the window
+  (`tourSheet`), the run mode in use looked at first. Close, Escape or a click outside go back
+  to Settings and change nothing; the last step offers to switch to a run mode looked at.
 - Every page scrolls.
 
 ## Peer rows

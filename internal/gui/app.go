@@ -78,8 +78,9 @@ type App struct {
 	settingsAt    settingsPage
 	settingsQuery string
 	settingsFocus settingsFocus
-	// welcomeChoice is the run mode chosen on the welcome page.
-	welcomeChoice runChoice
+	// tour is the first-run tour, or the same shown again from Settings;
+	// nil while neither shows.
+	tour *tour
 	// coreUpdate is a newer stable EasyTier found by the daily check.
 	coreUpdate string
 	// appUpdate is a newer signed version of the app; updating pauses the
@@ -124,7 +125,7 @@ func New() *App {
 		visible: true,
 	}
 	if a.prefs.Mode == ModeUnset {
-		a.page = pageWelcome
+		a.page, a.tour = pageWelcome, &tour{}
 	}
 	return a
 }

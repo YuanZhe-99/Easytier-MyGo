@@ -283,6 +283,7 @@ func settingsHits() []settingsHit {
 		{setRunMode, L.ModeUserTitle(), L.ModeUserBody()},
 		{setRunMode, L.ModeFollowTitle(), L.ModeFollowBody()},
 		{setRunMode, L.ModeBackgroundTitle(), L.ModeBackgroundBody()},
+		{setRunMode, L.TourRewatchTitle(), join(L.TourRewatchAbout(), L.TourRewatch())},
 		{setRunMode, L.SectionHelper(), join(L.ActionUpdateHelper(), L.ActionUninstallHelper())},
 		{setCore, L.SectionInstalled(), join(L.SettingsCores(), L.CoreBundled(), L.ActionUseCore())},
 		{setCore, L.SettingsCheckUpdates(), L.SettingsCheckUpdatesHint()},
@@ -322,40 +323,61 @@ func searchSettings(all []settingsHit, q string) []settingsHit {
 	return slices.Concat(byTitle, byWords)
 }
 
+// languageSelect picks the interface language: the system's, or one of the
+// catalogs'. Settings › General and the tour show it.
+// Side effects: switches the locale and remembers the choice.
+func (a *App) languageSelect(c *ui.Context, key string, width float32) {
+	langs := mygo.App.Languages()
+	options := []string{L.LanguageSystem()}
+	for _, l := range langs {
+		options = append(options, i18n.Autonym(l))
+	}
+	cur := options[0]
+	a.mu.Lock()
+	chosen := a.prefs.Language
+	a.mu.Unlock()
+	if i := slices.Index(langs, chosen); i >= 0 {
+		cur = options[i+1]
+	}
+	if ui.Select(c.Key(key), &cur, options).Width(width).Label(L.SettingsLanguage()).Changed() {
+		i := slices.Index(options, cur)
+		lang := ""
+		if i > 0 {
+			lang = langs[i-1]
+		}
+		mygo.App.SetLocale(lang)
+		a.mu.Lock()
+		p := a.prefs
+		a.mu.Unlock()
+		p.Language = lang
+		a.setPrefs(p)
+	}
+}
+
+// setOpenAtLogin turns the login item on or off (main thread), as Settings
+// › General and the tour's startup step do.
+// Side effects: a toast when the system refuses.
+func (a *App) setOpenAtLogin(on bool) {
+	if err := mygo.App.SetOpenAtLogin(on); err != nil {
+		a.showToast(err.Error(), true)
+		return
+	}
+	a.mu.Lock()
+	a.openAtLogin = on
+	a.mu.Unlock()
+}
+
 // generalPage: language and look, start and close, notifications.
 func (a *App) generalPage(c *ui.Context) {
 	r := a.settingsRows(c)
 	pageColumn(c, "set-general", pageColumnW, func() {
 		pageIntro(c, L.SettingsGeneral(), L.SettingsGeneralAbout())
 		r.section(c, "look", L.SectionLook(), nil, func(r *rows) {
-			// Language: the system's, or one of the catalogs'.
-			langs := mygo.App.Languages()
-			options := []string{L.LanguageSystem()}
-			for _, l := range langs {
-				options = append(options, i18n.Autonym(l))
-			}
-			cur := options[0]
 			a.mu.Lock()
-			chosen := a.prefs.Language
 			themeIdx := max(slices.Index([]string{"system", "light", "dark"}, a.prefs.Theme), 0)
 			a.mu.Unlock()
-			if i := slices.Index(langs, chosen); i >= 0 {
-				cur = options[i+1]
-			}
 			r.row(c, "lang", iconLanguage, L.SettingsLanguage(), L.SettingsLanguageAbout(), func() {
-				if ui.Select(c.Key("lang-select"), &cur, options).Width(200).Changed() {
-					i := slices.Index(options, cur)
-					lang := ""
-					if i > 0 {
-						lang = langs[i-1]
-					}
-					mygo.App.SetLocale(lang)
-					a.mu.Lock()
-					p := a.prefs
-					a.mu.Unlock()
-					p.Language = lang
-					a.setPrefs(p)
-				}
+				a.languageSelect(c, "lang-select", 200)
 			})
 			r.row(c, "theme", iconSunMoon, L.SettingsTheme(), L.SettingsThemeAbout(), func() {
 				if ui.Segmented(c.Key("theme-seg"), &themeIdx, L.ThemeSystem(), L.ThemeLight(), L.ThemeDark()).Changed() {
@@ -371,13 +393,7 @@ func (a *App) generalPage(c *ui.Context) {
 		r.section(c, "start", L.SectionStart(), nil, func(r *rows) {
 			r.row(c, "login", iconPower, L.SettingsLaunchAtLogin(), L.SettingsLaunchAtLoginHint(), func() {
 				if ui.Switch(c.Key("login-sw"), &login).Label(L.SettingsLaunchAtLogin()).Changed() {
-					if err := mygo.App.SetOpenAtLogin(login); err != nil {
-						a.showToast(err.Error(), true)
-					} else {
-						a.mu.Lock()
-						a.openAtLogin = login
-						a.mu.Unlock()
-					}
+					a.setOpenAtLogin(login)
 				}
 			})
 			r.row(c, "hidden", iconTray, L.SettingsStartHidden(), L.SettingsStartHiddenAbout(), func() {
@@ -481,6 +497,11 @@ func (a *App) runModePage(c *ui.Context) {
 					}
 				})
 			}
+			r.row(c, "mode-tour", iconPlay, L.TourRewatchTitle(), L.TourRewatchAbout(), func() {
+				if ui.Button(c.Key("mode-tour-go"), L.TourRewatch()).Disabled(busy).Clicked() {
+					a.openTour()
+				}
+			})
 		})
 		ui.Row(c.Key("mode-note")).Gap(8).AlignItems(ui.Center).Margin(10, 4, 0, 4).Children(func() {
 			if busy {
