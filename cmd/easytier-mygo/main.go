@@ -34,9 +34,13 @@ func main() {
 			a.Focus()
 		}
 	})
-	hidden := mygo.App.WasOpenedAtLogin() && a.StartHidden()
 
 	mygo.App.WhenReady(func() {
+		// Asked only once the app runs: macOS reports a login-item launch
+		// while the app finishes launching, so asking before Run always
+		// answered no and the window opened at login.
+		// An update installed while the window was closed keeps it closed.
+		hidden := a.TakeRelaunchHidden() || mygo.App.WasOpenedAtLogin() && a.StartHidden()
 		mygo.App.SetMenu(mygo.NewMenu([]*mygo.MenuItem{
 			{Role: mygo.RoleAppMenu},
 			{Role: mygo.RoleEditMenu},

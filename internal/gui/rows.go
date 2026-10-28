@@ -13,6 +13,7 @@ const (
 	rowMinH       float32 = 54  // a row
 	tileSize      float32 = 32  // the tile a row starts with
 	rowControlW   float32 = 260 // a field on a row's right
+	hourSelectW   float32 = 120 // an hour of the day on a row
 	blockIndent   float32 = 62  // a block under its row, lined up with the row's words
 )
 

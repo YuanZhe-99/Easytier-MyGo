@@ -321,3 +321,32 @@ func TestShownStatusStale(t *testing.T) {
 		}
 	}
 }
+
+// TestAutoInstallDue: an automatic install starts only in its mode's
+// window, and a failed attempt does not repeat right away.
+func TestAutoInstallDue(t *testing.T) {
+	at3 := time.Date(2026, 10, 28, 3, 20, 0, 0, time.Local)
+	for _, tc := range []struct {
+		name    string
+		mode    string
+		hour    int
+		now     time.Time
+		idle    time.Duration
+		lastTry time.Time
+		want    bool
+	}{
+		{"off", "", 3, at3, time.Hour, time.Time{}, false},
+		{"daily in its hour", autoInstallDaily, 3, at3, 0, time.Time{}, true},
+		{"daily outside its hour", autoInstallDaily, 4, at3, time.Hour, time.Time{}, false},
+		{"daily at midnight", autoInstallDaily, 0, at3.Add(-3 * time.Hour), 0, time.Time{}, true},
+		{"idle long enough", autoInstallIdle, 3, at3, autoIdleAfter, time.Time{}, true},
+		{"in use", autoInstallIdle, 3, at3, time.Minute, time.Time{}, false},
+		{"idle unknown", autoInstallIdle, 3, at3, 0, time.Time{}, false},
+		{"tried recently", autoInstallDaily, 3, at3, 0, at3.Add(-10 * time.Minute), false},
+		{"tried long ago", autoInstallIdle, 3, at3, time.Hour, at3.Add(-autoRetryAfter), true},
+	} {
+		if got := autoInstallDue(tc.mode, tc.hour, tc.now, tc.idle, tc.lastTry); got != tc.want {
+			t.Errorf("%s: got %v, want %v", tc.name, got, tc.want)
+		}
+	}
+}

@@ -297,6 +297,7 @@ func settingsHits() []settingsHit {
 	}
 	if mygo.Updater.Enabled() {
 		hits = append(hits, settingsHit{setAbout, L.SettingsCheckAppUpdates(), join(L.ActionCheckAppUpdate(), L.SectionUpdates())})
+		hits = append(hits, settingsHit{setAbout, L.SettingsAutoInstall(), join(L.SettingsAutoInstallAbout(), L.AutoInstallIdle(), L.AutoInstallDaily())})
 	}
 	return hits
 }

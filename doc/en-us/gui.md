@@ -103,13 +103,20 @@ screenshots (`SCREENSHOT_DIR`).
 - **About & updates:** the version with Source code, the license with EasyTier's source code,
   the design credit with EasyTier-iOS; the app's updates — a new version with Install and
   restart, the download's progress, or when it was last checked with Check for updates — and the
-  daily check; Diagnostics: the diagnostics file (Export diagnostics…) and the log folder.
+  daily check with, when it is on, the automatic install (off, when idle, or daily at an hour);
+  Diagnostics: the diagnostics file (Export diagnostics…) and the log folder.
 - **App updates:** the daily check and "Check for updates" read the signed update of the latest
   GitHub release; "Install and restart" installs it in place and relaunches. In No privileges
   mode the user daemon stops during the install (Windows cannot replace running programs) and
   starts again with the new version; the helper then updates itself from the signed bundle (on
   macOS by code signature, [packaging.md](packaging.md)). Copies installed by a package manager
   (`.deb`) and development builds say they cannot update themselves.
+- **Automatic install:** off by default. "When idle" installs a version the daily check found
+  once the keyboard and mouse have been unused for 15 minutes (a desktop that does not report
+  idle time never counts as idle); "Daily" installs it within the chosen hour, local time. The
+  GUI looks every five minutes while it runs; a failed attempt waits six hours. An update
+  installed while the window was closed into the tray relaunches into the tray
+  (`autoInstallDue`, `Prefs.RelaunchHidden`).
 
 ## First run
 
@@ -198,6 +205,8 @@ screenshots (`SCREENSHOT_DIR`).
   says so the first time; without a tray, closing quits.
 - macOS: closing into the tray also hides the Dock icon (Settings → General, on by default; also
   when started hidden at login). Minimizing keeps it; showing the window brings it back.
+- macOS: a login item gets no command-line argument, and the system says it was opened at login
+  only while the app finishes launching, so the GUI asks once it is ready, not before.
 
 ## Languages
 

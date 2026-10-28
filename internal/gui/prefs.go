@@ -49,6 +49,14 @@ type Prefs struct {
 	CheckAppUpdates bool      `json:"check_app_updates"`
 	LastAppCheck    time.Time `json:"last_app_check,omitzero"`
 	AnnouncedApp    string    `json:"announced_app,omitempty"`
+	// AutoInstall installs a found app update without asking: "" never,
+	// "idle" once the computer is idle, "daily" within AutoInstallHour
+	// (local time, 0–23).
+	AutoInstall     string `json:"auto_install,omitempty"`
+	AutoInstallHour int    `json:"auto_install_hour"`
+	// RelaunchHidden starts the next launch in the tray: an update
+	// installed while the window was closed keeps it closed.
+	RelaunchHidden bool `json:"relaunch_hidden,omitempty"`
 	// ShowPrereleases lists pre-releases in the core manager.
 	ShowPrereleases bool `json:"show_prereleases,omitempty"`
 	// SidebarRail keeps the sidebar folded to its icons.
@@ -56,7 +64,7 @@ type Prefs struct {
 }
 
 func defaultPrefs() Prefs {
-	return Prefs{Theme: "system", HideDock: true, StartHidden: true, Notify: true, CheckCoreUpdates: true, CheckAppUpdates: true}
+	return Prefs{Theme: "system", HideDock: true, StartHidden: true, Notify: true, CheckCoreUpdates: true, CheckAppUpdates: true, AutoInstallHour: 3}
 }
 
 // prefsPath is $XDG_CONFIG_HOME/easytier-mygo/gui.json.
@@ -88,6 +96,20 @@ func (a *App) StartHidden() bool {
 	a.mu.Lock()
 	defer a.mu.Unlock()
 	return a.prefs.StartHidden
+}
+
+// TakeRelaunchHidden reports whether this launch follows an update
+// installed while the window was closed, and forgets it.
+// Side effects: saves the prefs when the mark was set.
+func (a *App) TakeRelaunchHidden() bool {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	if !a.prefs.RelaunchHidden {
+		return false
+	}
+	a.prefs.RelaunchHidden = false
+	_ = savePrefs(a.prefs)
+	return true
 }
 
 // HidesDock reports whether the Dock icon goes away with the window: macOS

@@ -24,6 +24,6 @@ EasyTier MyGo 是 [EasyTier](https://github.com/EasyTier/EasyTier) 的原生桌�
 
 | 组件 | 版本 | 唯一来源 |
 |---|---|---|
-| Go | 1.27.2 | `go.mod` |
-| MyGo | v0.5.5 | `go.mod` |
+| Go | 1.27.3 | `go.mod` |
+| MyGo | v0.7.1 | `go.mod` |
 | EasyTier（内置） | v2.6.4 | `third_party/easytier.json` |

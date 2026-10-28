@@ -2,6 +2,8 @@ package gui
 
 import (
 	"context"
+	"fmt"
+	"slices"
 	"time"
 
 	"github.com/egoist/mygo"
@@ -14,8 +16,38 @@ import (
 // appCheckEvery is how often the automatic app update check runs.
 const appCheckEvery = 24 * time.Hour
 
-// appUpdateLoop runs the daily app update check while the GUI runs: the
-// first one shortly after launch, when one is due.
+// Automatic installs (Prefs.AutoInstall).
+const (
+	autoInstallIdle  = "idle"
+	autoInstallDaily = "daily"
+	// autoIdleAfter is how long without keyboard or mouse counts as idle.
+	autoIdleAfter = 15 * time.Minute
+	// autoRetryAfter keeps a failed automatic install from repeating.
+	autoRetryAfter = 6 * time.Hour
+	// appLoopEvery is how often the loop looks at checks and installs.
+	appLoopEvery = 5 * time.Minute
+)
+
+// autoInstallDue reports whether an automatic install may start now.
+// Inputs: mode and hour from the prefs; idle is the system's idle time (0
+// when it does not tell); lastTry is the last automatic install attempt.
+// Notes: a system that does not report idle time never counts as idle.
+func autoInstallDue(mode string, hour int, now time.Time, idle time.Duration, lastTry time.Time) bool {
+	if !lastTry.IsZero() && now.Sub(lastTry) < autoRetryAfter {
+		return false
+	}
+	switch mode {
+	case autoInstallIdle:
+		return idle >= autoIdleAfter
+	case autoInstallDaily:
+		return now.Hour() == hour
+	}
+	return false
+}
+
+// appUpdateLoop runs the daily app update check while the GUI runs, the
+// first one shortly after launch when one is due, and installs a found
+// version when the automatic install's time has come.
 func (a *App) appUpdateLoop() {
 	if !mygo.Updater.Enabled() {
 		return // a package manager or a development build
@@ -25,6 +57,7 @@ func (a *App) appUpdateLoop() {
 		return
 	case <-time.After(10 * time.Second):
 	}
+	var lastTry time.Time
 	for {
 		a.mu.Lock()
 		due := a.prefs.CheckAppUpdates && time.Since(a.prefs.LastAppCheck) >= appCheckEvery
@@ -32,10 +65,24 @@ func (a *App) appUpdateLoop() {
 		if due {
 			a.checkApp(false)
 		}
+		a.mu.Lock()
+		found := a.appUpdate != nil && !a.updating && !a.busy["app-update"]
+		mode, hour := a.prefs.AutoInstall, a.prefs.AutoInstallHour
+		a.mu.Unlock()
+		if found && mode != "" {
+			var idle time.Duration
+			if mode == autoInstallIdle {
+				idle = mygo.Power.IdleTime()
+			}
+			if now := time.Now(); autoInstallDue(mode, hour, now, idle, lastTry) {
+				lastTry = now
+				a.installApp()
+			}
+		}
 		select {
 		case <-a.ctx.Done():
 			return
-		case <-time.After(time.Hour):
+		case <-time.After(appLoopEvery):
 		}
 	}
 }
@@ -80,6 +127,7 @@ func (a *App) checkApp(manual bool) {
 // Side effects: in No privileges mode the user daemon (and its networks)
 // stops first, because Windows cannot move a folder whose programs run;
 // it starts again with the new version. On failure it starts again at once.
+// A window closed into the tray stays closed after the relaunch.
 func (a *App) installApp() {
 	a.mu.Lock()
 	up, user := a.appUpdate, a.prefs.Mode != ModeHelper
@@ -111,6 +159,8 @@ func (a *App) installApp() {
 		}
 		a.mu.Lock()
 		a.quitting = true
+		a.prefs.RelaunchHidden = !a.visible
+		_ = savePrefs(a.prefs)
 		a.mu.Unlock()
 		mygo.App.Relaunch()
 	}()
@@ -154,6 +204,40 @@ func (a *App) appUpdateRows(c *ui.Context, r *rows) {
 			p := a.prefs
 			a.mu.Unlock()
 			p.CheckAppUpdates = auto
+			a.setPrefs(p)
+		}
+	})
+	if auto {
+		a.autoInstallRows(c, r)
+	}
+}
+
+// autoInstallRows choose the automatic install: never, when idle, or daily
+// at an hour (the hour row shows only for daily). They need the daily
+// check, which finds what they install.
+func (a *App) autoInstallRows(c *ui.Context, r *rows) {
+	modes := []string{"", autoInstallIdle, autoInstallDaily}
+	a.mu.Lock()
+	p := a.prefs
+	a.mu.Unlock()
+	idx := max(slices.Index(modes, p.AutoInstall), 0)
+	r.row(c, "app-autoinstall", iconArrowUp, L.SettingsAutoInstall(), L.SettingsAutoInstallAbout(), func() {
+		if ui.Segmented(c.Key("app-autoinstall-seg"), &idx, L.AutoInstallOff(), L.AutoInstallIdle(), L.AutoInstallDaily()).Changed() {
+			p.AutoInstall = modes[idx]
+			a.setPrefs(p)
+		}
+	})
+	if p.AutoInstall != autoInstallDaily {
+		return
+	}
+	hours := make([]string, 24)
+	for h := range hours {
+		hours[h] = fmt.Sprintf("%02d:00", h)
+	}
+	cur := hours[min(max(p.AutoInstallHour, 0), 23)]
+	r.row(c, "app-autoinstall-hour", iconClock, L.SettingsAutoInstallTime(), L.SettingsAutoInstallTimeAbout(), func() {
+		if ui.Select(c.Key("app-autoinstall-hour-sel"), &cur, hours).Width(hourSelectW).Label(L.SettingsAutoInstallTime()).Changed() {
+			p.AutoInstallHour = slices.Index(hours, cur)
 			a.setPrefs(p)
 		}
 	})

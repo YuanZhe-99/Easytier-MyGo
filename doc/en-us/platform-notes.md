@@ -82,6 +82,7 @@ Verified on macOS 27.0.1, Apple M1 (2026-10-16, Go 1.27.2 from Homebrew, EasyTie
 | Code signature (2026-10-17) | `MYGO_SIGN` build: the app, its executables and the `.dmg` carry `TeamIdentifier=982C6JDNCS` with the hardened runtime and verify strictly; the signed daemon runs the signed core (`no_tun` network up); a rebuild keeps the same designated requirement |
 
 Not verified on macOS: the `osascript` prompt from the GUI's install button, helper self-update,
+starting in the tray at login (fixed in 0.2.3), automatic app updates,
 and the GUI's appearance (no screenshot was taken).
 
 ## Known limitations

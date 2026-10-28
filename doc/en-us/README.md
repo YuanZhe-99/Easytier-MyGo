@@ -29,6 +29,6 @@ Windows and macOS backends are experimental and partly verified on real machines
 
 | Component | Version | Source of truth |
 |---|---|---|
-| Go | 1.27.2 | `go.mod` |
-| MyGo | v0.5.5 | `go.mod` |
+| Go | 1.27.3 | `go.mod` |
+| MyGo | v0.7.1 | `go.mod` |
 | EasyTier (bundled) | v2.6.4 | `third_party/easytier.json` |

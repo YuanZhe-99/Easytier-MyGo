@@ -427,14 +427,84 @@ func (msgs Messages) SettingsCheckAppUpdates() string {
 	return Catalog.Format(msgs.locale, "SettingsCheckAppUpdates", nil)
 }
 
-// SettingsCheckAppUpdatesHint says "Reads the latest release from GitHub. Updates are signed, and installed only when you choose."
+// SettingsCheckAppUpdatesHint says "Reads the latest release from GitHub. Updates are signed, and installed only when you choose or when you let them ins…"
 // in the language the app shows.
 func SettingsCheckAppUpdatesHint() string { return In(i18n.Locale()).SettingsCheckAppUpdatesHint() }
 
-// SettingsCheckAppUpdatesHint says "Reads the latest release from GitHub. Updates are signed, and installed only when you choose."
+// SettingsCheckAppUpdatesHint says "Reads the latest release from GitHub. Updates are signed, and installed only when you choose or when you let them ins…"
 // in the language of msgs.
 func (msgs Messages) SettingsCheckAppUpdatesHint() string {
 	return Catalog.Format(msgs.locale, "SettingsCheckAppUpdatesHint", nil)
+}
+
+// SettingsAutoInstall says "Install updates automatically"
+// in the language the app shows.
+func SettingsAutoInstall() string { return In(i18n.Locale()).SettingsAutoInstall() }
+
+// SettingsAutoInstall says "Install updates automatically"
+// in the language of msgs.
+func (msgs Messages) SettingsAutoInstall() string {
+	return Catalog.Format(msgs.locale, "SettingsAutoInstall", nil)
+}
+
+// SettingsAutoInstallAbout says "Installs a found version and restarts the app without asking: when idle (15 minutes without keyboard or mouse), or da…"
+// in the language the app shows.
+func SettingsAutoInstallAbout() string { return In(i18n.Locale()).SettingsAutoInstallAbout() }
+
+// SettingsAutoInstallAbout says "Installs a found version and restarts the app without asking: when idle (15 minutes without keyboard or mouse), or da…"
+// in the language of msgs.
+func (msgs Messages) SettingsAutoInstallAbout() string {
+	return Catalog.Format(msgs.locale, "SettingsAutoInstallAbout", nil)
+}
+
+// AutoInstallOff says "Off"
+// in the language the app shows.
+func AutoInstallOff() string { return In(i18n.Locale()).AutoInstallOff() }
+
+// AutoInstallOff says "Off"
+// in the language of msgs.
+func (msgs Messages) AutoInstallOff() string {
+	return Catalog.Format(msgs.locale, "AutoInstallOff", nil)
+}
+
+// AutoInstallIdle says "When idle"
+// in the language the app shows.
+func AutoInstallIdle() string { return In(i18n.Locale()).AutoInstallIdle() }
+
+// AutoInstallIdle says "When idle"
+// in the language of msgs.
+func (msgs Messages) AutoInstallIdle() string {
+	return Catalog.Format(msgs.locale, "AutoInstallIdle", nil)
+}
+
+// AutoInstallDaily says "Daily"
+// in the language the app shows.
+func AutoInstallDaily() string { return In(i18n.Locale()).AutoInstallDaily() }
+
+// AutoInstallDaily says "Daily"
+// in the language of msgs.
+func (msgs Messages) AutoInstallDaily() string {
+	return Catalog.Format(msgs.locale, "AutoInstallDaily", nil)
+}
+
+// SettingsAutoInstallTime says "Install at"
+// in the language the app shows.
+func SettingsAutoInstallTime() string { return In(i18n.Locale()).SettingsAutoInstallTime() }
+
+// SettingsAutoInstallTime says "Install at"
+// in the language of msgs.
+func (msgs Messages) SettingsAutoInstallTime() string {
+	return Catalog.Format(msgs.locale, "SettingsAutoInstallTime", nil)
+}
+
+// SettingsAutoInstallTimeAbout says "Updates install within this hour, local time, while the app runs."
+// in the language the app shows.
+func SettingsAutoInstallTimeAbout() string { return In(i18n.Locale()).SettingsAutoInstallTimeAbout() }
+
+// SettingsAutoInstallTimeAbout says "Updates install within this hour, local time, while the app runs."
+// in the language of msgs.
+func (msgs Messages) SettingsAutoInstallTimeAbout() string {
+	return Catalog.Format(msgs.locale, "SettingsAutoInstallTimeAbout", nil)
 }
 
 // BannerConnecting says "Connecting to the background service…"

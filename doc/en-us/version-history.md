@@ -3,6 +3,17 @@
 The project restarted from 0.1.0 on 2026-10-16. The earlier, inherited history (versions up to
 0.10.80) is preserved under the git tag `archive/v0.10.80` and is not continued.
 
+## 0.2.3 (2026-10-28)
+
+- macOS: opening at login now starts in the tray. A login item gets no command-line argument,
+  and the GUI asked whether it was opened at login before macOS could say so, so the window
+  always opened.
+- App updates can install themselves: About & updates › Install updates automatically — off
+  (default), when idle (15 minutes without keyboard or mouse), or daily within a chosen hour.
+  An update installed while the window was closed relaunches into the tray.
+- MyGo v0.7.1 (updated from v0.6.4) / EasyTier v2.6.4 (checked 2026-10-28, unchanged); UPX
+  v5.3.0 for packaging.
+
 ## 0.2.2 (2026-10-25)
 
 - First-run tour: the computers are drawn as Kyokai's tour draws them — one fixed view from the
