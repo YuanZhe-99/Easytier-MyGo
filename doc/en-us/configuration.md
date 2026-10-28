@@ -24,6 +24,20 @@ by the next save; a button replaces it with a new one. New networks get one when
 
 ACL rules are edited in the TOML editor; the structured ACL editor returns in a later release.
 
+## Core versions and EasyTier mini
+
+The projection reads both EasyTier 2.6 and 2.7 documents: the VPN portal in either format (a
+client range, or named clients), `tcp_stun_servers`, `socket_mark` and `prefer_peer_relay`.
+The editor names what the network's core cannot run (`configdoc.VersionConflicts`): on 2.7 or
+later the 2.6 portal format, before 2.7 the settings 2.7 added. Prefer existing relays is offered
+on 2.7 cores, or when the document sets it.
+
+**Mini copies.** EasyTier mini silently ignores much of a document. Instead of changing a network,
+"Make a mini copy" (`network.mini-copy`) adds a new one named "<name> (mini)" ("(mini 2)", … when
+taken) from its saved document with what mini ignores removed (`configdoc.StripForMini`) and a
+fresh `instance_id`; the original stays as its backup. In a mini copy's editor a notice lists
+what mini would still ignore, and rows mini does not run say so.
+
 ## Save and apply
 
 Saving writes the document. Applying is a separate, explicit action that restarts that network's

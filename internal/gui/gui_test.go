@@ -118,6 +118,24 @@ func TestViewsRender(t *testing.T) {
 			a.editor = &configEditor{id: "n1", name: "Home"}
 			a.editor.load("instance_name = \"home\"\nhostname = \"laptop\"\ndhcp = true\nlisteners = [\"tcp://0.0.0.0:11010\"]\n\n[network_identity]\nnetwork_name = \"family-net\"\nnetwork_secret = \"s3cret\"\n\n[[peer]]\nuri = \"tcp://public.easytier.cn:11010\"\n\n[flags]\nno_tun = false\n", "rev1")
 		},
+		"edit-mini": func(a *App) {
+			a.page = pageEdit
+			a.editor = &configEditor{id: "n2", name: "Office lab (mini)", mini: true, release: "v2.7.0"}
+			a.editor.load("listeners = [\"tcp://0.0.0.0:11010\", \"quic://0.0.0.0:11012\"]\n\n[network_identity]\nnetwork_name = \"lab\"\n\n[flags]\naccept_dns = true\n", "rev1")
+		},
+		"edit-v26": func(a *App) {
+			a.page = pageEdit
+			a.editor = &configEditor{id: "n1", name: "Home", release: "v2.6.4"}
+			a.editor.load("tcp_stun_servers = [\"stun.example:3478\"]\n\n[network_identity]\nnetwork_name = \"family-net\"\n\n[flags]\nsocket_mark = 7\n", "rev1")
+		},
+		"settings-core-mini": func(a *App) {
+			a.settingsOpen, a.settingsAt = true, setCore
+			a.coresView = coresState{loaded: true, miniChecked: true,
+				cores: []localapi.CoreInfo{{Tag: "bundled", Source: "bundled", Tested: true, Selected: true},
+					{Tag: "mini-v2.7.0", Source: "official", Pre: true, Mini: true, InUse: true}},
+				mini: []localapi.ReleaseInfo{{Tag: "v2.7.0", Prerelease: true, Published: time.Date(2026, 10, 6, 0, 0, 0, 0, time.UTC), Size: 2395328, Installed: true},
+					{Tag: "v2.7.0-preview.2", Published: time.Date(2026, 9, 6, 0, 0, 0, 0, time.UTC), Size: 2301000}}}
+		},
 		"create": func(a *App) { a.createDlg = &createDialog{name: "Office"} },
 		"helper-stopped": func(a *App) {
 			a.connected, a.connErr, a.prefs.Mode = false, "daemon not running", ModeHelper

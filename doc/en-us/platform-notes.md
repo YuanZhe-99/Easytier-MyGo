@@ -36,6 +36,7 @@ Verified on the development machine (2026-10-16, EasyTier v2.6.4, isolated ports
 | Smoke script | `scripts/smoke.sh user` and `helper` pass on this machine |
 | Helper self-update | Signed bundle accepted without a prompt (binary replaced, helper restarted); unsigned and tampered bundles refused; the bundle signed by `release.yml` with the GitHub secret is accepted too |
 | GUI helper buttons | Remove and install through the real polkit dialog (pkexec), operator recorded |
+| EasyTier 2.7.0 and mini (WSL Debian 13 aarch64, 2026-10-28) | Live adapter test passes on a v2.7.0 core and on mini (queried by the v2.7.0 CLI); the user daemon downloads mini v2.7.0 with its CLI from GitHub (SHA-256 verified), makes "Default Network (mini)" without a QUIC listener and MagicDNS (the original unchanged), runs it beside the full network on v2.7.0 — both connected and peered over TCP — and refuses a second mini network |
 
 ## macOS and Windows
 
@@ -82,8 +83,8 @@ Verified on macOS 27.0.1, Apple M1 (2026-10-16, Go 1.27.2 from Homebrew, EasyTie
 | Code signature (2026-10-17) | `MYGO_SIGN` build: the app, its executables and the `.dmg` carry `TeamIdentifier=982C6JDNCS` with the hardened runtime and verify strictly; the signed daemon runs the signed core (`no_tun` network up); a rebuild keeps the same designated requirement |
 
 Not verified on macOS: the `osascript` prompt from the GUI's install button, helper self-update,
-starting in the tray at login (fixed in 0.2.3), automatic app updates,
-and the GUI's appearance (no screenshot was taken).
+starting in the tray at login (fixed in 0.2.3), automatic app updates, EasyTier mini through
+the app, and the GUI's appearance (no screenshot was taken).
 
 ## Known limitations
 
@@ -94,6 +95,10 @@ and the GUI's appearance (no screenshot was taken).
   `easytier-mygo` group, and path-valued config options are refused.
 - Windows has passed `no_tun` networks only; WinTun is untested. macOS TUN (utun) is verified
   through the helper.
+- EasyTier mini runs one network at a time (its management port is fixed at 15888, which another
+  program may hold) and has no `--check-config`: a mini copy whose document does not load fails at
+  start and returns to its previous revision. On Windows, mini ran on its own on ARM64 (the x64
+  build, emulated) but not yet through the app.
 - Cores marked untested may change their CLI output or config format; the app degrades to
   "status unreadable" without restarting anything, and the previous core can be selected again.
 - Unauthenticated GitHub API requests are limited to 60 per hour; release lists are cached with

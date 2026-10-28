@@ -16,6 +16,12 @@
 
 ACL 规则在 TOML 编辑器中编辑；结构化 ACL 编辑器会在后续版本回归。
 
+## 内核版本与 EasyTier mini
+
+投影能读取 EasyTier 2.6 与 2.7 的文档：两种格式的 VPN 入口（客户端地址段或具名客户端）、`tcp_stun_servers`、`socket_mark` 和 `prefer_peer_relay`。编辑器会指出网络所用内核无法运行的设置（`configdoc.VersionConflicts`）：2.7 及以后是 2.6 的入口格式，2.7 之前是 2.7 新增的设置。“优先使用已有中继”只在 2.7 内核上、或文档已设置时提供。
+
+**mini 副本。** EasyTier mini 会静默忽略文档中的许多设置。“创建 mini 副本”（`network.mini-copy`）不修改原网络，而是根据其已保存的文档新增一个名为 “<名称> (mini)” 的网络（名称已被占用时为 “(mini 2)” 等），移除 mini 会忽略的设置（`configdoc.StripForMini`）并换上新的 `instance_id`；原网络保留，作为备份。在 mini 副本的编辑器里，提示会列出 mini 仍会忽略的设置，mini 不支持的行也会注明。
+
 ## 保存与应用
 
 保存只写入文档。应用是单独的显式操作：用已保存 revision 的冻结副本重启该网络的内核。如果新 revision 在宽限期内失败，daemon 会回到上一个已应用的 revision 并说明原因。

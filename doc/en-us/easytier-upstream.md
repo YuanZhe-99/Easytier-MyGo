@@ -45,6 +45,45 @@ adapter accepts both forms (`coreadapter.Uint64`, `NatType.UnmarshalJSON`); fixt
 in `internal/coreadapter/testdata`. Networks connected and peered on v2.7.0 through the core
 manager.
 
+Configuration, read from the v2.7.0 source (`easytier-core/src/config/toml.rs`) and checked live
+on 2026-10-28 (the live adapter test passes; `--check-config` accepts the documents):
+
+- `[vpn_portal_config]` refuses unknown keys. `client_cidr` (v2.6) is gone; the portal is
+  `wireguard_listen`, an optional `wireguard_private_key` and `enabled`, and named clients in
+  `[[vpn_portal_config.clients]]` (`name`, `virtual_ip` with its prefix, `groups`). v2.6.4 in turn
+  requires `client_cidr`, so no portal document works on both.
+- New keys: `tcp_stun_servers` (top level), `[flags] socket_mark` (Linux, CAP_NET_ADMIN),
+  `[flags] prefer_peer_relay`, and `[[managed_credentials]]`. v2.6.4 ignores unknown top-level
+  keys.
+- `--config-server` needs a full URL (`udp://host:22020/TOKEN`); this application does not pass
+  it.
+- `configdoc.VersionConflicts` names what a network's core version refuses or ignores; the
+  editor shows it. Applying runs `--check-config` with the network's own core.
+
+## EasyTier mini (v2.7.0)
+
+A compact client built from the same source, released apart in `EasyTier/easytier-mini`
+(LGPL-3.0). Read from `easytier-contrib/easytier-mini` and the compact runtime
+(`compact_runtime_core_host_config`), verified live on 2026-10-28:
+
+- Assets: `easytier-mini-<os>-<arch>-<tag>.zip` with the same platform names; the files sit at the
+  archive's root: `easytier-mini` alone (plus `wintun.dll` on Windows), about 2.4 MB, not
+  UPX-packed. The GitHub API publishes each asset's SHA-256, and `SHA256SUMS` exists.
+- No CLI of its own. Its read-only management RPC answers the full release's `easytier-cli` of
+  the same tag for `node`, `peer`, `-v peer`, `route` and `connector`; `node` carries no `config`
+  field. The core manager installs mini with that CLI (`mini-<tag>`).
+- Arguments: `-c/--config`, `-w/--config-server`, `--machine-id`, `--hostname`, `--secure-mode`;
+  anything else is refused. No `--check-config`; a document that does not load ends the process.
+- The management port is fixed at `127.0.0.1:15888` (`--rpc-portal` and `rpc_portal` are not
+  read), so one mini process runs per computer.
+- It runs `tcp://` and `udp://` listeners, mapped listeners and peers, TUN or `no_tun`
+  (smoltcp), DHCP, STUN, UDP hole punching and AES-GCM. It silently ignores other URL schemes,
+  subnet proxy (`proxy_network`), exit nodes (using or being one), SOCKS5, port forwarding, the
+  WireGuard portal, public IPv6 addresses, MagicDNS, KCP and QUIC proxying, UDP broadcast relay,
+  UPnP, TCP hole punching and compression; ChaCha20 falls back to AES-GCM.
+  `configdoc.StripForMini` removes exactly these from a copy.
+- A v2.7.0 core and a mini node peer directly over TCP.
+
 ## Verified quirks
 
 - Two local cores do not handshake over loopback: the connector binds source addresses to

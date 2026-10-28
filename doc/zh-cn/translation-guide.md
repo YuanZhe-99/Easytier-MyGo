@@ -51,6 +51,9 @@
 | quarantine (macOS) | 隔离属性 |
 | first-run tour / Watch tour | 首次启动引导 / 重看引导 |
 | sign in (to the computer) | 登录 |
+| EasyTier mini / mini copy | EasyTier mini / mini 副本 |
+| WireGuard portal | WireGuard 入口 |
+| prefer existing relays | 优先使用已有中继 |
 
 ## 6. 审阅清单
 

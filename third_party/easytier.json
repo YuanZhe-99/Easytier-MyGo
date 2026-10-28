@@ -5,7 +5,12 @@
   "bundled": "v2.6.4",
   "published": "2026-05-12",
   "tested": [
-    "v2.6.4"
+    "v2.6.4",
+    "v2.7.0"
+  ],
+  "mini_repository": "EasyTier/easytier-mini",
+  "mini_tested": [
+    "v2.7.0"
   ],
   "assets": {
     "darwin-amd64": {

@@ -12,6 +12,7 @@ import (
 	"github.com/egoist/mygo/i18n"
 	"github.com/egoist/mygo/ui"
 
+	"github.com/YuanZhe-99/Easytier-MyGo/internal/cores"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/localapi"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/version"
 	L "github.com/YuanZhe-99/Easytier-MyGo/locales"
@@ -33,6 +34,9 @@ type coresState struct {
 	cores    []localapi.CoreInfo
 	releases []localapi.ReleaseInfo
 	checked  bool
+	// mini and miniChecked are EasyTier mini's releases, checked apart.
+	mini        []localapi.ReleaseInfo
+	miniChecked bool
 }
 
 // settingsPage is a page of the Settings sheet.
@@ -288,6 +292,7 @@ func settingsHits() []settingsHit {
 		{setCore, L.SectionInstalled(), join(L.SettingsCores(), L.CoreBundled(), L.ActionUseCore())},
 		{setCore, L.SettingsCheckUpdates(), L.SettingsCheckUpdatesHint()},
 		{setCore, L.CoresAvailable(), join(L.ActionCheckReleases(), L.CoresShowPre())},
+		{setCore, L.CoreMini(), join(L.CoresMiniTitle(), L.CoresMiniAbout())},
 		{setAbout, L.AboutLicenseTitle(), join(L.AboutLicense(), L.AboutSource())},
 		{setAbout, L.DiagFile(), join(L.ActionExportDiagnostics(), L.SettingsAdvancedHint())},
 		{setAbout, L.DiagLogs(), join(L.ActionOpenLogs(), L.DiagLogsAbout())},
@@ -561,8 +566,11 @@ func (a *App) corePage(c *ui.Context) {
 			}
 			for _, core := range cs.cores {
 				about := L.CoreDownloadedAbout()
-				if core.Source == "bundled" {
+				switch {
+				case core.Source == "bundled":
 					about = L.CoreBundledAbout()
+				case core.Mini:
+					about = L.CoreMiniAbout()
 				}
 				r.row(c, "core-"+core.Tag, iconCPU, core.Tag, about, func() {
 					if core.Tested {
@@ -573,11 +581,14 @@ func (a *App) corePage(c *ui.Context) {
 					if core.Pre {
 						pill(c, L.CorePrerelease(), k.relay)
 					}
-					if core.Selected {
+					if core.Selected || core.InUse {
 						pill(c, L.CoreInUse(), t.Accent)
+					}
+					if core.Selected {
 						return
 					}
-					if ui.Button(c.Key("use-"+core.Tag), L.ActionUseCore()).Disabled(busy).Clicked() {
+					// A mini core is never selected: mini networks use the newest.
+					if !core.Mini && ui.Button(c.Key("use-"+core.Tag), L.ActionUseCore()).Disabled(busy).Clicked() {
 						a.selectCore(core.Tag)
 					}
 					if core.Source != "bundled" && ui.Button(c.Key("rm-"+core.Tag), L.ActionRemove()).Disabled(busy).Clicked() {
@@ -642,6 +653,51 @@ func (a *App) corePage(c *ui.Context) {
 				})
 			}
 		})
+		a.miniReleases(c, r, cs, busy, connected)
+	})
+}
+
+// miniReleases is the core manager's EasyTier mini section: the optional
+// compact client, its releases (all of them: mini publishes most as
+// pre-releases) with Download.
+func (a *App) miniReleases(c *ui.Context, r *rows, cs coresState, busy, connected bool) {
+	t, k := c.Theme(), tok(c)
+	r.section(c, "mini", L.CoreMini(), func() {
+		if ui.Button(c.Key("mini-check"), L.ActionCheckReleases()).Disabled(busy || !connected).Clicked() {
+			a.loadMini()
+		}
+	}, func(r *rows) {
+		r.row(c, "mini-about", iconInfo, L.CoresMiniTitle(), L.CoresMiniAbout(), nil)
+		if busy && !cs.miniChecked {
+			r.row(c, "mini-busy", iconDownload, L.CoresWorking(), "", func() { ui.Spinner(c) })
+		}
+		if cs.miniChecked && len(cs.mini) == 0 {
+			r.row(c, "mini-none", iconDownload, L.CoresNone(), "", nil)
+		}
+		for _, rel := range cs.mini {
+			r.row(c, "mini-rel-"+rel.Tag, iconDownload, rel.Tag, L.CorePublished(rel.Published.Format("2006-01-02")), func() {
+				if rel.Prerelease {
+					pill(c, L.CorePrerelease(), k.relay)
+				}
+				if rel.Tested {
+					pill(c, L.CoreTested(), k.good)
+				}
+				if rel.Installed {
+					ui.Text(c, L.CoreInstalled()).FontSize(sizeSmall).TextColor(t.TextMuted)
+					return
+				}
+				if ui.Button(c.Key("mini-dl-"+rel.Tag), L.ActionDownload(formatBytes(float64(rel.Size)))).Disabled(busy).Clicked() {
+					a.coreRequest(localapi.Request{Type: localapi.RequestCoreInstall, Tag: rel.Tag, Mini: true})
+				}
+			})
+		}
+	})
+}
+
+// loadMini reads EasyTier mini's releases.
+func (a *App) loadMini() {
+	a.do("cores", localapi.Request{Type: localapi.RequestReleases, Mini: true, Pre: true}, "", func(r *localapi.Response) {
+		a.coresView.mini, a.coresView.miniChecked = r.Releases, true
 	})
 }
 
@@ -683,10 +739,14 @@ func (a *App) coreRequest(req localapi.Request) {
 			a.coreUpdate = ""
 		}
 		a.coresView.cores = r.Cores
+		installed := func(tag string) bool {
+			return slices.ContainsFunc(r.Cores, func(c localapi.CoreInfo) bool { return c.Tag == tag })
+		}
 		for i := range a.coresView.releases {
-			a.coresView.releases[i].Installed = slices.ContainsFunc(r.Cores, func(c localapi.CoreInfo) bool {
-				return c.Tag == a.coresView.releases[i].Tag
-			})
+			a.coresView.releases[i].Installed = installed(a.coresView.releases[i].Tag)
+		}
+		for i := range a.coresView.mini {
+			a.coresView.mini[i].Installed = installed(cores.MiniPrefix + a.coresView.mini[i].Tag)
 		}
 	})
 }

@@ -3,6 +3,21 @@
 The project restarted from 0.1.0 on 2026-10-16. The earlier, inherited history (versions up to
 0.10.80) is preserved under the git tag `archive/v0.10.80` and is not continued.
 
+## 0.2.4 (2026-10-28)
+
+- EasyTier 2.7.0 readiness (the bundled core stays v2.6.4; 2.7.0 is a pre-release): the form
+  reads and writes the 2.7 VPN portal (named clients), `tcp_stun_servers`, `socket_mark` and
+  Prefer existing relays (offered on 2.7 cores); the editor names settings the network's core
+  version refuses or ignores. v2.7.0 is now labeled tested.
+- Fix: applying a saved document checked it with the fallback core instead of the selected one,
+  so a 2.7 document could be refused (or a 2.6 one accepted) by the wrong version.
+- EasyTier mini, optional and never bundled: Settings › EasyTier core › EasyTier mini downloads
+  it (with the same release's `easytier-cli`, both verified). "Make a mini copy" in a network's
+  editor adds "<name> (mini)" without what mini ignores, keeping the original as its backup;
+  mini copies run on the newest mini, one at a time, and their editor marks what mini does not
+  run. `easytier-mygo-ctl` gains `mini-releases`, `install-mini` and `mini-copy`.
+- MyGo v0.7.1 / EasyTier v2.6.4 (checked 2026-10-28, unchanged).
+
 ## 0.2.3 (2026-10-28)
 
 - macOS: opening at login now starts in the tray. A login item gets no command-line argument,

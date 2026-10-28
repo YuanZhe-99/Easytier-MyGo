@@ -140,3 +140,64 @@ func TestRemoveRefusesBundledAndPaths(t *testing.T) {
 		}
 	}
 }
+
+// A mini release installs EasyTier mini with the easytier-cli of the full
+// release of the same tag, both checked against their published SHA-256.
+func TestInstallMiniTakesCLIFromFullRelease(t *testing.T) {
+	full := fakeZip(t, "easytier-linux-x86_64")
+	var buf bytes.Buffer
+	zw := zip.NewWriter(&buf)
+	h := &zip.FileHeader{Name: exe("easytier-mini"), Method: zip.Deflate}
+	h.SetMode(0o755)
+	w, _ := zw.CreateHeader(h)
+	fmt.Fprint(w, "#!/bin/sh\necho mini\n")
+	zw.Close()
+	mini := buf.Bytes()
+	var srv *httptest.Server
+	srv = httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		asset := func(name, path string, data []byte) map[string]any {
+			return map[string]any{"name": name, "browser_download_url": srv.URL + path, "size": len(data), "digest": "sha256:" + SHA256(data)}
+		}
+		switch r.URL.Path {
+		case "/releases":
+			json.NewEncoder(w).Encode([]any{map[string]any{"tag_name": "v2.7.0", "prerelease": true, "published_at": "2026-10-06T00:00:00Z",
+				"assets": []any{asset("easytier-linux-x86_64-v2.7.0.zip", "/full", full)}}})
+		case "/mini-releases":
+			json.NewEncoder(w).Encode([]any{map[string]any{"tag_name": "v2.7.0", "prerelease": true, "published_at": "2026-10-06T00:00:00Z",
+				"assets": []any{asset("easytier-mini-linux-x86_64-v2.7.0.zip", "/mini", mini)}}})
+		case "/full":
+			w.Write(full)
+		case "/mini":
+			w.Write(mini)
+		default:
+			http.NotFound(w, r)
+		}
+	}))
+	t.Cleanup(srv.Close)
+	m := manager(t, srv)
+	m.MiniAPI = srv.URL + "/mini-releases"
+	rels, err := m.ReleasesOf(context.Background(), KindMini, true)
+	if err != nil || len(rels) != 1 || rels[0].Kind != KindMini || rels[0].Dir != "" {
+		t.Fatalf("mini releases: %+v %v", rels, err)
+	}
+	c, err := m.Install(context.Background(), rels[0])
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, ok := m.NewestMini()
+	if !ok || got.Tag != "mini-v2.7.0" || got.Kind != KindMini || got.Release() != "v2.7.0" || c.Tag != got.Tag {
+		t.Fatalf("installed mini: %+v ok=%v", got, ok)
+	}
+	core, cli := got.Binaries()
+	if filepath.Base(core) != exe("easytier-mini") {
+		t.Fatalf("mini executable: %s", core)
+	}
+	for _, p := range []string{core, cli} {
+		if _, err := os.Stat(p); err != nil {
+			t.Fatalf("%s missing: %v", p, err)
+		}
+	}
+	if old, _ := Binaries(got.Dir); exists(old) {
+		t.Fatal("a mini core must not carry the full easytier-core")
+	}
+}

@@ -4802,3 +4802,337 @@ func TourRewatch() string { return In(i18n.Locale()).TourRewatch() }
 func (msgs Messages) TourRewatch() string {
 	return Catalog.Format(msgs.locale, "TourRewatch", nil)
 }
+
+// FeatureListeners says "Listeners other than TCP and UDP"
+// in the language the app shows.
+func FeatureListeners() string { return In(i18n.Locale()).FeatureListeners() }
+
+// FeatureListeners says "Listeners other than TCP and UDP"
+// in the language of msgs.
+func (msgs Messages) FeatureListeners() string {
+	return Catalog.Format(msgs.locale, "FeatureListeners", nil)
+}
+
+// FeatureMappedListeners says "Mapped listeners other than TCP and UDP"
+// in the language the app shows.
+func FeatureMappedListeners() string { return In(i18n.Locale()).FeatureMappedListeners() }
+
+// FeatureMappedListeners says "Mapped listeners other than TCP and UDP"
+// in the language of msgs.
+func (msgs Messages) FeatureMappedListeners() string {
+	return Catalog.Format(msgs.locale, "FeatureMappedListeners", nil)
+}
+
+// FeaturePeers says "Peers other than TCP and UDP"
+// in the language the app shows.
+func FeaturePeers() string { return In(i18n.Locale()).FeaturePeers() }
+
+// FeaturePeers says "Peers other than TCP and UDP"
+// in the language of msgs.
+func (msgs Messages) FeaturePeers() string {
+	return Catalog.Format(msgs.locale, "FeaturePeers", nil)
+}
+
+// FeatureSocks5 says "SOCKS5 proxy"
+// in the language the app shows.
+func FeatureSocks5() string { return In(i18n.Locale()).FeatureSocks5() }
+
+// FeatureSocks5 says "SOCKS5 proxy"
+// in the language of msgs.
+func (msgs Messages) FeatureSocks5() string {
+	return Catalog.Format(msgs.locale, "FeatureSocks5", nil)
+}
+
+// FeaturePortForward says "Port forwarding"
+// in the language the app shows.
+func FeaturePortForward() string { return In(i18n.Locale()).FeaturePortForward() }
+
+// FeaturePortForward says "Port forwarding"
+// in the language of msgs.
+func (msgs Messages) FeaturePortForward() string {
+	return Catalog.Format(msgs.locale, "FeaturePortForward", nil)
+}
+
+// FeatureVpnPortal says "WireGuard portal"
+// in the language the app shows.
+func FeatureVpnPortal() string { return In(i18n.Locale()).FeatureVpnPortal() }
+
+// FeatureVpnPortal says "WireGuard portal"
+// in the language of msgs.
+func (msgs Messages) FeatureVpnPortal() string {
+	return Catalog.Format(msgs.locale, "FeatureVpnPortal", nil)
+}
+
+// FeatureIPv6Public says "Public IPv6 addresses"
+// in the language the app shows.
+func FeatureIPv6Public() string { return In(i18n.Locale()).FeatureIPv6Public() }
+
+// FeatureIPv6Public says "Public IPv6 addresses"
+// in the language of msgs.
+func (msgs Messages) FeatureIPv6Public() string {
+	return Catalog.Format(msgs.locale, "FeatureIPv6Public", nil)
+}
+
+// FeatureUDPBroadcast says "UDP broadcast relay"
+// in the language the app shows.
+func FeatureUDPBroadcast() string { return In(i18n.Locale()).FeatureUDPBroadcast() }
+
+// FeatureUDPBroadcast says "UDP broadcast relay"
+// in the language of msgs.
+func (msgs Messages) FeatureUDPBroadcast() string {
+	return Catalog.Format(msgs.locale, "FeatureUDPBroadcast", nil)
+}
+
+// FeatureCompression says "Compression"
+// in the language the app shows.
+func FeatureCompression() string { return In(i18n.Locale()).FeatureCompression() }
+
+// FeatureCompression says "Compression"
+// in the language of msgs.
+func (msgs Messages) FeatureCompression() string {
+	return Catalog.Format(msgs.locale, "FeatureCompression", nil)
+}
+
+// FeatureEncryption says "Encryption other than AES-GCM"
+// in the language the app shows.
+func FeatureEncryption() string { return In(i18n.Locale()).FeatureEncryption() }
+
+// FeatureEncryption says "Encryption other than AES-GCM"
+// in the language of msgs.
+func (msgs Messages) FeatureEncryption() string {
+	return Catalog.Format(msgs.locale, "FeatureEncryption", nil)
+}
+
+// FeatureNewPortal says "WireGuard portal with named clients"
+// in the language the app shows.
+func FeatureNewPortal() string { return In(i18n.Locale()).FeatureNewPortal() }
+
+// FeatureNewPortal says "WireGuard portal with named clients"
+// in the language of msgs.
+func (msgs Messages) FeatureNewPortal() string {
+	return Catalog.Format(msgs.locale, "FeatureNewPortal", nil)
+}
+
+// FeatureTCPStun says "TCP STUN servers"
+// in the language the app shows.
+func FeatureTCPStun() string { return In(i18n.Locale()).FeatureTCPStun() }
+
+// FeatureTCPStun says "TCP STUN servers"
+// in the language of msgs.
+func (msgs Messages) FeatureTCPStun() string {
+	return Catalog.Format(msgs.locale, "FeatureTCPStun", nil)
+}
+
+// FeatureSocketMark says "Socket mark"
+// in the language the app shows.
+func FeatureSocketMark() string { return In(i18n.Locale()).FeatureSocketMark() }
+
+// FeatureSocketMark says "Socket mark"
+// in the language of msgs.
+func (msgs Messages) FeatureSocketMark() string {
+	return Catalog.Format(msgs.locale, "FeatureSocketMark", nil)
+}
+
+// FeatureManagedCredentials says "Managed credentials"
+// in the language the app shows.
+func FeatureManagedCredentials() string { return In(i18n.Locale()).FeatureManagedCredentials() }
+
+// FeatureManagedCredentials says "Managed credentials"
+// in the language of msgs.
+func (msgs Messages) FeatureManagedCredentials() string {
+	return Catalog.Format(msgs.locale, "FeatureManagedCredentials", nil)
+}
+
+// FlagPreferRelay says "Prefer existing relays"
+// in the language the app shows.
+func FlagPreferRelay() string { return In(i18n.Locale()).FlagPreferRelay() }
+
+// FlagPreferRelay says "Prefer existing relays"
+// in the language of msgs.
+func (msgs Messages) FlagPreferRelay() string {
+	return Catalog.Format(msgs.locale, "FlagPreferRelay", nil)
+}
+
+// FlagPreferRelayHint says "Reach a node through a credential peer that already relays to it (EasyTier 2.7)."
+// in the language the app shows.
+func FlagPreferRelayHint() string { return In(i18n.Locale()).FlagPreferRelayHint() }
+
+// FlagPreferRelayHint says "Reach a node through a credential peer that already relays to it (EasyTier 2.7)."
+// in the language of msgs.
+func (msgs Messages) FlagPreferRelayHint() string {
+	return Catalog.Format(msgs.locale, "FlagPreferRelayHint", nil)
+}
+
+// ListSeparator says ", "
+// in the language the app shows.
+func ListSeparator() string { return In(i18n.Locale()).ListSeparator() }
+
+// ListSeparator says ", "
+// in the language of msgs.
+func (msgs Messages) ListSeparator() string {
+	return Catalog.Format(msgs.locale, "ListSeparator", nil)
+}
+
+// EditMiniNote says "This network runs on EasyTier mini: TCP and UDP connections only, one mini network at a time."
+// in the language the app shows.
+func EditMiniNote() string { return In(i18n.Locale()).EditMiniNote() }
+
+// EditMiniNote says "This network runs on EasyTier mini: TCP and UDP connections only, one mini network at a time."
+// in the language of msgs.
+func (msgs Messages) EditMiniNote() string {
+	return Catalog.Format(msgs.locale, "EditMiniNote", nil)
+}
+
+// EditMiniIgnored says "EasyTier mini ignores these saved settings: {list}."
+// in the language the app shows.
+func EditMiniIgnored(list string) string { return In(i18n.Locale()).EditMiniIgnored(list) }
+
+// EditMiniIgnored says "EasyTier mini ignores these saved settings: {list}."
+// in the language of msgs.
+func (msgs Messages) EditMiniIgnored(list string) string {
+	return Catalog.Format(msgs.locale, "EditMiniIgnored", map[string]any{"list": list})
+}
+
+// EditLegacyPortal says "The WireGuard portal uses the EasyTier 2.6 format, which EasyTier 2.7 refuses. Set its clients up again in the TOML e…"
+// in the language the app shows.
+func EditLegacyPortal() string { return In(i18n.Locale()).EditLegacyPortal() }
+
+// EditLegacyPortal says "The WireGuard portal uses the EasyTier 2.6 format, which EasyTier 2.7 refuses. Set its clients up again in the TOML e…"
+// in the language of msgs.
+func (msgs Messages) EditLegacyPortal() string {
+	return Catalog.Format(msgs.locale, "EditLegacyPortal", nil)
+}
+
+// EditNeedsNewer says "This network runs on EasyTier {release}, which refuses or ignores these EasyTier 2.7 settings: {list}."
+// in the language the app shows.
+func EditNeedsNewer(release string, list string) string {
+	return In(i18n.Locale()).EditNeedsNewer(release, list)
+}
+
+// EditNeedsNewer says "This network runs on EasyTier {release}, which refuses or ignores these EasyTier 2.7 settings: {list}."
+// in the language of msgs.
+func (msgs Messages) EditNeedsNewer(release string, list string) string {
+	return Catalog.Format(msgs.locale, "EditNeedsNewer", map[string]any{"release": release, "list": list})
+}
+
+// EditSectionCore says "Core"
+// in the language the app shows.
+func EditSectionCore() string { return In(i18n.Locale()).EditSectionCore() }
+
+// EditSectionCore says "Core"
+// in the language of msgs.
+func (msgs Messages) EditSectionCore() string {
+	return Catalog.Format(msgs.locale, "EditSectionCore", nil)
+}
+
+// CoreMini says "EasyTier mini"
+// in the language the app shows.
+func CoreMini() string { return In(i18n.Locale()).CoreMini() }
+
+// CoreMini says "EasyTier mini"
+// in the language of msgs.
+func (msgs Messages) CoreMini() string {
+	return Catalog.Format(msgs.locale, "CoreMini", nil)
+}
+
+// EditMiniRuns says "This network runs on EasyTier mini, not on the core chosen in Settings."
+// in the language the app shows.
+func EditMiniRuns() string { return In(i18n.Locale()).EditMiniRuns() }
+
+// EditMiniRuns says "This network runs on EasyTier mini, not on the core chosen in Settings."
+// in the language of msgs.
+func (msgs Messages) EditMiniRuns() string {
+	return Catalog.Format(msgs.locale, "EditMiniRuns", nil)
+}
+
+// ActionMiniCopy says "Make a mini copy"
+// in the language the app shows.
+func ActionMiniCopy() string { return In(i18n.Locale()).ActionMiniCopy() }
+
+// ActionMiniCopy says "Make a mini copy"
+// in the language of msgs.
+func (msgs Messages) ActionMiniCopy() string {
+	return Catalog.Format(msgs.locale, "ActionMiniCopy", nil)
+}
+
+// EditMiniCopyAbout says "Adds a copy of the saved configuration for EasyTier mini. Settings mini cannot run are left out of the copy; this net…"
+// in the language the app shows.
+func EditMiniCopyAbout() string { return In(i18n.Locale()).EditMiniCopyAbout() }
+
+// EditMiniCopyAbout says "Adds a copy of the saved configuration for EasyTier mini. Settings mini cannot run are left out of the copy; this net…"
+// in the language of msgs.
+func (msgs Messages) EditMiniCopyAbout() string {
+	return Catalog.Format(msgs.locale, "EditMiniCopyAbout", nil)
+}
+
+// ToastMiniCopied says "Added {name}."
+// in the language the app shows.
+func ToastMiniCopied(name string) string { return In(i18n.Locale()).ToastMiniCopied(name) }
+
+// ToastMiniCopied says "Added {name}."
+// in the language of msgs.
+func (msgs Messages) ToastMiniCopied(name string) string {
+	return Catalog.Format(msgs.locale, "ToastMiniCopied", map[string]any{"name": name})
+}
+
+// ToastMiniCopiedWithout says "Added {name}, without: {list}."
+// in the language the app shows.
+func ToastMiniCopiedWithout(name string, list string) string {
+	return In(i18n.Locale()).ToastMiniCopiedWithout(name, list)
+}
+
+// ToastMiniCopiedWithout says "Added {name}, without: {list}."
+// in the language of msgs.
+func (msgs Messages) ToastMiniCopiedWithout(name string, list string) string {
+	return Catalog.Format(msgs.locale, "ToastMiniCopiedWithout", map[string]any{"name": name, "list": list})
+}
+
+// EditMiniSchemes says "EasyTier mini uses only tcp:// and udp:// addresses."
+// in the language the app shows.
+func EditMiniSchemes() string { return In(i18n.Locale()).EditMiniSchemes() }
+
+// EditMiniSchemes says "EasyTier mini uses only tcp:// and udp:// addresses."
+// in the language of msgs.
+func (msgs Messages) EditMiniSchemes() string {
+	return Catalog.Format(msgs.locale, "EditMiniSchemes", nil)
+}
+
+// EditMiniNotRun says "EasyTier mini does not run this."
+// in the language the app shows.
+func EditMiniNotRun() string { return In(i18n.Locale()).EditMiniNotRun() }
+
+// EditMiniNotRun says "EasyTier mini does not run this."
+// in the language of msgs.
+func (msgs Messages) EditMiniNotRun() string {
+	return Catalog.Format(msgs.locale, "EditMiniNotRun", nil)
+}
+
+// CoreMiniAbout says "Runs the networks made for EasyTier mini."
+// in the language the app shows.
+func CoreMiniAbout() string { return In(i18n.Locale()).CoreMiniAbout() }
+
+// CoreMiniAbout says "Runs the networks made for EasyTier mini."
+// in the language of msgs.
+func (msgs Messages) CoreMiniAbout() string {
+	return Catalog.Format(msgs.locale, "CoreMiniAbout", nil)
+}
+
+// CoresMiniTitle says "A compact client, optional"
+// in the language the app shows.
+func CoresMiniTitle() string { return In(i18n.Locale()).CoresMiniTitle() }
+
+// CoresMiniTitle says "A compact client, optional"
+// in the language of msgs.
+func (msgs Messages) CoresMiniTitle() string {
+	return Catalog.Format(msgs.locale, "CoresMiniTitle", nil)
+}
+
+// CoresMiniAbout says "A small EasyTier client with TCP, UDP and the virtual device only. Networks run on it as mini copies, one at a time."
+// in the language the app shows.
+func CoresMiniAbout() string { return In(i18n.Locale()).CoresMiniAbout() }
+
+// CoresMiniAbout says "A small EasyTier client with TCP, UDP and the virtual device only. Networks run on it as mini copies, one at a time."
+// in the language of msgs.
+func (msgs Messages) CoresMiniAbout() string {
+	return Catalog.Format(msgs.locale, "CoresMiniAbout", nil)
+}

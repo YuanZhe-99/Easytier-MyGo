@@ -718,5 +718,72 @@
   "TourArtFromStartup": "Online from startup",
   "TourRewatchTitle": "What is the difference between the modes?",
   "TourRewatchAbout": "Watch the first-run tour again: the virtual device, startup and sign-in, staying online.",
-  "TourRewatch": "Watch tour"
+  "TourRewatch": "Watch tour",
+  "FeatureListeners": "Listeners other than TCP and UDP",
+  "FeatureMappedListeners": "Mapped listeners other than TCP and UDP",
+  "FeaturePeers": "Peers other than TCP and UDP",
+  "FeatureSocks5": "SOCKS5 proxy",
+  "FeaturePortForward": "Port forwarding",
+  "FeatureVpnPortal": "WireGuard portal",
+  "FeatureIPv6Public": "Public IPv6 addresses",
+  "FeatureUDPBroadcast": "UDP broadcast relay",
+  "FeatureCompression": "Compression",
+  "FeatureEncryption": "Encryption other than AES-GCM",
+  "FeatureNewPortal": "WireGuard portal with named clients",
+  "FeatureTCPStun": "TCP STUN servers",
+  "FeatureSocketMark": "Socket mark",
+  "FeatureManagedCredentials": "Managed credentials",
+  "FlagPreferRelay": "Prefer existing relays",
+  "FlagPreferRelayHint": "Reach a node through a credential peer that already relays to it (EasyTier 2.7).",
+  "ListSeparator": ", ",
+  "EditMiniNote": "This network runs on EasyTier mini: TCP and UDP connections only, one mini network at a time.",
+  "EditMiniIgnored": "EasyTier mini ignores these saved settings: {list}.",
+  "@EditMiniIgnored": {
+    "placeholders": {
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "EditLegacyPortal": "The WireGuard portal uses the EasyTier 2.6 format, which EasyTier 2.7 refuses. Set its clients up again in the TOML editor.",
+  "EditNeedsNewer": "This network runs on EasyTier {release}, which refuses or ignores these EasyTier 2.7 settings: {list}.",
+  "@EditNeedsNewer": {
+    "placeholders": {
+      "release": {
+        "type": "String"
+      },
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "EditSectionCore": "Core",
+  "CoreMini": "EasyTier mini",
+  "EditMiniRuns": "This network runs on EasyTier mini, not on the core chosen in Settings.",
+  "ActionMiniCopy": "Make a mini copy",
+  "EditMiniCopyAbout": "Adds a copy of the saved configuration for EasyTier mini. Settings mini cannot run are left out of the copy; this network stays as it is.",
+  "ToastMiniCopied": "Added {name}.",
+  "@ToastMiniCopied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ToastMiniCopiedWithout": "Added {name}, without: {list}.",
+  "@ToastMiniCopiedWithout": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "EditMiniSchemes": "EasyTier mini uses only tcp:// and udp:// addresses.",
+  "EditMiniNotRun": "EasyTier mini does not run this.",
+  "CoreMiniAbout": "Runs the networks made for EasyTier mini.",
+  "CoresMiniTitle": "A compact client, optional",
+  "CoresMiniAbout": "A small EasyTier client with TCP, UDP and the virtual device only. Networks run on it as mini copies, one at a time."
 }

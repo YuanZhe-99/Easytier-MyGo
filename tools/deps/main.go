@@ -145,7 +145,10 @@ func update(args []string) error {
 		Bundled:    rel.TagName,
 		Published:  rel.PublishedAt.Format("2006-01-02"),
 		Tested:     old.Tested,
-		Assets:     map[string]third_party.Asset{},
+		// EasyTier mini is not bundled; its pins stay as they are.
+		MiniRepository: old.MiniRepository,
+		MiniTested:     old.MiniTested,
+		Assets:         map[string]third_party.Asset{},
 	}
 	for _, p := range platforms {
 		up, _ := third_party.EasyTierPlatformName(p.goos, p.goarch)

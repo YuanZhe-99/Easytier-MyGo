@@ -44,10 +44,12 @@ Daemon 按运行方式（[run-modes.md](run-modes.md)）运行在两种权限环
 
 Daemon 运行设置中所选的内核：内置内核（默认）、按请求下载的官方版本，或自定义构建。`internal/cores` 从 GitHub API 读取发布列表（按 ETag 缓存），只在请求时下载，校验官方公布的 SHA-256，并用内置的 `upx` 解压 UPX 压缩的可执行文件。每个内核及其配套 CLI 位于 `<state>/cores/<tag>/`。切换内核会让运行中的网络在新内核上重启。`third_party/easytier.json` → `tested` 中的版本标为已测试。特权助手自行下载官方内核；给助手添加自定义构建只能通过 `easytier-mygo-svc helper add-core`，并需要管理员批准。
 
+EasyTier mini（[easytier-upstream.md](easytier-upstream.md)）是可选的，从不内置：内核管理从 `EasyTier/easytier-mini` 下载它，连同完整版同 tag 的 `easytier-cli`，两者都经校验，放在 `<state>/cores/mini-<tag>/`。它从不是所选内核。只有作为 mini 副本创建的网络（`profiles.Profile.Mini`、`network.mini-copy`）才在其上运行；这些网络总是使用最新安装的 mini，不受内核切换影响，只用 `-c` 在 mini 固定的 15888 端口启动，用 `configdoc.Parse` 代替 `--check-config` 检查，并且同一时间只运行一个（`Daemon.checkMini`）。原网络保持不变。
+
 ## 本地 API
 
 - 传输：Unix 域 socket（Windows 命名管道在计划中）；按行 JSON，带 `version` 字段。每个连接一个请求，会话（`session.attach`）除外：它保持连接并接收推送（网络状态、新的流量点、新事件），最多每 500 ms 一次。错误带代码（`not-found`、`conflict`、`invalid-config`、`needs-helper` 等）。
-- 双方都检查 `localapi.ProtocolVersion`。枚举以名称传输。改变字段含义必须升级版本。
+- 双方都检查 `localapi.ProtocolVersion`。枚举以名称传输。改变字段含义必须升级版本；新增字段和请求则不必（0.2.4 在版本 2 内新增了 `network.mini-copy` 与 mini 相关字段，旧 daemon 会以 “unknown request” 回应新请求）。
 - 授权来自操作系统提供的对端凭据，绝不来自请求内容。只读与写入两级保护的是本应用的控制入口。
 - 内核自己的 `--rpc-portal`（回环 TCP）是另一个入口，本机用户都能访问；本应用不声称将其关闭。
 

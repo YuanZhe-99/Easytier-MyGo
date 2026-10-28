@@ -63,6 +63,15 @@ with its matching CLI. Switching cores restarts running networks on the new core
 cores itself; a custom build for the helper is added only through
 `easytier-mygo-svc helper add-core` with administrator approval.
 
+EasyTier mini ([easytier-upstream.md](easytier-upstream.md)) is optional and
+never bundled: the core manager downloads it from `EasyTier/easytier-mini` together with the
+same-tag `easytier-cli` of the full release, both verified, into `<state>/cores/mini-<tag>/`. It is
+never the selected core. A network runs on it only when it was created as a mini copy
+(`profiles.Profile.Mini`, `network.mini-copy`); such networks always use the newest installed
+mini, ignore core switches, start with `-c` alone on mini's fixed port 15888, are checked by
+`configdoc.Parse` instead of `--check-config`, and run one at a time (`Daemon.checkMini`). The
+original network stays as it was.
+
 ## Local API
 
 - Transport: a Unix domain socket (named pipe on Windows planned); newline-delimited JSON with a
@@ -71,7 +80,9 @@ cores itself; a custom build for the helper is added only through
   most every 500 ms. Errors carry a code (`not-found`, `conflict`, `invalid-config`,
   `needs-helper`, …).
 - `localapi.ProtocolVersion` is checked by both sides. Enums cross the socket as names. Changing a
-  field's meaning requires a version bump.
+  field's meaning requires a version bump; added fields and requests do not (0.2.4 added
+  `network.mini-copy` and the mini fields within version 2, and an older daemon answers the new
+  request with "unknown request").
 - Authorization comes from the operating system's peer credentials, never from the request body.
   Read-only and write tiers protect this application's control entry point.
 - The core's own `--rpc-portal` (TCP on loopback) is a separate entry point reachable by local

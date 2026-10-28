@@ -30,6 +30,14 @@ type configEditor struct {
 	err      string
 	advanced bool
 
+	// mini and release describe the core the network runs on (EasyTier
+	// mini; its EasyTier release, "" when unknown). miniIgnored and
+	// conflicts are what that core leaves out of or refuses in the saved
+	// document (configdoc feature IDs).
+	mini                   bool
+	release                string
+	miniIgnored, conflicts []string
+
 	// Form fields.
 	name, netName, secret, ipv4, hostname string
 	instanceID                            string
@@ -43,6 +51,7 @@ type configEditor struct {
 var advancedFlags = []string{
 	"latency_first", "enable_exit_node", "accept_dns", "disable_p2p", "p2p_only", "lazy_p2p",
 	"enable_kcp_proxy", "enable_quic_proxy", "private_mode", "enable_encryption", "enable_ipv6", "multi_thread",
+	"prefer_peer_relay", // EasyTier 2.7+: offered on those cores, or when the document sets it
 }
 
 func flagLabel(key string) (string, string) {
@@ -71,6 +80,8 @@ func flagLabel(key string) (string, string) {
 		return L.FlagIPv6(), L.FlagIPv6Hint()
 	case "multi_thread":
 		return L.FlagMultiThread(), L.FlagMultiThreadHint()
+	case "prefer_peer_relay":
+		return L.FlagPreferRelay(), L.FlagPreferRelayHint()
 	}
 	return key, ""
 }
@@ -98,7 +109,7 @@ func (a *App) openEditor(id string) {
 				return
 			}
 			n, _ := a.networkByID(id)
-			e.name = n.Name
+			e.name, e.mini, e.release = n.Name, n.Mini, n.CoreRelease
 			e.load(doc.Config.Text, doc.Config.Revision)
 		})
 	}()
@@ -110,6 +121,11 @@ func (e *configEditor) load(text, rev string) {
 	b := editor.NewBuffer(text)
 	b.SetLanguage(editor.LanguageFor("network.toml"))
 	e.raw = editor.State{Buffer: b, Label: L.EditTomlLabel(), LineNumbers: editor.LineNumbersOn}
+	e.miniIgnored = nil
+	if e.mini {
+		e.miniIgnored, _ = configdoc.MiniUnsupported(text)
+	}
+	e.conflicts, _ = configdoc.VersionConflicts(text, configdoc.AtLeast27(e.release))
 	v, err := configdoc.Extract(text)
 	if err != nil {
 		// The form cannot represent this document; edit it as TOML.
@@ -351,6 +367,14 @@ func (a *App) formView(c *ui.Context, e *configEditor) {
 	area := func(key string, v *string, placeholder string) {
 		ui.TextArea(c.Key(key), v).Placeholder(placeholder).FillWidth().MinHeight(64)
 	}
+	// On EasyTier mini, rows it does not run say so in the warning color.
+	hint := func(about, onMini string) (string, ui.Color) {
+		if e.mini {
+			return onMini, tok(c).warn
+		}
+		return about, ui.Color{}
+	}
+	a.coreNotes(c, e)
 	r.section(c, "f-basic", L.EditSectionBasic(), nil, func(r *rows) {
 		r.row(c, "f-name", iconTag, L.FieldDisplayName(), L.EditNameAbout(), func() { field("f-name-in", &e.name, "") })
 		r.row(c, "f-netname", iconNetwork, L.FieldNetworkName(), L.FieldSecretHint(), func() { field("f-netname-in", &e.netName, "") })
@@ -386,9 +410,11 @@ func (a *App) formView(c *ui.Context, e *configEditor) {
 		})
 	})
 	r.section(c, "f-connect", L.EditSectionConnect(), nil, func(r *rows) {
-		r.row(c, "f-peers", iconServer, L.FieldPeers(), L.FieldPeersHint(), nil)
+		about, col := hint(L.FieldPeersHint(), L.EditMiniSchemes())
+		r.rowIn(c, "f-peers", iconServer, L.FieldPeers(), about, col, nil)
 		r.block(c, "f-peers-area", func() { area("f-peers-in", &e.peers, "tcp://public.easytier.cn:11010") })
-		r.row(c, "f-listeners", iconEar, L.FieldListeners(), L.FieldListenersHint(), nil)
+		about, col = hint(L.FieldListenersHint(), L.EditMiniSchemes())
+		r.rowIn(c, "f-listeners", iconEar, L.FieldListeners(), about, col, nil)
 		r.block(c, "f-listeners-area", func() { area("f-listeners-in", &e.listeners, "tcp://0.0.0.0:11010\nudp://0.0.0.0:11010") })
 		device := !e.noTun
 		r.row(c, "f-device", iconDevice, L.SummaryDevice(), L.EditDeviceAbout(), func() {
@@ -398,9 +424,11 @@ func (a *App) formView(c *ui.Context, e *configEditor) {
 		})
 	})
 	r.section(c, "f-routing", L.EditSectionRouting(), nil, func(r *rows) {
-		r.row(c, "f-proxies", iconRoute, L.FieldProxies(), L.FieldProxiesHint(), nil)
+		about, col := hint(L.FieldProxiesHint(), L.EditMiniNotRun())
+		r.rowIn(c, "f-proxies", iconRoute, L.FieldProxies(), about, col, nil)
 		r.block(c, "f-proxies-area", func() { area("f-proxies-in", &e.proxies, "192.168.1.0/24") })
-		r.row(c, "f-exits", iconExit, L.FieldExitNodes(), L.FieldExitNodesHint(), nil)
+		about, col = hint(L.FieldExitNodesHint(), L.EditMiniNotRun())
+		r.rowIn(c, "f-exits", iconExit, L.FieldExitNodes(), about, col, nil)
 		r.block(c, "f-exits-area", func() { area("f-exits-in", &e.exits, "10.144.144.2") })
 	})
 	r.section(c, "f-advanced", L.EditSectionAdvanced(), func() {
@@ -417,9 +445,16 @@ func (a *App) formView(c *ui.Context, e *configEditor) {
 			return
 		}
 		for _, key := range advancedFlags {
+			if _, set := e.base.Flags[key]; key == "prefer_peer_relay" && !set && !configdoc.AtLeast27(e.release) {
+				continue // the 2.6 core does not have it
+			}
 			on := e.flags[key]
 			label, h := flagLabel(key)
-			r.row(c, "flag-"+key, iconFlag, label, h, func() {
+			col := ui.Color{}
+			if miniFlags[key] {
+				h, col = hint(h, L.EditMiniNotRun())
+			}
+			r.rowIn(c, "flag-"+key, iconFlag, label, h, col, func() {
 				ui.Switch(c.Key("flag-sw-"+key), &on).Label(label)
 			})
 			e.flags[key] = on
@@ -427,6 +462,7 @@ func (a *App) formView(c *ui.Context, e *configEditor) {
 		r.row(c, "f-dev", iconDevice, L.FieldDevName(), "", func() { field("f-dev-in", &e.devName, "et0") })
 		r.row(c, "f-mtu", iconRuler, L.FieldMTU(), "", func() { field("f-mtu-in", &e.mtu, "1380") })
 	})
+	a.coreSection(c, &r, e)
 	r.section(c, "f-delete", L.EditSectionDelete(), nil, func(r *rows) {
 		r.rowIn(c, "f-delete-row", iconTrash, L.ActionDeleteNetwork(), L.EditDeleteAbout(), t.TextMuted, func() {
 			if ui.Button(c.Key("f-delete-btn"), L.ActionDeleteNetwork()).Disabled(busy).Clicked() {

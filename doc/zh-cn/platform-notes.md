@@ -35,6 +35,7 @@
 | 冒烟脚本 | `scripts/smoke.sh user` 与 `helper` 在本机通过 |
 | 助手自更新 | 签名的构建包无需弹窗即被接受（替换二进制并重启助手）；未签名或被篡改的构建包被拒绝；`release.yml` 用 GitHub secret 签名的构建包同样被接受 |
 | GUI 助手按钮 | 经真实 polkit 对话框（pkexec）卸载与安装，operator 被记录 |
+| EasyTier 2.7.0 与 mini（WSL Debian 13 aarch64，2026-10-28） | 实测适配器测试在 v2.7.0 内核和 mini（由 v2.7.0 CLI 查询）上通过；用户 daemon 从 GitHub 下载 mini v2.7.0 及其 CLI（SHA-256 已校验），生成不含 QUIC 监听地址与 MagicDNS 的 “Default Network (mini)”（原网络不变），与 v2.7.0 上的完整网络一起运行——两者都已连接并经 TCP 互连——并拒绝第二个 mini 网络 |
 
 ## macOS 与 Windows
 
@@ -64,13 +65,14 @@
 | 按代码签名自更新助手（2026-10-17） | 用 ad hoc 签名副本的单元测试：满足已安装副本指定要求的二进制被安装；其他签名或更旧的版本被拒绝，已安装文件保持不变，不留下暂存副本 |
 | 代码签名（2026-10-17） | 设置 `MYGO_SIGN` 构建：应用、其可执行文件与 `.dmg` 都带 `TeamIdentifier=982C6JDNCS` 和 hardened runtime，并通过严格校验；签名后的 daemon 能运行签名后的内核（`no_tun` 网络启动）；重新构建后指定要求保持不变 |
 
-macOS 上未验证：GUI 安装按钮触发的 `osascript` 授权、助手自更新、登录时在托盘中启动（0.2.3 修复）、应用自动更新，以及 GUI 外观（未截图）。
+macOS 上未验证：GUI 安装按钮触发的 `osascript` 授权、助手自更新、登录时在托盘中启动（0.2.3 修复）、应用自动更新、通过本应用运行 EasyTier mini，以及 GUI 外观（未截图）。
 
 ## 已知限制
 
 - EasyTier 内核自带的 RPC portal（回环 TCP，端口从 25888 起）对本机所有用户可达，本机用户可以通过 `easytier-cli` 查询或修改运行中的内核。本应用的本地 API 受保护，内核的 portal 不受保护。目标场景是单用户桌面。
 - 特权助手以 root/SYSTEM 运行内核；其 API 仅限 operator 与 `easytier-mygo` 组，并拒绝路径类配置项。
 - Windows 只验证过 `no_tun` 网络；WinTun 未测试。macOS 的 TUN（utun）已通过助手验证。
+- EasyTier mini 同一时间只运行一个网络（其管理端口固定为 15888，可能被其他程序占用），且没有 `--check-config`：文档无法加载的 mini 副本会在启动时失败，并回到之前的 revision。在 Windows 上，mini 曾在 ARM64 上单独运行（x64 版本，经仿真），但尚未通过本应用运行。
 - 标为未测试的内核可能改变 CLI 输出或配置格式；应用会降级为“无法读取状态”而不重启任何东西，也可以重新选回之前的内核。
 - 未认证的 GitHub API 请求每小时限 60 次；发布列表按 ETag 缓存，只在请求时或每日检查时获取。
 - `.deb` 不依赖 WebKitGTK（`mygo.json` 中的 `linux.webview: false`）。

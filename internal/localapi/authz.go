@@ -161,6 +161,7 @@ var writeRequests = map[RequestType]bool{
 	RequestNetworkCreate: true,
 	RequestNetworkDelete: true,
 	RequestNetworkRename: true,
+	RequestMiniCopy:      true,
 	RequestConnect:       true,
 	RequestDisconnect:    true,
 	RequestApply:         true,

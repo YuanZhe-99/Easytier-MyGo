@@ -38,6 +38,7 @@ type Values struct {
 	// Advanced scalars, all inside [flags] except IPv6PublicAddrAuto.
 	DevName               *string
 	MTU                   *uint32
+	SocketMark            *uint32 // EasyTier 2.7+, Linux only
 	InstanceRecvBpsLimit  *uint64
 	RelayNetworkWhitelist *string
 	IPv6PublicAddrAuto    *bool
@@ -50,6 +51,7 @@ type Values struct {
 	// Extra projection fields are pinned to upstream v2.6.4 top-level keys.
 	StunServers          *[]string
 	StunServersV6        *[]string
+	TCPStunServers       *[]string // EasyTier 2.7+
 	TCPWhitelist         *[]string
 	UDPWhitelist         *[]string
 	CredentialFile       *string
@@ -89,10 +91,26 @@ type PortForward struct {
 	DstAddr  string
 }
 
-// VpnPortalConfig is the [vpn_portal_config] table (WireGuard portal).
+// VpnPortalConfig is the [vpn_portal_config] table (WireGuard portal) in
+// either format: EasyTier 2.6 hands clients addresses from a range
+// (ClientCIDR); EasyTier 2.7 names each client in
+// [[vpn_portal_config.clients]] and rejects client_cidr.
 type VpnPortalConfig struct {
-	ClientCIDR      string
+	ClientCIDR      string // 2.6 format only
 	WireguardListen string
+	PrivateKey      string // wireguard_private_key, 2.7 format, optional
+	Enabled         *bool  // enabled, 2.7 format, optional
+	Clients         []VpnPortalClient
+}
+
+// Legacy reports whether the portal uses the EasyTier 2.6 format.
+func (v VpnPortalConfig) Legacy() bool { return v.ClientCIDR != "" }
+
+// VpnPortalClient is one [[vpn_portal_config.clients]] block.
+type VpnPortalClient struct {
+	Name      string
+	VirtualIP string // virtual_ip: the client's address with its prefix
+	Groups    []string
 }
 
 // DefaultFlags are the TOML-semantics defaults of the covered flags.*
@@ -130,6 +148,7 @@ func DefaultFlags() map[string]bool {
 		"disable_relay_quic":                false,
 		"enable_relay_foreign_network_quic": false,
 		"disable_relay_data":                false,
+		"prefer_peer_relay":                 false, // EasyTier 2.7+
 	}
 }
 
@@ -917,6 +936,13 @@ func Extract(text string) (Values, error) {
 		}
 		v.MTU = &n
 	}
+	if a, ok := res.assigns["flags.socket_mark"]; ok {
+		n, de := decodeLiteral[uint32](text, a)
+		if de != nil {
+			return Values{}, de
+		}
+		v.SocketMark = &n
+	}
 	if a, ok := res.assigns["flags.instance_recv_bps_limit"]; ok {
 		n, de := decodeLiteral[uint64](text, a)
 		if de != nil {
@@ -962,7 +988,7 @@ func Extract(text string) (Values, error) {
 	if v.MappedListeners, err = stringList("mapped_listeners"); err != nil {
 		return Values{}, err
 	}
-	for path, target := range map[string]**[]string{"stun_servers": &v.StunServers, "stun_servers_v6": &v.StunServersV6, "tcp_whitelist": &v.TCPWhitelist, "udp_whitelist": &v.UDPWhitelist} {
+	for path, target := range map[string]**[]string{"stun_servers": &v.StunServers, "stun_servers_v6": &v.StunServersV6, "tcp_stun_servers": &v.TCPStunServers, "tcp_whitelist": &v.TCPWhitelist, "udp_whitelist": &v.UDPWhitelist} {
 		if *target, err = stringList(path); err != nil {
 			return Values{}, err
 		}
@@ -1065,29 +1091,127 @@ func extractPortForwards(res *scanResult, text string) (*[]PortForward, error) {
 	return &out, nil
 }
 
-// extractVpnPortal reads the [vpn_portal_config] table.
+// extractVpnPortal reads the [vpn_portal_config] table and its
+// [[vpn_portal_config.clients]] blocks, in either format.
 func extractVpnPortal(res *scanResult, text string) (*VpnPortalConfig, error) {
-	cidrA, okCIDR := res.assigns["vpn_portal_config.client_cidr"]
-	listenA, okListen := res.assigns["vpn_portal_config.wireguard_listen"]
-	if !okCIDR && !okListen {
+	_, inTable := res.tables["vpn_portal_config"]
+	clients := res.arrayFields[portalClients]
+	if !inTable && len(clients) == 0 {
 		return nil, nil
 	}
 	var v VpnPortalConfig
-	if okCIDR {
-		s, err := decodeLiteral[string](text, cidrA)
-		if err != nil {
-			return nil, err
+	for path, dst := range map[string]*string{
+		"vpn_portal_config.client_cidr":           &v.ClientCIDR,
+		"vpn_portal_config.wireguard_listen":      &v.WireguardListen,
+		"vpn_portal_config.wireguard_private_key": &v.PrivateKey,
+	} {
+		if a, ok := res.assigns[path]; ok {
+			s, err := decodeLiteral[string](text, a)
+			if err != nil {
+				return nil, err
+			}
+			*dst = s
 		}
-		v.ClientCIDR = s
 	}
-	if okListen {
-		s, err := decodeLiteral[string](text, listenA)
+	if a, ok := res.assigns["vpn_portal_config.enabled"]; ok {
+		b, err := decodeLiteral[bool](text, a)
 		if err != nil {
 			return nil, err
 		}
-		v.WireguardListen = s
+		v.Enabled = &b
+	}
+	for _, block := range clients {
+		var c VpnPortalClient
+		for key, a := range block {
+			var err error
+			switch key {
+			case "name":
+				c.Name, err = decodeLiteral[string](text, a)
+			case "virtual_ip":
+				c.VirtualIP, err = decodeLiteral[string](text, a)
+			case "groups":
+				c.Groups, err = decodeLiteral[[]string](text, a)
+			default:
+				return nil, fmt.Errorf("%w: [[%s]] has unsupported key %q", ErrUnsupported, portalClients, key)
+			}
+			if err != nil {
+				return nil, err
+			}
+		}
+		v.Clients = append(v.Clients, c)
 	}
 	return &v, nil
+}
+
+// portalClients names the EasyTier 2.7 portal's client blocks.
+const portalClients = "vpn_portal_config.clients"
+
+// SetVpnPortal writes the portal: the 2.6 keys for a legacy one, else
+// the 2.7 keys and its client blocks. Callers remove the old portal first.
+func SetVpnPortal(text string, v VpnPortalConfig) (string, error) {
+	var err error
+	step := func(f func() (string, error)) {
+		if err == nil {
+			text, err = f()
+		}
+	}
+	if v.Legacy() {
+		step(func() (string, error) { return SetString(text, "vpn_portal_config.client_cidr", v.ClientCIDR) })
+	}
+	step(func() (string, error) {
+		return SetString(text, "vpn_portal_config.wireguard_listen", v.WireguardListen)
+	})
+	if v.Legacy() {
+		return text, err
+	}
+	if v.PrivateKey != "" {
+		step(func() (string, error) {
+			return SetString(text, "vpn_portal_config.wireguard_private_key", v.PrivateKey)
+		})
+	}
+	if v.Enabled != nil {
+		step(func() (string, error) { return SetBool(text, "vpn_portal_config.enabled", *v.Enabled) })
+	}
+	var b strings.Builder
+	for _, c := range v.Clients {
+		b.WriteString("[[" + portalClients + "]]\nname = " + tomlQuote(c.Name) + "\nvirtual_ip = " + tomlQuote(c.VirtualIP) + "\n")
+		if len(c.Groups) > 0 {
+			parts := make([]string, len(c.Groups))
+			for i, g := range c.Groups {
+				parts[i] = tomlQuote(g)
+			}
+			b.WriteString("groups = [ " + strings.Join(parts, ", ") + " ]\n")
+		}
+		b.WriteString("\n")
+	}
+	step(func() (string, error) { return setTableArray(text, portalClients, b.String()) })
+	return text, err
+}
+
+// removeVpnPortal deletes the portal table and every client block.
+func removeVpnPortal(text string) (string, error) {
+	text, err := RemoveTable(text, "vpn_portal_config")
+	if err != nil {
+		return "", err
+	}
+	return removeTableArray(text, portalClients)
+}
+
+// removeTableArray deletes every [[name]] block.
+func removeTableArray(text, name string) (string, error) {
+	for range 1024 {
+		res, err := scan(text)
+		if err != nil {
+			return "", err
+		}
+		if len(res.arrayBlocks[name]) == 0 {
+			return text, nil
+		}
+		if text, err = RemoveTable(text, name); err != nil {
+			return "", err
+		}
+	}
+	return "", fmt.Errorf("%w: too many [[%s]] blocks", ErrUnsupported, name)
 }
 
 // Changes compares the loaded base with the current form values and
@@ -1140,6 +1264,9 @@ func Changes(base, current Values) Values {
 	if changedUint32(base.MTU, current.MTU) {
 		c.MTU = current.MTU
 	}
+	if changedUint32(base.SocketMark, current.SocketMark) {
+		c.SocketMark = current.SocketMark
+	}
 	if changedUint64(base.InstanceRecvBpsLimit, current.InstanceRecvBpsLimit) {
 		c.InstanceRecvBpsLimit = current.InstanceRecvBpsLimit
 	}
@@ -1177,6 +1304,7 @@ func Changes(base, current Values) Values {
 	}{
 		{"stun_servers", base.StunServers, current.StunServers, &c.StunServers},
 		{"stun_servers_v6", base.StunServersV6, current.StunServersV6, &c.StunServersV6},
+		{"tcp_stun_servers", base.TCPStunServers, current.TCPStunServers, &c.TCPStunServers},
 		{"tcp_whitelist", base.TCPWhitelist, current.TCPWhitelist, &c.TCPWhitelist},
 		{"udp_whitelist", base.UDPWhitelist, current.UDPWhitelist, &c.UDPWhitelist},
 	} {
@@ -1218,7 +1346,7 @@ func Changes(base, current Values) Values {
 	if base.VpnPortal != nil && current.VpnPortal == nil && !currentRemoved(current, "vpn_portal_config") {
 		c.Remove = append(c.Remove, "vpn_portal_config")
 	}
-	if current.VpnPortal != nil && (base.VpnPortal == nil || *base.VpnPortal != *current.VpnPortal) {
+	if current.VpnPortal != nil && (base.VpnPortal == nil || !reflect.DeepEqual(*base.VpnPortal, *current.VpnPortal)) {
 		c.VpnPortal = current.VpnPortal
 		if base.VpnPortal != nil {
 			c.Remove = append(c.Remove, "vpn_portal_config")
@@ -1323,6 +1451,10 @@ func ApplyValues(text string, v Values) (string, error) {
 	}
 	// Removals first: disabling presence-based structures.
 	for _, path := range v.Remove {
+		if path == "vpn_portal_config" {
+			step(func() (string, error) { return removeVpnPortal(text) })
+			continue
+		}
 		step(func() (string, error) { return RemoveKey(text, path) })
 	}
 	if v.InstanceName != nil {
@@ -1367,6 +1499,9 @@ func ApplyValues(text string, v Values) (string, error) {
 	if v.MTU != nil {
 		step(func() (string, error) { return SetInt(text, "flags.mtu", int64(*v.MTU)) })
 	}
+	if v.SocketMark != nil {
+		step(func() (string, error) { return SetInt(text, "flags.socket_mark", int64(*v.SocketMark)) })
+	}
 	if v.InstanceRecvBpsLimit != nil {
 		step(func() (string, error) {
 			return SetValue(text, "flags.instance_recv_bps_limit", fmt.Sprintf("%d", *v.InstanceRecvBpsLimit))
@@ -1396,7 +1531,7 @@ func ApplyValues(text string, v Values) (string, error) {
 		path  string
 		value *[]string
 	}{
-		{"stun_servers", v.StunServers}, {"stun_servers_v6", v.StunServersV6}, {"tcp_whitelist", v.TCPWhitelist}, {"udp_whitelist", v.UDPWhitelist},
+		{"stun_servers", v.StunServers}, {"stun_servers_v6", v.StunServersV6}, {"tcp_stun_servers", v.TCPStunServers}, {"tcp_whitelist", v.TCPWhitelist}, {"udp_whitelist", v.UDPWhitelist},
 	} {
 		if field.value != nil {
 			step(func() (string, error) { return SetStringArray(text, field.path, *field.value) })
@@ -1423,12 +1558,7 @@ func ApplyValues(text string, v Values) (string, error) {
 		step(func() (string, error) { return SetPortForwards(text, *v.PortForwards) })
 	}
 	if v.VpnPortal != nil {
-		step(func() (string, error) {
-			return SetString(text, "vpn_portal_config.client_cidr", v.VpnPortal.ClientCIDR)
-		})
-		step(func() (string, error) {
-			return SetString(text, "vpn_portal_config.wireguard_listen", v.VpnPortal.WireguardListen)
-		})
+		step(func() (string, error) { return SetVpnPortal(text, *v.VpnPortal) })
 	}
 	if v.Peers != nil {
 		step(func() (string, error) { return SetPeers(text, *v.Peers) })
@@ -1441,11 +1571,11 @@ func (v Values) IsEmpty() bool {
 	return v.InstanceName == nil && v.InstanceID == nil && v.Hostname == nil && v.IPv4 == nil &&
 		v.DHCP == nil && v.Listeners == nil && v.NetworkName == nil &&
 		v.NetworkSecret == nil && v.Peers == nil && len(v.Flags) == 0 &&
-		v.DevName == nil && v.MTU == nil && v.InstanceRecvBpsLimit == nil &&
+		v.DevName == nil && v.MTU == nil && v.SocketMark == nil && v.InstanceRecvBpsLimit == nil &&
 		v.RelayNetworkWhitelist == nil && v.IPv6PublicAddrAuto == nil &&
 		v.Socks5Proxy == nil && v.Routes == nil && v.ExitNodes == nil &&
 		v.MappedListeners == nil && v.ProxyNetworks == nil &&
-		v.StunServers == nil && v.StunServersV6 == nil && v.TCPWhitelist == nil && v.UDPWhitelist == nil && v.CredentialFile == nil && v.NetNS == nil && v.IPv6PublicAddrPrefix == nil &&
+		v.StunServers == nil && v.StunServersV6 == nil && v.TCPStunServers == nil && v.TCPWhitelist == nil && v.UDPWhitelist == nil && v.CredentialFile == nil && v.NetNS == nil && v.IPv6PublicAddrPrefix == nil &&
 		v.PortForwards == nil && v.VpnPortal == nil && v.SecureModeEnabled == nil && v.SecurePrivateKey == nil && v.SecurePublicKey == nil && len(v.Remove) == 0
 }
 

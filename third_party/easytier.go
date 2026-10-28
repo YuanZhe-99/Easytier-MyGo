@@ -24,13 +24,17 @@ type Asset struct {
 
 // Manifest pins the EasyTier core shipped with this build.
 type Manifest struct {
-	Repository string           `json:"repository"`
-	License    string           `json:"license"`
-	Source     string           `json:"source"`
-	Bundled    string           `json:"bundled"`
-	Published  string           `json:"published"`
-	Tested     []string         `json:"tested"`
-	Assets     map[string]Asset `json:"assets"`
+	Repository string   `json:"repository"`
+	License    string   `json:"license"`
+	Source     string   `json:"source"`
+	Bundled    string   `json:"bundled"`
+	Published  string   `json:"published"`
+	Tested     []string `json:"tested"`
+	// MiniRepository and MiniTested describe EasyTier mini, which is never
+	// bundled: users download it on request.
+	MiniRepository string           `json:"mini_repository"`
+	MiniTested     []string         `json:"mini_tested"`
+	Assets         map[string]Asset `json:"assets"`
 }
 
 // EasyTier parses the embedded manifest.

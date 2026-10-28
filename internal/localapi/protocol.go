@@ -56,6 +56,7 @@ const (
 	RequestNetworkCreate RequestType = "network.create" // Name + Text
 	RequestNetworkDelete RequestType = "network.delete"
 	RequestNetworkRename RequestType = "network.rename"
+	RequestMiniCopy      RequestType = "network.mini-copy"  // a copy of Network for EasyTier mini
 	RequestConnect       RequestType = "network.connect"    // run (applies the saved document if never applied)
 	RequestDisconnect    RequestType = "network.disconnect" // user stop
 	RequestApply         RequestType = "network.apply"      // restart with the saved document
@@ -99,6 +100,7 @@ type Request struct {
 	Watch    []string    `json:"watch,omitempty"` // network IDs on screen
 	Tag      string      `json:"tag,omitempty"`   // core release tag
 	Pre      bool        `json:"pre,omitempty"`   // include pre-releases
+	Mini     bool        `json:"mini,omitempty"`  // releases and installs of EasyTier mini
 	Settings *Settings   `json:"settings,omitempty"`
 }
 
@@ -118,6 +120,10 @@ type Response struct {
 	Cores    []CoreInfo      `json:"cores,omitempty"`
 	Releases []ReleaseInfo   `json:"releases,omitempty"`
 	Push     *Push           `json:"push,omitempty"`
+	// Created and Removed answer RequestMiniCopy: the new network and the
+	// settings left out of it (configdoc feature IDs).
+	Created string   `json:"created,omitempty"`
+	Removed []string `json:"removed,omitempty"`
 }
 
 // CoreInfo is an installed EasyTier core.
@@ -127,6 +133,10 @@ type CoreInfo struct {
 	Tested   bool   `json:"tested"`
 	Pre      bool   `json:"pre,omitempty"`
 	Selected bool   `json:"selected,omitempty"`
+	// Mini marks an EasyTier mini core; networks made for mini run on the
+	// newest one (InUse), never on the selected core.
+	Mini  bool `json:"mini,omitempty"`
+	InUse bool `json:"in_use,omitempty"`
 }
 
 // ReleaseInfo is an official EasyTier release available for download.
@@ -136,6 +146,7 @@ type ReleaseInfo struct {
 	Published  time.Time `json:"published"`
 	Size       int64     `json:"size"`
 	Installed  bool      `json:"installed"`
+	Mini       bool      `json:"mini,omitempty"`
 	Tested     bool      `json:"tested"`
 }
 
@@ -203,6 +214,11 @@ type NetworkStatus struct {
 	NATType     string `json:"nat_type,omitempty"`
 	CoreVersion string `json:"core_version,omitempty"`
 	NoTUN       bool   `json:"no_tun"`
+	// Mini marks a network that runs on EasyTier mini. CoreRelease is the
+	// EasyTier release its core comes from ("v2.6.4"; empty for a custom
+	// build or a missing mini core), which decides the settings it runs.
+	Mini        bool   `json:"mini,omitempty"`
+	CoreRelease string `json:"core_release,omitempty"`
 	// MagicDNSZone is the saved document's MagicDNS zone ("et.net"); empty
 	// when accept_dns is off. Peers resolve as <hostname>.<zone>.
 	MagicDNSZone string    `json:"magic_dns_zone,omitempty"`

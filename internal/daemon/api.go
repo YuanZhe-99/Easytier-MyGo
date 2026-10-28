@@ -129,8 +129,12 @@ func (d *Daemon) Handle(ctx context.Context, req localapi.Request, access locala
 			if d.opts.Cores == nil {
 				return localapi.Fail("", "core management is not available")
 			}
-			if _, ok := d.opts.Cores.Find(tag); !ok {
+			c, ok := d.opts.Cores.Find(tag)
+			if !ok {
 				return localapi.Fail(localapi.CodeNotFound, "core %q is not installed", tag)
+			}
+			if c.Kind == cores.KindMini {
+				return localapi.Fail("", "EasyTier mini runs only networks made for it")
 			}
 		}
 		d.mu.Lock()
@@ -159,7 +163,11 @@ func (d *Daemon) Handle(ctx context.Context, req localapi.Request, access locala
 		if d.opts.Cores == nil {
 			return localapi.Fail("", "core management is not available")
 		}
-		rels, err := d.opts.Cores.Releases(ctx, req.Pre)
+		kind, prefix := cores.KindFull, ""
+		if req.Mini {
+			kind, prefix = cores.KindMini, cores.MiniPrefix
+		}
+		rels, err := d.opts.Cores.ReleasesOf(ctx, kind, req.Pre)
 		if err != nil {
 			return failOf(err)
 		}
@@ -168,17 +176,25 @@ func (d *Daemon) Handle(ctx context.Context, req localapi.Request, access locala
 			installed[c.Tag] = true
 		}
 		man, _ := third_party.EasyTier()
+		tested := man.Tested
+		if req.Mini {
+			tested = man.MiniTested
+		}
 		var out []localapi.ReleaseInfo
 		for _, r := range rels {
 			out = append(out, localapi.ReleaseInfo{Tag: r.Tag, Prerelease: r.Prerelease, Published: r.Published,
-				Size: r.Size, Installed: installed[r.Tag], Tested: slices.Contains(man.Tested, r.Tag)})
+				Size: r.Size, Installed: installed[prefix+r.Tag], Tested: slices.Contains(tested, r.Tag), Mini: req.Mini})
 		}
 		return localapi.Response{OK: true, Releases: out}
 	case localapi.RequestCoreInstall:
 		if d.opts.Cores == nil {
 			return localapi.Fail("", "core management is not available")
 		}
-		rels, err := d.opts.Cores.Releases(ctx, true)
+		kind := cores.KindFull
+		if req.Mini {
+			kind = cores.KindMini
+		}
+		rels, err := d.opts.Cores.ReleasesOf(ctx, kind, true)
 		if err != nil {
 			return failOf(err)
 		}
@@ -188,6 +204,9 @@ func (d *Daemon) Handle(ctx context.Context, req localapi.Request, access locala
 		}
 		if _, err := d.opts.Cores.Install(ctx, rels[i]); err != nil {
 			return failOf(err)
+		}
+		if req.Mini {
+			d.refreshMini(ctx)
 		}
 		return localapi.Response{OK: true, Cores: d.coreList()}
 	case localapi.RequestCoreAdd:
@@ -213,10 +232,22 @@ func (d *Daemon) Handle(ctx context.Context, req localapi.Request, access locala
 		if req.Tag == selected {
 			return localapi.Fail(localapi.CodeBusy, "the selected core cannot be removed")
 		}
+		if mc, ok := d.miniCore(); ok && mc.Tag == req.Tag && d.miniRunning() {
+			return localapi.Fail(localapi.CodeBusy, "a network is running on this EasyTier mini; disconnect it first")
+		}
 		if err := d.opts.Cores.Remove(req.Tag); err != nil {
 			return failOf(err)
 		}
+		if strings.HasPrefix(req.Tag, cores.MiniPrefix) {
+			d.refreshMini(ctx)
+		}
 		return localapi.Response{OK: true, Cores: d.coreList()}
+	case localapi.RequestMiniCopy:
+		p, ids, err := d.miniCopy(req.Network)
+		if err != nil {
+			return failOf(err)
+		}
+		return localapi.Response{OK: true, Networks: d.statuses(), Created: p.ID, Removed: ids}
 	case localapi.RequestHelperUpdate:
 		if d.opts.OnSelfUpdate == nil {
 			return localapi.Fail(localapi.CodeNeedsAdmin, "this daemon cannot update itself")
@@ -246,21 +277,52 @@ func (d *Daemon) coreList() []localapi.CoreInfo {
 	if sel == "" {
 		sel = cores.BundledTag
 	}
+	mini, _ := d.miniCore()
 	var out []localapi.CoreInfo
 	for _, c := range d.opts.Cores.List() {
-		out = append(out, localapi.CoreInfo{Tag: c.Tag, Source: string(c.Source), Tested: c.Tested, Pre: c.Pre, Selected: c.Tag == sel})
+		isMini := c.Kind == cores.KindMini
+		out = append(out, localapi.CoreInfo{Tag: c.Tag, Source: string(c.Source), Tested: c.Tested, Pre: c.Pre,
+			Selected: !isMini && c.Tag == sel, Mini: isMini, InUse: isMini && c.Tag == mini.Tag})
 	}
 	return out
 }
 
-// switchCore moves every network to the selected core; running ones
-// restart on it.
+// switchCore moves every network but the mini ones to the selected core;
+// running ones restart on it.
 func (d *Daemon) switchCore(ctx context.Context) {
 	core, cli := d.binaries()
+	d.switchWorkers(ctx, false, core, cli)
+}
+
+// refreshMini moves the mini networks to the newest installed EasyTier
+// mini (after one is installed or removed); running ones restart on it.
+func (d *Daemon) refreshMini(ctx context.Context) {
+	if c, ok := d.miniCore(); ok {
+		core, cli := c.Binaries()
+		d.switchWorkers(ctx, true, core, cli)
+	}
+}
+
+// miniRunning reports whether the daemon wants a mini network running.
+func (d *Daemon) miniRunning() bool {
+	d.mu.Lock()
+	defer d.mu.Unlock()
+	for _, e := range d.workers {
+		if e.mini && e.running {
+			return true
+		}
+	}
+	return false
+}
+
+// switchWorkers sets the binaries of the mini (or the other) workers.
+func (d *Daemon) switchWorkers(ctx context.Context, mini bool, core, cli string) {
 	d.mu.Lock()
 	var ws []*supervisor.Worker
 	for _, e := range d.workers {
-		ws = append(ws, e.w)
+		if e.mini == mini {
+			ws = append(ws, e.w)
+		}
 	}
 	d.mu.Unlock()
 	for _, w := range ws {
@@ -323,7 +385,12 @@ func (d *Daemon) apply(ctx context.Context, id string) error {
 	if err != nil {
 		return err
 	}
-	if err := supervisor.Preflight(ctx, d.opts.CoreBin, path); err != nil {
+	// The network's own core judges it: a 2.7 document fails the 2.6 core.
+	coreBin, _ := d.binariesFor(p)
+	if p.Mini && coreBin == "" {
+		return errNoMini
+	}
+	if err := supervisor.Preflight(ctx, coreBin, path, p.Mini); err != nil {
 		return err
 	}
 	d.mu.Lock()
@@ -385,6 +452,7 @@ func (d *Daemon) statuses() []localapi.NetworkStatus {
 // facts) to a worker status.
 func (d *Daemon) decorate(s *localapi.NetworkStatus, p profiles.Profile) {
 	s.ID, s.Name, s.Run = p.ID, p.Name, p.Run
+	s.Mini, s.CoreRelease = p.Mini, d.coreRelease(p)
 	if s.Applied == "" {
 		s.Applied = p.Applied
 	}

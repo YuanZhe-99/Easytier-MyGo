@@ -67,8 +67,14 @@ screenshots (`SCREENSHOT_DIR`).
 - The form is rows like Settings' (`formView`): Network (name, network name, secret with Show,
   device name, instance ID with Generate new), Address (automatic, virtual IPv4), Connections
   (peers and listening addresses as text areas under their rows, the virtual device), Routing
-  (subnets to share, exit nodes), Advanced (folded: the flags, device name, MTU), and Delete
-  network last. TOML is MyGo's editor with line numbers; switching carries unsaved edits.
+  (subnets to share, exit nodes), Advanced (folded: the flags, device name, MTU), Core (Make a
+  mini copy; in a mini copy, that it runs on EasyTier mini), and Delete network last. TOML is
+  MyGo's editor with line numbers; switching carries unsaved edits.
+- Notices above the form (`coreNotes`): in a mini copy, that it runs on EasyTier mini and which
+  saved settings mini ignores; for any network, settings its core version refuses or ignores
+  ([configuration.md](configuration.md)). In a mini copy, the rows mini does not run (peers and
+  listening addresses beyond TCP and UDP, subnets, exit nodes, MagicDNS, KCP, QUIC) say so in the
+  warning color. Make a mini copy opens the new network with a notice of what was left out.
 - **Add network** (`createDialogView`) is a dialog over the dimmed window: name, network name,
   secret, first peer and the virtual device as rows, then Import file…, Cancel and Create.
 - **Activity** (`logsView`, the sidebar's clock): every network's events, newest 100, by day
@@ -99,7 +105,10 @@ screenshots (`SCREENSHOT_DIR`).
   helper, installed with its version (Update helper when it is older, Remove helper) or not.
 - **EasyTier core:** a callout when the daily check found a newer stable release; the cores
   installed (tested or untested, In use, Use, Remove); the daily check; the official releases
-  with Show pre-releases and Check for releases, each with Download (size) or Installed.
+  with Show pre-releases and Check for releases, each with Download (size) or Installed; then
+  EasyTier mini, optional (`miniReleases`): what it is, Check for releases, and its releases, all
+  of them since mini marks most as pre-releases. An installed mini core shows In use when mini
+  copies run on it and has no Use: it is never the selected core.
 - **About & updates:** the version with Source code, the license with EasyTier's source code,
   the design credit with EasyTier-iOS; the app's updates — a new version with Install and
   restart, the download's progress, or when it was last checked with Check for updates — and the

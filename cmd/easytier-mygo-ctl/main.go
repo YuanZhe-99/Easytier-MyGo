@@ -10,6 +10,8 @@
 //	easytier-mygo-ctl watch [ID...]          attach a session and print frames
 //	easytier-mygo-ctl background on|off      helper only
 //	easytier-mygo-ctl cores | releases [--pre] | install-core TAG | remove-core TAG | use-core TAG
+//	easytier-mygo-ctl mini-releases | install-mini TAG   EasyTier mini (optional)
+//	easytier-mygo-ctl mini-copy ID           copy a network for EasyTier mini
 //
 // Without -socket it uses the privileged helper's socket when it exists,
 // else the per-user socket.
@@ -140,8 +142,9 @@ func runCmd(ctx context.Context, c *localapi.Client, args []string) error {
 			}
 			fmt.Printf("%s %-12s %-9s tested=%v pre=%v\n", mark, c.Tag, c.Source, c.Tested, c.Pre)
 		}
-	case "releases":
-		r, err := do(localapi.Request{Type: localapi.RequestReleases, Pre: len(args) > 1 && args[1] == "--pre"})
+	case "releases", "mini-releases":
+		mini := args[0] == "mini-releases"
+		r, err := do(localapi.Request{Type: localapi.RequestReleases, Pre: mini || len(args) > 1 && args[1] == "--pre", Mini: mini})
 		if err != nil {
 			return err
 		}
@@ -156,6 +159,17 @@ func runCmd(ctx context.Context, c *localapi.Client, args []string) error {
 		}
 		_, err := do(localapi.Request{Type: t, Tag: args[1]})
 		return err
+	case "install-mini":
+		need(args, 2)
+		_, err := do(localapi.Request{Type: localapi.RequestCoreInstall, Tag: args[1], Mini: true})
+		return err
+	case "mini-copy":
+		need(args, 2)
+		r, err := do(localapi.Request{Type: localapi.RequestMiniCopy, Network: args[1]})
+		if err != nil {
+			return err
+		}
+		fmt.Printf("created %s, left out: %v\n", r.Created, r.Removed)
 	case "shutdown":
 		_, err := do(localapi.Request{Type: localapi.RequestShutdown})
 		return err

@@ -41,6 +41,10 @@ type Profile struct {
 	Applied  string    `json:"applied,omitempty"`
 	Previous string    `json:"previous,omitempty"`
 	Created  time.Time `json:"created"`
+	// Mini runs the network on EasyTier mini instead of the selected core.
+	// It is set when the network is created as a copy for mini and never
+	// changes, so a document is only ever stripped in its own copy.
+	Mini bool `json:"mini,omitempty"`
 }
 
 type metaFile struct {
@@ -104,6 +108,11 @@ func (s *Store) Get(id string) (Profile, error) {
 // Create adds a network with a display name and its document text.
 // Returns: the new metadata (stopped, never applied).
 func (s *Store) Create(name, text string) (Profile, error) {
+	return s.CreateFor(name, text, false)
+}
+
+// CreateFor is Create for the full core or, with mini, for EasyTier mini.
+func (s *Store) CreateFor(name, text string, mini bool) (Profile, error) {
 	name = strings.TrimSpace(name)
 	if name == "" {
 		return Profile{}, errors.New("network name is empty")
@@ -117,7 +126,7 @@ func (s *Store) Create(name, text string) (Profile, error) {
 	if _, err := s.docs.Create(id, text); err != nil {
 		return Profile{}, err
 	}
-	p := Profile{ID: id, Name: name, Created: time.Now().UTC()}
+	p := Profile{ID: id, Name: name, Created: time.Now().UTC(), Mini: mini}
 	s.metas = append(s.metas, p)
 	if err := s.saveLocked(); err != nil {
 		s.metas = s.metas[:len(s.metas)-1]

@@ -34,6 +34,10 @@ type Config struct {
 	// RPC is the core's management portal ("127.0.0.1:port"), always
 	// explicit so the EasyTier default (15888) is never assumed.
 	RPC string
+	// Mini runs EasyTier mini: started with -c alone (its management port
+	// is fixed, so RPC must be that port) and checked by configdoc.Parse
+	// only, because it has no --check-config.
+	Mini bool
 	// Dir is the network's state directory (core.log, recovery.json).
 	Dir string
 	// ExtraArgs are appended to every core start (logging options).
@@ -385,18 +389,23 @@ func (w *Worker) setRun(run bool) {
 
 // preflight runs the core's --check-config on a revision.
 func (w *Worker) preflight(ctx context.Context, path string) error {
-	return Preflight(ctx, w.cfg.CoreBin, path)
+	return Preflight(ctx, w.cfg.CoreBin, path, w.cfg.Mini)
 }
 
 // Preflight checks a configuration without starting a network: the values
 // the core refuses without a reason (configdoc.Parse), then
-// `easytier-core --check-config -c path`.
+// `easytier-core --check-config -c path`, which EasyTier mini (mini) does
+// not have: a mini network that fails to load stops at start instead, and
+// the confirmation window returns it to its previous revision.
 // Returns: a *ConfigError when either rejects it.
-func Preflight(ctx context.Context, coreBin, path string) error {
+func Preflight(ctx context.Context, coreBin, path string, mini bool) error {
 	if text, err := os.ReadFile(path); err == nil {
 		if _, err := configdoc.Parse(string(text)); err != nil {
 			return &ConfigError{Detail: ScrubDetail(err.Error())}
 		}
+	}
+	if mini {
+		return nil
 	}
 	ctx, cancel := context.WithTimeout(ctx, 15*time.Second)
 	defer cancel()
@@ -429,8 +438,7 @@ func firstLine(s string) string {
 // target if rev fails during the confirmation window.
 func (w *Worker) start(rev, prev revision) error {
 	_ = w.proc.Stop(10 * time.Second)
-	args := append([]string{"-c", rev.Path, "--rpc-portal", w.cfg.RPC}, w.cfg.ExtraArgs...)
-	if err := w.proc.Start(args); err != nil {
+	if err := w.proc.Start(w.args(rev.Path)); err != nil {
 		w.setError(err.Error())
 		return err
 	}
@@ -443,6 +451,15 @@ func (w *Worker) start(rev, prev revision) error {
 	w.setError("")
 	w.cfg.Logf("network %s: core started (revision %.12s)", w.cfg.ID, rev.Rev)
 	return nil
+}
+
+// args are the core's arguments for a revision: EasyTier mini takes the
+// file alone; the full core gets its explicit portal and ExtraArgs.
+func (w *Worker) args(path string) []string {
+	if w.cfg.Mini {
+		return []string{"-c", path}
+	}
+	return append([]string{"-c", path, "--rpc-portal", w.cfg.RPC}, w.cfg.ExtraArgs...)
 }
 
 // rollback returns from a failed candidate to its previous revision.
@@ -575,8 +592,7 @@ func (w *Worker) recover() {
 	}
 	w.saveAttempts()
 	_ = w.proc.Stop(10 * time.Second)
-	args := append([]string{"-c", w.current.Path, "--rpc-portal", w.cfg.RPC}, w.cfg.ExtraArgs...)
-	err := w.proc.Start(args)
+	err := w.proc.Start(w.args(w.current.Path))
 	w.engine.EndRecovery(comp, err)
 	w.engine.Grace(w.core)
 	w.engine.Grace(w.inst)

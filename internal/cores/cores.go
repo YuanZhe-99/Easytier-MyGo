@@ -45,13 +45,55 @@ const (
 // BundledTag names the bundled core in selections.
 const BundledTag = "bundled"
 
+// Kind tells the full EasyTier core from EasyTier mini, the compact client
+// built from the same source (EasyTier/easytier-mini): one executable,
+// TCP and UDP only, a fixed management port, no --check-config, and no
+// CLI of its own, so a mini core carries the full release's easytier-cli
+// of the same tag.
+type Kind string
+
+const (
+	KindFull Kind = ""
+	KindMini Kind = "mini"
+)
+
+// MiniPrefix starts the tag of an installed mini core ("mini-v2.7.0").
+const MiniPrefix = "mini-"
+
+// MiniRPC is EasyTier mini's management portal; it cannot be changed, so
+// one mini core runs per computer.
+const MiniRPC = "127.0.0.1:15888"
+
 // Core is one installed core.
 type Core struct {
-	Tag    string `json:"tag"`    // release tag, BundledTag, or a custom name
-	Dir    string `json:"dir"`    // holds easytier-core and easytier-cli
+	Tag    string `json:"tag"`    // release tag, BundledTag, a custom name, or MiniPrefix+tag
+	Dir    string `json:"dir"`    // holds the core and easytier-cli
 	Source Source `json:"source"` // bundled, official, custom
+	Kind   Kind   `json:"kind,omitempty"`
 	Tested bool   `json:"tested"` // verified with this build of the app
 	Pre    bool   `json:"pre,omitempty"`
+}
+
+// Release returns the EasyTier release tag the core was built from ("" for
+// a custom build; the bundled core's pinned tag).
+func (c Core) Release() string {
+	switch c.Source {
+	case SourceBundled:
+		man, _ := third_party.EasyTier()
+		return man.Bundled
+	case SourceOfficial:
+		return strings.TrimPrefix(c.Tag, MiniPrefix)
+	}
+	return ""
+}
+
+// Binaries returns the core's executable and its CLI.
+func (c Core) Binaries() (core, cli string) {
+	if c.Kind == KindMini {
+		_, cli = Binaries(c.Dir)
+		return filepath.Join(c.Dir, exe("easytier-mini")), cli
+	}
+	return Binaries(c.Dir)
 }
 
 // Release is an official EasyTier release with this platform's asset.
@@ -63,8 +105,10 @@ type Release struct {
 	URL        string    `json:"url"`
 	SHA256     string    `json:"sha256"`
 	Size       int64     `json:"size"`
-	// dir is the archive's top-level directory.
-	Dir string `json:"dir"`
+	// dir is the archive's top-level directory ("" for mini archives,
+	// whose files sit at the root).
+	Dir  string `json:"dir"`
+	Kind Kind   `json:"kind,omitempty"`
 }
 
 // Manager keeps cores under one directory (<Dir>/<tag>/).
@@ -77,8 +121,9 @@ type Manager struct {
 	UPX string
 	// HTTP is the client for GitHub (nil: a client with a timeout).
 	HTTP *http.Client
-	// API is the releases endpoint (tests override it).
-	API string
+	// API and MiniAPI are the release endpoints of EasyTier and EasyTier
+	// mini (tests override them).
+	API, MiniAPI string
 	// GOOS/GOARCH select the asset (default: this machine).
 	GOOS, GOARCH string
 }
@@ -117,7 +162,12 @@ func Binaries(dir string) (core, cli string) {
 // ones, newest tag first.
 func (m *Manager) List() []Core {
 	man, _ := third_party.EasyTier()
-	tested := func(tag string) bool { return slices.Contains(man.Tested, tag) }
+	tested := func(c Core) bool {
+		if c.Kind == KindMini {
+			return slices.Contains(man.MiniTested, c.Release())
+		}
+		return slices.Contains(man.Tested, c.Tag)
+	}
 	var out []Core
 	if m.BundledDir != "" {
 		if core, _ := Binaries(m.BundledDir); exists(core) {
@@ -135,7 +185,7 @@ func (m *Manager) List() []Core {
 			continue
 		}
 		meta.Dir = filepath.Join(m.Dir, e.Name())
-		meta.Tested = meta.Source == SourceOfficial && tested(meta.Tag)
+		meta.Tested = meta.Source == SourceOfficial && tested(meta)
 		installed = append(installed, meta)
 	}
 	slices.SortFunc(installed, func(a, b Core) int { return strings.Compare(b.Tag, a.Tag) })
@@ -149,6 +199,17 @@ func (m *Manager) Find(tag string) (Core, bool) {
 	}
 	for _, c := range m.List() {
 		if c.Tag == tag {
+			return c, true
+		}
+	}
+	return Core{}, false
+}
+
+// NewestMini returns the newest installed EasyTier mini core, which every
+// network made for mini runs on.
+func (m *Manager) NewestMini() (Core, bool) {
+	for _, c := range m.List() { // newest tag first
+		if c.Kind == KindMini {
 			return c, true
 		}
 	}
@@ -182,18 +243,35 @@ type releaseCache struct {
 	Body []apiRelease `json:"body"`
 }
 
-const defaultAPI = "https://api.github.com/repos/EasyTier/EasyTier/releases?per_page=20"
+const (
+	defaultAPI     = "https://api.github.com/repos/EasyTier/EasyTier/releases?per_page=20"
+	defaultMiniAPI = "https://api.github.com/repos/EasyTier/easytier-mini/releases?per_page=20"
+)
 
-// Releases lists official releases that have an asset for this platform,
-// newest first. Pre-releases are included only when asked for. The GitHub
-// response is cached with its ETag, so a repeated check costs no quota.
-// Side effects: one network request; updates <Dir>/releases.json.
+// Releases lists official EasyTier releases that have an asset for this
+// platform, newest first (see ReleasesOf).
 func (m *Manager) Releases(ctx context.Context, includePre bool) ([]Release, error) {
-	api := m.API
+	return m.ReleasesOf(ctx, KindFull, includePre)
+}
+
+// ReleasesOf lists the official releases of one kind that have an asset
+// for this platform, newest first. Pre-releases are included only when
+// asked for. The GitHub response is cached with its ETag, so a repeated
+// check costs no quota.
+// Side effects: one network request; updates <Dir>/releases.json (or
+// releases-mini.json).
+func (m *Manager) ReleasesOf(ctx context.Context, kind Kind, includePre bool) ([]Release, error) {
+	api, cacheName := m.API, "releases.json"
 	if api == "" {
 		api = defaultAPI
 	}
-	cachePath := filepath.Join(m.Dir, "releases.json")
+	if kind == KindMini {
+		api, cacheName = m.MiniAPI, "releases-mini.json"
+		if api == "" {
+			api = defaultMiniAPI
+		}
+	}
+	cachePath := filepath.Join(m.Dir, cacheName)
 	var cache releaseCache
 	_, _ = fsutil.ReadJSON(cachePath, &cache)
 
@@ -228,7 +306,7 @@ func (m *Manager) Releases(ctx context.Context, includePre bool) ([]Release, err
 		if r.Draft || (r.Prerelease && !includePre) {
 			continue
 		}
-		if rel, ok := matchAsset(r, goos, goarch); ok {
+		if rel, ok := matchAsset(r, kind, goos, goarch); ok {
 			out = append(out, rel)
 		}
 	}
@@ -236,57 +314,93 @@ func (m *Manager) Releases(ctx context.Context, includePre bool) ([]Release, err
 }
 
 // matchAsset picks this platform's archive and its SHA-256 from a release.
-func matchAsset(r apiRelease, goos, goarch string) (Release, bool) {
+func matchAsset(r apiRelease, kind Kind, goos, goarch string) (Release, bool) {
 	up, ok := third_party.EasyTierPlatformName(goos, goarch)
 	if !ok {
 		return Release{}, false
 	}
-	name := fmt.Sprintf("easytier-%s-%s.zip", up, r.TagName)
+	name, dir := fmt.Sprintf("easytier-%s-%s.zip", up, r.TagName), "easytier-"+up
+	if kind == KindMini {
+		name, dir = fmt.Sprintf("easytier-mini-%s-%s.zip", up, r.TagName), ""
+	}
 	for _, a := range r.Assets {
 		if a.Name != name {
 			continue
 		}
 		sum, _ := strings.CutPrefix(a.Digest, "sha256:")
 		return Release{Tag: r.TagName, Prerelease: r.Prerelease, Published: r.PublishedAt, Asset: a.Name,
-			URL: a.URL, SHA256: sum, Size: a.Size, Dir: "easytier-" + up}, sum != ""
+			URL: a.URL, SHA256: sum, Size: a.Size, Dir: dir, Kind: kind}, sum != ""
 	}
 	return Release{}, false
 }
 
 // Install downloads a release, verifies it, unpacks the core and CLI into
-// <Dir>/<tag>/ and records its metadata.
-// Side effects: network download (tens of MB); replaces an existing copy.
+// <Dir>/<tag>/ (<Dir>/mini-<tag>/ for mini) and records its metadata. A
+// mini release also downloads the full release of the same tag, for its
+// easytier-cli.
+// Side effects: network downloads (tens of MB); replaces an existing copy.
 func (m *Manager) Install(ctx context.Context, r Release) (Core, error) {
+	data, err := m.download(ctx, r)
+	if err != nil {
+		return Core{}, err
+	}
+	if r.Kind != KindMini {
+		c := Core{Tag: r.Tag, Source: SourceOfficial, Pre: r.Prerelease}
+		return c, m.place(c, func(dir string) error { return Unpack(data, r.Dir, dir) })
+	}
+	full, err := m.Releases(ctx, true)
+	if err != nil {
+		return Core{}, err
+	}
+	i := slices.IndexFunc(full, func(f Release) bool { return f.Tag == r.Tag })
+	if i < 0 {
+		return Core{}, fmt.Errorf("EasyTier %s has no release for this platform, so its easytier-cli is missing", r.Tag)
+	}
+	cliData, err := m.download(ctx, full[i])
+	if err != nil {
+		return Core{}, err
+	}
+	c := Core{Tag: MiniPrefix + r.Tag, Source: SourceOfficial, Kind: KindMini, Pre: r.Prerelease}
+	return c, m.place(c, func(dir string) error {
+		if err := Unpack(data, "", dir); err != nil {
+			return err
+		}
+		_, cli := Binaries(dir)
+		return unpackOnly(cliData, full[i].Dir, dir, filepath.Base(cli))
+	})
+}
+
+// download fetches a release archive and checks its published SHA-256.
+func (m *Manager) download(ctx context.Context, r Release) ([]byte, error) {
 	if r.SHA256 == "" {
-		return Core{}, errors.New("release has no published SHA-256; refusing to install")
+		return nil, errors.New("release has no published SHA-256; refusing to install")
 	}
 	req, err := http.NewRequestWithContext(ctx, "GET", r.URL, nil)
 	if err != nil {
-		return Core{}, err
+		return nil, err
 	}
 	resp, err := m.client().Do(req)
 	if err != nil {
-		return Core{}, err
+		return nil, err
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return Core{}, fmt.Errorf("download %s: %s", r.Asset, resp.Status)
+		return nil, fmt.Errorf("download %s: %s", r.Asset, resp.Status)
 	}
 	data, err := io.ReadAll(io.LimitReader(resp.Body, 512<<20))
 	if err != nil {
-		return Core{}, err
+		return nil, err
 	}
 	if got := SHA256(data); got != r.SHA256 {
-		return Core{}, fmt.Errorf("%s: SHA-256 %s does not match the published %s", r.Asset, got, r.SHA256)
+		return nil, fmt.Errorf("%s: SHA-256 %s does not match the published %s", r.Asset, got, r.SHA256)
 	}
-	c := Core{Tag: r.Tag, Source: SourceOfficial, Pre: r.Prerelease}
-	return c, m.place(c, func(dir string) error { return Unpack(data, r.Dir, dir) })
+	return data, nil
 }
 
 // AddCustom copies a custom build (a directory with easytier-core and
 // easytier-cli) under a name.
 func (m *Manager) AddCustom(name, from string) (Core, error) {
-	if name == "" || name == BundledTag || strings.ContainsAny(name, `/\ `) || strings.HasPrefix(name, ".") {
+	if name == "" || name == BundledTag || strings.ContainsAny(name, `/\ `) || strings.HasPrefix(name, ".") || strings.HasPrefix(name, MiniPrefix) {
 		return Core{}, fmt.Errorf("invalid core name %q", name)
 	}
 	srcCore, srcCLI := Binaries(from)
@@ -334,9 +448,15 @@ func (m *Manager) place(c Core, fill func(dir string) error) error {
 	return os.Rename(tmp, final)
 }
 
-// Unpack extracts the files under dir/ of a release zip into dest,
-// keeping their permission bits. The web console binaries are skipped.
+// Unpack extracts the files under dir/ of a release zip ("" for the
+// archive's root) into dest, keeping their permission bits. The web
+// console binaries are skipped.
 func Unpack(data []byte, dir, dest string) error {
+	return unpackOnly(data, dir, dest, "")
+}
+
+// unpackOnly is Unpack limited to one file name ("" for every file).
+func unpackOnly(data []byte, dir, dest, only string) error {
 	zr, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
 	if err != nil {
 		return err
@@ -344,13 +464,17 @@ func Unpack(data []byte, dir, dest string) error {
 	if err := os.MkdirAll(dest, 0o755); err != nil {
 		return err
 	}
+	prefix := ""
+	if dir != "" {
+		prefix = dir + "/"
+	}
 	n := 0
 	for _, f := range zr.File {
-		rel, ok := strings.CutPrefix(f.Name, dir+"/")
+		rel, ok := strings.CutPrefix(f.Name, prefix)
 		if !ok || rel == "" || f.FileInfo().IsDir() || strings.Contains(rel, "/") {
 			continue
 		}
-		if strings.HasPrefix(rel, "easytier-web") {
+		if strings.HasPrefix(rel, "easytier-web") || only != "" && rel != only {
 			continue
 		}
 		if rel != path.Clean(rel) || strings.HasPrefix(rel, ".") {
@@ -366,7 +490,11 @@ func Unpack(data []byte, dir, dest string) error {
 		n++
 	}
 	if n == 0 {
-		return fmt.Errorf("archive has no files under %s/", dir)
+		what := "files"
+		if only != "" {
+			what = only
+		}
+		return fmt.Errorf("archive has no %s under %s/", what, dir)
 	}
 	return nil
 }

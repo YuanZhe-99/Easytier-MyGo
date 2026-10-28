@@ -475,5 +475,72 @@
   "TourArtFromStartup": "開機後一直在線",
   "TourRewatchTitle": "三種方式有什麼差別？",
   "TourRewatchAbout": "重看首次啟動時的導覽：虛擬網卡、開機與登入、保持在線。",
-  "TourRewatch": "重看導覽"
+  "TourRewatch": "重看導覽",
+  "FeatureListeners": "TCP 和 UDP 以外的監聽位址",
+  "FeatureMappedListeners": "TCP 和 UDP 以外的對應監聽位址",
+  "FeaturePeers": "TCP 和 UDP 以外的對等節點",
+  "FeatureSocks5": "SOCKS5 代理",
+  "FeaturePortForward": "連接埠轉送",
+  "FeatureVpnPortal": "WireGuard 入口",
+  "FeatureIPv6Public": "公網 IPv6 位址",
+  "FeatureUDPBroadcast": "UDP 廣播中繼",
+  "FeatureCompression": "壓縮",
+  "FeatureEncryption": "AES-GCM 以外的加密演算法",
+  "FeatureNewPortal": "具名用戶端的 WireGuard 入口",
+  "FeatureTCPStun": "TCP STUN 伺服器",
+  "FeatureSocketMark": "通訊端標記",
+  "FeatureManagedCredentials": "受管憑證",
+  "FlagPreferRelay": "優先使用既有中繼",
+  "FlagPreferRelayHint": "透過已在中繼的憑證節點抵達目標（EasyTier 2.7）。",
+  "ListSeparator": "、",
+  "EditMiniNote": "此網路在 EasyTier mini 上執行：只支援 TCP 和 UDP 連線，同一時間只能執行一個 mini 網路。",
+  "EditMiniIgnored": "EasyTier mini 會忽略這些已儲存的設定：{list}。",
+  "@EditMiniIgnored": {
+    "placeholders": {
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "EditLegacyPortal": "WireGuard 入口使用 EasyTier 2.6 的格式，EasyTier 2.7 會拒絕它。請在 TOML 編輯器中重新設定其用戶端。",
+  "EditNeedsNewer": "此網路在 EasyTier {release} 上執行，它會拒絕或忽略這些 EasyTier 2.7 設定：{list}。",
+  "@EditNeedsNewer": {
+    "placeholders": {
+      "release": {
+        "type": "String"
+      },
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "EditSectionCore": "核心",
+  "CoreMini": "EasyTier mini",
+  "EditMiniRuns": "此網路在 EasyTier mini 上執行，而不是設定中選擇的核心。",
+  "ActionMiniCopy": "建立 mini 副本",
+  "EditMiniCopyAbout": "為 EasyTier mini 新增一份已儲存設定的副本。mini 無法執行的設定不會出現在副本中；此網路保持不變。",
+  "ToastMiniCopied": "已新增 {name}。",
+  "@ToastMiniCopied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ToastMiniCopiedWithout": "已新增 {name}，不含：{list}。",
+  "@ToastMiniCopiedWithout": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "EditMiniSchemes": "EasyTier mini 只使用 tcp:// 和 udp:// 位址。",
+  "EditMiniNotRun": "EasyTier mini 不支援此項。",
+  "CoreMiniAbout": "執行為 EasyTier mini 建立的網路。",
+  "CoresMiniTitle": "精簡用戶端（選用）",
+  "CoresMiniAbout": "只有 TCP、UDP 和虛擬網卡的小型 EasyTier 用戶端。網路以 mini 副本的形式在其上執行，同一時間一個。"
 }

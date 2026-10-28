@@ -15,6 +15,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/YuanZhe-99/Easytier-MyGo/internal/cores"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/health"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/localapi"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/supervisor"
@@ -23,7 +24,8 @@ import (
 // The test binary doubles as a fake easytier-core and easytier-cli: the
 // tests run it through symlinks with those names.
 //
-// Fake core: `--check-config -c FILE` fails when FILE contains "invalid";
+// Fake core (also as easytier-mini): `--check-config -c FILE` fails when
+// FILE contains "invalid" or a "check-refuse" file is next to the binary;
 // a run exits at once when its config contains "exit-at-start", else it
 // sleeps until killed.
 // Fake cli: prints a node (one peer) for `node` and a peer pair for
@@ -31,7 +33,7 @@ import (
 // unreachable portal.
 func TestMain(m *testing.M) {
 	switch filepath.Base(os.Args[0]) {
-	case "easytier-core":
+	case "easytier-core", "easytier-mini":
 		fakeCore(os.Args[1:])
 	case "easytier-cli":
 		fakeCLI(os.Args[1:])
@@ -54,7 +56,8 @@ func fakeCore(args []string) {
 	}
 	text, _ := os.ReadFile(cfg)
 	if check {
-		if strings.Contains(string(text), "invalid") {
+		_, refuse := os.Stat(filepath.Join(filepath.Dir(os.Args[0]), "check-refuse"))
+		if strings.Contains(string(text), "invalid") || refuse == nil {
 			fmt.Println("Error: invalid config")
 			os.Exit(1)
 		}
@@ -473,5 +476,98 @@ func TestIdleHelperExits(t *testing.T) {
 		h.done <- err
 	case <-time.After(3 * time.Second):
 		t.Fatal("idle helper kept running")
+	}
+}
+
+// withMini installs a fake EasyTier mini v2.7.0 in the daemon's core manager.
+func withMini(t *testing.T) func(*Options) {
+	return func(o *Options) {
+		dir := filepath.Join(filepath.Dir(o.StateDir), "cores")
+		core := filepath.Join(dir, "mini-v2.7.0")
+		if err := os.MkdirAll(core, 0o755); err != nil {
+			t.Fatal(err)
+		}
+		self, _ := os.Executable()
+		for _, n := range []string{"easytier-mini", "easytier-cli"} {
+			if err := os.Symlink(self, filepath.Join(core, n)); err != nil {
+				t.Fatal(err)
+			}
+		}
+		meta := `{"tag":"mini-v2.7.0","source":"official","kind":"mini","tested":false}`
+		if err := os.WriteFile(filepath.Join(core, "core.json"), []byte(meta), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		o.Cores = &cores.Manager{Dir: dir}
+	}
+}
+
+// A copy for mini leaves the original alone, drops what mini ignores, and
+// only one mini network runs at a time.
+func TestMiniCopy(t *testing.T) {
+	h := start(t, withMini(t))
+	orig := "instance_id = \"5f0e3a2c-6b1d-4c8e-9a7f-0123456789ab\"\n" +
+		"listeners = [ \"tcp://0.0.0.0:11010\", \"quic://0.0.0.0:11012\" ]\n" + noTUN
+	id := h.create(orig)
+
+	r := h.do(localapi.Request{Type: localapi.RequestMiniCopy, Network: id})
+	if r.Created == "" || len(r.Removed) != 1 || r.Removed[0] != "listeners" {
+		t.Fatalf("copy: created %q removed %v", r.Created, r.Removed)
+	}
+	cp := h.status(r.Created)
+	if cp.Name != "net (mini)" || !cp.Mini || cp.CoreRelease != "v2.7.0" {
+		t.Fatalf("copy status: %+v", cp)
+	}
+	if got := h.do(localapi.Request{Type: localapi.RequestConfigGet, Network: id}).Config.Text; got != orig {
+		t.Fatalf("the original changed:\n%s", got)
+	}
+	text := h.do(localapi.Request{Type: localapi.RequestConfigGet, Network: r.Created}).Config.Text
+	if strings.Contains(text, "quic://") || strings.Contains(text, "5f0e3a2c") || !strings.Contains(text, "tcp://0.0.0.0:11010") {
+		t.Fatalf("copy text:\n%s", text)
+	}
+	if _, err := h.client.Do(context.Background(), localapi.Request{Type: localapi.RequestMiniCopy, Network: r.Created}); err == nil {
+		t.Fatal("a mini network was copied for mini again")
+	}
+	second := h.do(localapi.Request{Type: localapi.RequestMiniCopy, Network: id}).Created
+	if n := h.status(second).Name; n != "net (mini 2)" {
+		t.Fatalf("second copy named %q", n)
+	}
+
+	h.do(localapi.Request{Type: localapi.RequestConnect, Network: r.Created})
+	defer h.attach()()
+	h.eventually("mini network runs", func() bool { return h.status(r.Created).State != localapi.StateStopped })
+	_, err := h.client.Do(context.Background(), localapi.Request{Type: localapi.RequestConnect, Network: second})
+	if err == nil || !strings.Contains(err.Error(), "only one") {
+		t.Fatalf("a second mini network started: %v", err)
+	}
+	h.do(localapi.Request{Type: localapi.RequestDisconnect, Network: r.Created})
+	h.do(localapi.Request{Type: localapi.RequestConnect, Network: second})
+}
+
+// Applying checks a document with the core the network runs on, not the
+// fallback binaries (a 2.7 document must be judged by the 2.7 core).
+func TestApplyChecksWithSelectedCore(t *testing.T) {
+	h := start(t, func(o *Options) {
+		dir := filepath.Join(filepath.Dir(o.StateDir), "cores")
+		core := filepath.Join(dir, "strict")
+		if err := os.MkdirAll(core, 0o755); err != nil {
+			t.Fatal(err)
+		}
+		self, _ := os.Executable()
+		for _, n := range []string{"easytier-core", "easytier-cli", "check-refuse"} {
+			if err := os.Symlink(self, filepath.Join(core, n)); err != nil {
+				t.Fatal(err)
+			}
+		}
+		if err := os.WriteFile(filepath.Join(core, "core.json"), []byte(`{"tag":"strict","source":"custom"}`), 0o644); err != nil {
+			t.Fatal(err)
+		}
+		o.Cores = &cores.Manager{Dir: dir}
+	})
+	id := h.create(noTUN)
+	h.do(localapi.Request{Type: localapi.RequestApply, Network: id}) // the fallback core accepts it
+	h.do(localapi.Request{Type: localapi.RequestSettingsSet, Settings: &localapi.Settings{Core: "strict"}})
+	_, err := h.client.Do(context.Background(), localapi.Request{Type: localapi.RequestApply, Network: id})
+	if localapi.CodeOf(err) != localapi.CodeInvalidConfig {
+		t.Fatalf("apply on the selected core: %v", err)
 	}
 }

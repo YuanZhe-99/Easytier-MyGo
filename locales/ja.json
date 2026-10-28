@@ -475,5 +475,72 @@
   "TourArtFromStartup": "起動時からオンライン",
   "TourRewatchTitle": "モードの違いは？",
   "TourRewatchAbout": "初回起動時のツアーをもう一度：仮想デバイス、起動とサインイン、オンラインを保つ。",
-  "TourRewatch": "ツアーを見る"
+  "TourRewatch": "ツアーを見る",
+  "FeatureListeners": "TCP・UDP 以外の待ち受けアドレス",
+  "FeatureMappedListeners": "TCP・UDP 以外のマップされた待ち受けアドレス",
+  "FeaturePeers": "TCP・UDP 以外のピア",
+  "FeatureSocks5": "SOCKS5 プロキシ",
+  "FeaturePortForward": "ポート転送",
+  "FeatureVpnPortal": "WireGuard ポータル",
+  "FeatureIPv6Public": "公開 IPv6 アドレス",
+  "FeatureUDPBroadcast": "UDP ブロードキャスト中継",
+  "FeatureCompression": "圧縮",
+  "FeatureEncryption": "AES-GCM 以外の暗号化",
+  "FeatureNewPortal": "名前付きクライアントの WireGuard ポータル",
+  "FeatureTCPStun": "TCP STUN サーバー",
+  "FeatureSocketMark": "ソケットマーク",
+  "FeatureManagedCredentials": "管理対象の資格情報",
+  "FlagPreferRelay": "既存の中継を優先",
+  "FlagPreferRelayHint": "すでに中継している資格情報ピアを経由して到達します（EasyTier 2.7）。",
+  "ListSeparator": "、",
+  "EditMiniNote": "このネットワークは EasyTier mini で動作します。TCP と UDP の接続のみで、同時に動かせる mini ネットワークは 1 つです。",
+  "EditMiniIgnored": "EasyTier mini は保存済みの次の設定を無視します：{list}。",
+  "@EditMiniIgnored": {
+    "placeholders": {
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "EditLegacyPortal": "WireGuard ポータルは EasyTier 2.6 の形式で、EasyTier 2.7 では拒否されます。TOML エディターでクライアントを設定し直してください。",
+  "EditNeedsNewer": "このネットワークは EasyTier {release} で動作し、次の EasyTier 2.7 の設定を拒否または無視します：{list}。",
+  "@EditNeedsNewer": {
+    "placeholders": {
+      "release": {
+        "type": "String"
+      },
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "EditSectionCore": "コア",
+  "CoreMini": "EasyTier mini",
+  "EditMiniRuns": "このネットワークは設定で選んだコアではなく、EasyTier mini で動作します。",
+  "ActionMiniCopy": "mini 用のコピーを作成",
+  "EditMiniCopyAbout": "保存済みの構成を EasyTier mini 用にコピーして追加します。mini で動かせない設定はコピーから除かれ、このネットワークはそのまま残ります。",
+  "ToastMiniCopied": "{name} を追加しました。",
+  "@ToastMiniCopied": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "ToastMiniCopiedWithout": "{name} を追加しました（除いた設定：{list}）。",
+  "@ToastMiniCopiedWithout": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      },
+      "list": {
+        "type": "String"
+      }
+    }
+  },
+  "EditMiniSchemes": "EasyTier mini は tcp:// と udp:// のアドレスのみを使います。",
+  "EditMiniNotRun": "EasyTier mini では動作しません。",
+  "CoreMiniAbout": "EasyTier mini 用に作ったネットワークを動かします。",
+  "CoresMiniTitle": "コンパクトなクライアント（任意）",
+  "CoresMiniAbout": "TCP、UDP と仮想デバイスだけを備えた小さな EasyTier クライアントです。ネットワークは mini 用のコピーとして 1 つずつ動かします。"
 }

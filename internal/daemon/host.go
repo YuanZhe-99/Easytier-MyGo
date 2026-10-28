@@ -27,6 +27,7 @@ import (
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/localapi"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/profiles"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/supervisor"
+	"github.com/YuanZhe-99/Easytier-MyGo/third_party"
 )
 
 // Options configures a daemon.
@@ -89,12 +90,17 @@ type Daemon struct {
 	wg      sync.WaitGroup
 	ports   map[int]string
 	lastUse time.Time
+	// miniOwner is the mini network that last took EasyTier mini's fixed
+	// port; it blocks other mini networks while the daemon wants it running.
+	miniOwner string
 }
 
 type workerEntry struct {
 	w      *supervisor.Worker
 	cancel context.CancelFunc
-	port   int
+	port   int // 0 for mini, whose port is fixed (cores.MiniRPC)
+	// mini runs the network on EasyTier mini; global core switches skip it.
+	mini bool
 	// running is the daemon's decision: whether the worker should run now.
 	running bool
 }
@@ -200,9 +206,11 @@ func (d *Daemon) settingsPath() string { return filepath.Join(d.opts.StateDir, "
 
 // addWorker creates and starts the worker for one stored network.
 func (d *Daemon) addWorker(id string) {
+	p, _ := d.store.Get(id)
 	cfg := d.opts.Worker
 	cfg.ID = id
-	cfg.CoreBin, cfg.CLIBin = d.binaries()
+	cfg.CoreBin, cfg.CLIBin = d.binariesFor(p)
+	cfg.Mini = p.Mini
 	cfg.Dir = filepath.Join(d.opts.StateDir, "run", id)
 	cfg.Policy = d.opts.Policy
 	cfg.Logf = d.opts.Logf
@@ -213,14 +221,19 @@ func (d *Daemon) addWorker(id string) {
 		}
 	}
 	cfg.OnChange = d.notify
-	d.mu.Lock()
-	port := d.allocPortLocked(id)
-	d.mu.Unlock()
-	cfg.RPC = fmt.Sprintf("127.0.0.1:%d", port)
+	port := 0
+	if p.Mini {
+		cfg.RPC = cores.MiniRPC
+	} else {
+		d.mu.Lock()
+		port = d.allocPortLocked(id)
+		d.mu.Unlock()
+		cfg.RPC = fmt.Sprintf("127.0.0.1:%d", port)
+	}
 	w := supervisor.New(cfg)
 	wctx, wcancel := context.WithCancel(d.ctx)
 	d.mu.Lock()
-	d.workers[id] = &workerEntry{w: w, cancel: wcancel, port: port}
+	d.workers[id] = &workerEntry{w: w, cancel: wcancel, port: port, mini: p.Mini}
 	d.mu.Unlock()
 	d.wg.Add(1)
 	go func() { defer d.wg.Done(); w.Run(wctx) }()
@@ -228,15 +241,59 @@ func (d *Daemon) addWorker(id string) {
 
 // binaries returns the selected core's executables.
 func (d *Daemon) binaries() (core, cli string) {
-	if d.opts.Cores != nil {
-		d.mu.Lock()
-		tag := d.settings.Core
-		d.mu.Unlock()
-		if c, ok := d.opts.Cores.Find(tag); ok {
-			return cores.Binaries(c.Dir)
-		}
+	c, ok := d.selectedCore()
+	if ok {
+		return c.Binaries()
 	}
 	return d.opts.CoreBin, d.opts.CLIBin
+}
+
+// selectedCore is the installed core networks run on (not found: the
+// fallback binaries are used).
+func (d *Daemon) selectedCore() (cores.Core, bool) {
+	if d.opts.Cores == nil {
+		return cores.Core{}, false
+	}
+	d.mu.Lock()
+	tag := d.settings.Core
+	d.mu.Unlock()
+	c, ok := d.opts.Cores.Find(tag)
+	return c, ok && c.Kind != cores.KindMini
+}
+
+// binariesFor returns the executables a network runs on: the newest
+// EasyTier mini for a mini network ("" when none is installed), else the
+// selected core.
+func (d *Daemon) binariesFor(p profiles.Profile) (core, cli string) {
+	if !p.Mini {
+		return d.binaries()
+	}
+	if c, ok := d.miniCore(); ok {
+		return c.Binaries()
+	}
+	return "", ""
+}
+
+// miniCore is the EasyTier mini core mini networks run on.
+func (d *Daemon) miniCore() (cores.Core, bool) {
+	if d.opts.Cores == nil {
+		return cores.Core{}, false
+	}
+	return d.opts.Cores.NewestMini()
+}
+
+// coreRelease names the EasyTier release a network runs: what decides
+// which settings it accepts ("" when unknown).
+func (d *Daemon) coreRelease(p profiles.Profile) string {
+	if p.Mini {
+		c, _ := d.miniCore()
+		return c.Release()
+	}
+	if c, ok := d.selectedCore(); ok {
+		return c.Release()
+	}
+	man, _ := third_party.EasyTier()
+	return man.Bundled // the fallback binaries are the bundled core
 }
 
 // allocPortLocked picks the lowest free management port from the base.
@@ -327,6 +384,11 @@ func (d *Daemon) startWorker(id string, w *supervisor.Worker) error {
 	if err := d.checkPrivilege(id); err != nil {
 		return err
 	}
+	if p.Mini {
+		if err := d.checkMini(id, w); err != nil {
+			return err
+		}
+	}
 	path, rev := "", p.Applied
 	if rev != "" {
 		if fp, ok := d.store.FrozenPath(id, rev); ok {
@@ -339,6 +401,45 @@ func (d *Daemon) startWorker(id string, w *supervisor.Worker) error {
 		}
 	}
 	return w.Connect(d.ctx, path, rev)
+}
+
+var (
+	// errNoMini refuses a mini network while no EasyTier mini is installed.
+	errNoMini = errors.New("EasyTier mini is not installed; download it in Settings → EasyTier cores")
+	// errMiniBusy refuses a second mini network: mini's management port is
+	// fixed, so one runs at a time.
+	errMiniBusy = errors.New("another network is already running on EasyTier mini; only one can run at a time")
+	// errMiniPort refuses a mini network while something else holds its port.
+	errMiniPort = errors.New("EasyTier mini's management port 15888 is in use by another program")
+)
+
+// checkMini lets a mini network start: a mini core is installed (the
+// worker moves to the newest one), no other mini network runs, and mini's
+// fixed port is free.
+func (d *Daemon) checkMini(id string, w *supervisor.Worker) error {
+	c, ok := d.miniCore()
+	if !ok {
+		return errNoMini
+	}
+	d.mu.Lock()
+	owner := d.workers[d.miniOwner]
+	if d.miniOwner != id && owner != nil && owner.running {
+		d.mu.Unlock()
+		return errMiniBusy
+	}
+	// Our own core (a restart) may hold the port already.
+	own := d.miniOwner == id && w.Status().State != localapi.StateStopped
+	d.miniOwner = id
+	d.mu.Unlock()
+	if !own {
+		ln, err := net.Listen("tcp", cores.MiniRPC)
+		if err != nil {
+			return errMiniPort
+		}
+		ln.Close()
+	}
+	core, cli := c.Binaries()
+	return w.SetBinaries(d.ctx, core, cli)
 }
 
 // errNeedsHelper refuses a TUN network in a daemon without privileges.
