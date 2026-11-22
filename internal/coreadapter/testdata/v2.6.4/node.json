@@ -1,0 +1,71 @@
+{
+  "peer_id": 527529765,
+  "ipv4_addr": "10.144.44.1/24",
+  "proxy_cidrs": [],
+  "hostname": "dev-a",
+  "stun_info": {
+    "udp_nat_type": 6,
+    "tcp_nat_type": 6,
+    "last_update_time": 1791774985,
+    "public_ip": [
+      "203.0.113.10",
+      "2001:db8::1"
+    ],
+    "min_port": 22000,
+    "max_port": 32000
+  },
+  "inst_id": "65770af6-d780-49f8-acf7-cfc839cbf75f",
+  "listeners": [
+    "ring://65770af6-d780-49f8-acf7-cfc839cbf75f",
+    "tcp://0.0.0.0:21110",
+    "tcp://[::]:21110"
+  ],
+  "config": "hostname = \"dev-a\"\ninstance_name = \"dev-a\"\ninstance_id = \"65770af6-d780-49f8-acf7-cfc839cbf75f\"\nipv4 = \"10.144.44.1\"\ndhcp = false\nlisteners = [\"tcp://0.0.0.0:21110\"]\n\n[network_identity]\nnetwork_name = \"example-net\"\nnetwork_secret = \"example-secret\"\n\n[flags]\nno_tun = true\n",
+  "version": "2.6.4-8428a89d",
+  "feature_flag": {
+    "is_public_server": false,
+    "avoid_relay_data": false,
+    "kcp_input": true,
+    "no_relay_kcp": false,
+    "support_conn_list_sync": true,
+    "quic_input": true,
+    "no_relay_quic": false,
+    "is_credential_peer": false,
+    "need_p2p": false,
+    "disable_p2p": false,
+    "ipv6_public_addr_provider": false
+  },
+  "ip_list": {
+    "public_ipv4": {
+      "addr": 3405803786
+    },
+    "interface_ipv4s": [
+      {
+        "addr": 3325256714
+      },
+      {
+        "addr": 3325256715
+      },
+      {
+        "addr": 3325256716
+      }
+    ],
+    "public_ipv6": {
+      "part1": 536939960,
+      "part2": 0,
+      "part3": 0,
+      "part4": 1
+    },
+    "interface_ipv6s": [
+      {
+        "part1": 536939960,
+        "part2": 0,
+        "part3": 0,
+        "part4": 1
+      }
+    ],
+    "listeners": []
+  },
+  "public_ipv6_addr": null,
+  "ipv6_public_addr_prefix": null
+}

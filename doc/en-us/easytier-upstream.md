@@ -21,32 +21,33 @@ version; re-check them when the bundled version moves.
   v2.7.0.
 - License: LGPL-3.0.
 
-## CLI contract (v2.6.4)
+## CLI contract (v2.6.4 – v2.7.1)
 
 - `-o json node` returns node info. Its `config` field holds the full TOML including
   `network_secret`.
 - `-o json peer` returns display rows (byte counts and latency as strings); `-v -o json peer`
-  returns route/connection pairs with numeric counters, which traffic rates need.
+  returns route/connection pairs with raw counters, which traffic rates need.
 - With one instance the JSON is the value itself; with several it is
   `[{instance_id, instance_name, result}]`.
 - No running instance: `peer` fails with `no running instances found` (exit 1).
 - RPC unreachable: the first line is `Error: failed to get manage client`, the body contains
-  `Connection refused`.
+  `Connection refused` or `failed to connect to server`.
 - `service status` ignores `-o json` and prints `Service is running`, `Service is stopped` or
-  `Service is not installed`.
+  `Service is not installed` (requires administrator rights on Windows).
 - `easytier-core --check-config -c FILE` parses a config without starting a network; it does not
   check ports, TUN or permissions.
 
-## Changes seen in v2.7.0 (pre-release)
+## Changes in v2.7.0 / v2.7.1
 
-Verified 2026-10-16 with `v2.7.0-8b7f1f01`: 64-bit counters (`rx_bytes`, `latency_us`, …) are
-quoted strings, NAT types are names (`"Symmetric"`), and default-valued fields are omitted. The
-adapter accepts both forms (`coreadapter.Uint64`, `NatType.UnmarshalJSON`); fixtures for both live
-in `internal/coreadapter/testdata`. Networks connected and peered on v2.7.0 through the core
-manager.
+Verified 2026-10-16 with `v2.7.0-8b7f1f01` and 2026-11-21 with `v2.7.1-0d9c52b1` (bundled since
+0.2.5; upstream still marks v2.7.1 as pre-release on GitHub): 64-bit counters (`rx_bytes`,
+`latency_us`, …) are quoted strings, NAT types are names (`"Symmetric"`), and default-valued fields
+are omitted. The adapter accepts both forms (`coreadapter.Uint64`, `NatType.UnmarshalJSON`);
+fixtures for v2.7.1, v2.7.0 and v2.6.4 live in `internal/coreadapter/testdata`.
 
-Configuration, read from the v2.7.0 source (`easytier-core/src/config/toml.rs`) and checked live
-on 2026-10-28 (the live adapter test passes; `--check-config` accepts the documents):
+Configuration, read from the v2.7.0 / v2.7.1 source (`easytier-core/src/config/toml.rs`) and checked
+live on 2026-10-28 and 2026-11-21 (the live adapter test passes; `--check-config` accepts the
+documents):
 
 - `[vpn_portal_config]` refuses unknown keys. `client_cidr` (v2.6) is gone; the portal is
   `wireguard_listen`, an optional `wireguard_private_key` and `enabled`, and named clients in

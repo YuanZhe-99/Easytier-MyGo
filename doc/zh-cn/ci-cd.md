@@ -15,10 +15,10 @@
 
 每个变更集都先运行 `go run ./tools/deps check`。MyGo 或 EasyTier 有新版本时，在一个提交里一起改：
 
-1. `go run ./tools/deps update`（MyGo 升到最新；EasyTier 清单改为最新稳定版）。
+1. `go run ./tools/deps update`（MyGo 升到最新；EasyTier 清单改为最新稳定版，或用 `-easytier <tag>` 指定版本）。
 2. 运行 `go tool mygo migrate-ui .`，再加 `-write`，并人工复核标识/绑定值相关的改动。
 3. `go run ./tools/deps fetch`，重新采集 `internal/coreadapter/testdata`，运行 live adapter 测试和完整的本地检查。
 4. 只有 live 检查通过后，才把新的 EasyTier tag 加入 `third_party/easytier.json` 的 `tested`；更新 [README.md](README.md) 中的版本表。
 5. 在 [version-history.md](version-history.md) 记录“MyGo vX / EasyTier vY（YYYY-MM-DD 检查）”，没有变化也要记录。
 
-内置内核只跟随稳定版（GitHub 的 “latest”）。预发布版通过应用内的内核管理试用，从不随发布物分发。
+内置内核通常跟随稳定版（GitHub 的 “latest”）；上游迟迟未在 GitHub 取消 `2.7.x` 的预发布标记时，可用 `-easytier <tag>` 显式固定版本（`tools/deps check` 会显示 `ahead of latest`，且不会使 `-strict` 失败）。其余预发布版通过应用内的内核管理试用。

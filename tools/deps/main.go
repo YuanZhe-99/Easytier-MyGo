@@ -20,6 +20,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 	"time"
 
@@ -88,9 +89,12 @@ func check(args []string) error {
 	outdated := false
 	report := func(name, cur, latest string) {
 		state := "current"
-		if cur != latest {
+		switch {
+		case newerTag(latest, cur):
 			state = "UPDATE AVAILABLE"
 			outdated = true
+		case newerTag(cur, latest):
+			state = "ahead of latest"
 		}
 		fmt.Printf("%-9s pinned %-10s latest %-10s %s\n", name, cur, latest, state)
 	}
@@ -100,6 +104,26 @@ func check(args []string) error {
 		return errors.New("upstream pins are outdated")
 	}
 	return nil
+}
+
+// newerTag reports whether semver tag a ("v2.7.2") is newer than b ("v2.7.1").
+func newerTag(a, b string) bool {
+	pa, pb := tagParts(a), tagParts(b)
+	for i := range pa {
+		if pa[i] != pb[i] {
+			return pa[i] > pb[i]
+		}
+	}
+	return false
+}
+
+func tagParts(tag string) [3]int {
+	var out [3]int
+	for i, s := range strings.SplitN(strings.TrimPrefix(tag, "v"), ".", 3) {
+		n, _ := strconv.Atoi(strings.TrimFunc(s, func(r rune) bool { return r < '0' || r > '9' }))
+		out[i] = n
+	}
+	return out
 }
 
 // update moves MyGo to its latest version and rewrites the EasyTier

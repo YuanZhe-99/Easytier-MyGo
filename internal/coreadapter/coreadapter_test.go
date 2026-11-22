@@ -20,11 +20,11 @@ func fixtureIn(t *testing.T, dir, name string) []byte {
 	return data
 }
 
-// TestDecodeRealOutput runs against the bundled version's output and the
-// newest one seen (v2.7.0 prints counters as strings and NAT types as
-// names).
+// TestDecodeRealOutput runs against the bundled version's output (v2.7.1:
+// counters as strings and NAT types as names) and earlier formats (v2.6.4
+// numeric counters and NAT types; v2.7.0).
 func TestDecodeRealOutput(t *testing.T) {
-	for name, dir := range map[string]string{"bundled": "", "v2.7.0": "v2.7.0"} {
+	for name, dir := range map[string]string{"bundled": "", "v2.6.4": "v2.6.4", "v2.7.0": "v2.7.0"} {
 		t.Run(name, func(t *testing.T) { decodeVersion(t, dir) })
 	}
 }

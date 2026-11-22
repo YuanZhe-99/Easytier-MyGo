@@ -11,21 +11,21 @@
 - `easytier-core` 与 `easytier-cli` 必须来自同一 release；两者的 RPC 客户端在 v2.7.0 发生了变化。
 - 许可证：LGPL-3.0。
 
-## CLI 契约（v2.6.4）
+## CLI 契约（v2.6.4 – v2.7.1）
 
 - `-o json node` 返回节点信息。其 `config` 字段是包含 `network_secret` 的完整 TOML。
-- `-o json peer` 返回展示用的行（字节数和延迟是字符串）；`-v -o json peer` 返回带数值计数器的路由/连接对，流量速率依赖它。
+- `-o json peer` 返回展示用的行（字节数和延迟是字符串）；`-v -o json peer` 返回带原始计数器的路由/连接对，流量速率依赖它。
 - 单实例时 JSON 就是值本身；多实例时是 `[{instance_id, instance_name, result}]`。
 - 没有运行实例：`peer` 以 `no running instances found` 失败（退出码 1）。
-- RPC 不可达：第一行是 `Error: failed to get manage client`，正文包含 `Connection refused`。
-- `service status` 忽略 `-o json`，输出 `Service is running`、`Service is stopped` 或 `Service is not installed`。
+- RPC 不可达：第一行是 `Error: failed to get manage client`，正文包含 `Connection refused` 或 `failed to connect to server`。
+- `service status` 忽略 `-o json`，输出 `Service is running`、`Service is stopped` 或 `Service is not installed`（Windows 上需要管理员权限）。
 - `easytier-core --check-config -c FILE` 只解析配置、不启动网络；不检查端口、TUN 或权限。
 
-## v2.7.0（预发布）中的变化
+## v2.7.0 / v2.7.1 中的变化
 
-2026-10-16 用 `v2.7.0-8b7f1f01` 验证：64 位计数器（`rx_bytes`、`latency_us` 等）是带引号的字符串，NAT 类型是名称（`"Symmetric"`），默认值字段会被省略。适配器两种形式都接受（`coreadapter.Uint64`、`NatType.UnmarshalJSON`）；两个版本的夹具都在 `internal/coreadapter/testdata`。通过内核管理切换到 v2.7.0 后网络可以连接并互连。
+2026-10-16 用 `v2.7.0-8b7f1f01` 验证，2026-11-21 用 `v2.7.1-0d9c52b1` 验证（自 0.2.5 起作为内置内核；上游在 GitHub 上仍将 v2.7.1 标为预发布）：64 位计数器（`rx_bytes`、`latency_us` 等）是带引号的字符串，NAT 类型是名称（`"Symmetric"`），默认值字段会被省略。适配器两种形式都接受（`coreadapter.Uint64`、`NatType.UnmarshalJSON`）；v2.7.1、v2.7.0 与 v2.6.4 的夹具都在 `internal/coreadapter/testdata`。
 
-配置方面，依据 v2.7.0 源码（`easytier-core/src/config/toml.rs`），并于 2026-10-28 实测核对（实测适配器测试通过；`--check-config` 接受这些文档）：
+配置方面，依据 v2.7.0 / v2.7.1 源码（`easytier-core/src/config/toml.rs`），并于 2026-10-28 与 2026-11-21 实测核对（实测适配器测试通过；`--check-config` 接受这些文档）：
 
 - `[vpn_portal_config]` 拒绝未知键。`client_cidr`（v2.6）已移除；入口由 `wireguard_listen`、可选的 `wireguard_private_key` 与 `enabled`，以及 `[[vpn_portal_config.clients]]` 中的具名客户端（`name`、带前缀的 `virtual_ip`、`groups`）组成。反过来 v2.6.4 要求 `client_cidr`，因此没有一份入口配置能同时用于两个版本。
 - 新增键：`tcp_stun_servers`（顶层）、`[flags] socket_mark`（Linux，需 CAP_NET_ADMIN）、`[flags] prefer_peer_relay` 和 `[[managed_credentials]]`。v2.6.4 会忽略未知的顶层键。

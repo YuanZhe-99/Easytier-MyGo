@@ -31,7 +31,8 @@ signed ad hoc. Each disk image is then checked with `hdiutil verify` and the app
 Every change set starts with `go run ./tools/deps check`. When MyGo or EasyTier has a newer
 version, move everything together in one commit:
 
-1. `go run ./tools/deps update` (MyGo to latest; EasyTier manifest to the latest stable release).
+1. `go run ./tools/deps update` (MyGo to latest; EasyTier manifest to the latest stable release, or
+   `-easytier <tag>` when pinning an explicit release).
 2. `go tool mygo migrate-ui .`, then `-write`, and review identity/bound-value changes by hand.
 3. `go run ./tools/deps fetch`, re-capture `internal/coreadapter/testdata`, run the live adapter
    test and the full local gate.
@@ -40,5 +41,7 @@ version, move everything together in one commit:
 5. Record "MyGo vX / EasyTier vY (checked YYYY-MM-DD)" in [version-history.md](version-history.md),
    also when nothing changed.
 
-The bundled core follows stable releases only (GitHub's "latest"). Pre-releases are tried through
-the in-app core manager and are never shipped.
+The bundled core normally follows stable releases (GitHub's "latest"); when upstream leaves `2.7.x`
+marked as pre-release on GitHub, an explicit `-easytier <tag>` pin is used (`tools/deps check`
+reports `ahead of latest` without failing `-strict`). Pre-releases are otherwise tried through the
+in-app core manager.

@@ -3,6 +3,16 @@
 The project restarted from 0.1.0 on 2026-10-16. The earlier, inherited history (versions up to
 0.10.80) is preserved under the git tag `archive/v0.10.80` and is not continued.
 
+## 0.2.5 (2026-11-21)
+
+- Bundled EasyTier core updated from v2.6.4 to v2.7.1 (upstream still marks 2.7.1 as pre-release
+  on GitHub); adapter fixtures re-captured on v2.7.1 (v2.6.4 and v2.7.0 fixtures kept) and v2.7.1
+  labeled tested.
+- `tools/deps check` reports `ahead of latest` instead of failing `-strict` when the bundled
+  EasyTier version is newer than GitHub's latest non-prerelease tag.
+- MyGo v0.10.0 (updated from v0.7.1) / EasyTier v2.7.1 (updated from v2.6.4, checked 2026-11-21);
+  Go module dependencies updated.
+
 ## 0.2.4 (2026-10-28)
 
 - EasyTier 2.7.0 readiness (the bundled core stays v2.6.4; 2.7.0 is a pre-release): the form

@@ -3,8 +3,8 @@
 // parses its output; it never writes configuration and never changes the
 // core's state.
 //
-// The types mirror the JSON that easytier-cli v2.6.4 prints (verified
-// against real output, see testdata). Fields that the CLI renders as
+// The types mirror the JSON that easytier-cli prints (verified against real
+// v2.6.4, v2.7.0 and v2.7.1 output, see testdata). Fields that the CLI renders as
 // display strings (peer list bytes, latency, loss rate) keep the string
 // representation and quote formatting; the verbose peer command returns
 // raw counters instead.

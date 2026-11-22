@@ -55,8 +55,9 @@ Verified on the development machine (2026-10-16, EasyTier v2.6.4, isolated ports
   the service manager restarts it.
 
 Until verified on real machines, these are designs that compile and pass vet, not results.
-Verified so far on Windows 11 ARM64 (Go 1.27.2, no C compiler): the local gate passes, and
-`scripts/smoke.sh user` runs a `no_tun` network on the bundled v2.6.4 core through the user daemon
+Verified so far on Windows 11 ARM64 (Go 1.27.2 / 1.27.3, no C compiler): the local gate passes, and
+`scripts/smoke.sh user` runs a `no_tun` network on the bundled core (v2.6.4, and on 2026-11-21
+v2.7.1 including two peered `no_tun` cores and the live adapter test) through the user daemon
 and shuts it down through the API. The helper, installed and removed through UAC, runs the same
 network for a non-administrator operator while a session is attached (`ctl watch`); uninstalling
 removes the service, the binaries, the state and the `EasyTier MyGo` folders under `%ProgramFiles%`
