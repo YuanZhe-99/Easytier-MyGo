@@ -12,7 +12,8 @@ import (
 )
 
 // TestUnitsVerify checks the generated units with systemd-analyze when it
-// is available (it validates syntax and the referenced executable).
+// is available (it validates syntax and the referenced executable, without
+// failing on unrelated system units installed on the host).
 func TestUnitsVerify(t *testing.T) {
 	if !strings.Contains(ServiceUnit(), "run --host helper --idle-exit") || !strings.Contains(SocketUnit(), "ListenStream=/run/easytier-mygo/ctl.sock") {
 		t.Fatal("units lost their essential lines")
@@ -27,7 +28,7 @@ func TestUnitsVerify(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	out, _ := exec.Command(analyze, "verify", filepath.Join(dir, Unit+".socket"), filepath.Join(dir, Unit+".service")).CombinedOutput()
+	out, _ := exec.Command(analyze, "--recursive-errors=no", "verify", filepath.Join(dir, Unit+".socket"), filepath.Join(dir, Unit+".service")).CombinedOutput()
 	for _, line := range strings.Split(string(out), "\n") {
 		// The executable is not installed on the test machine; everything
 		// else must verify cleanly.
