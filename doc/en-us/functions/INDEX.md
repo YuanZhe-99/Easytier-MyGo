@@ -16,8 +16,8 @@ effects and notes where non-trivial).
 | `internal/telemetry` | Rates from counters, curve ring | `Tracker.Observe`, `Ring` |
 | `internal/localapi` | Local API protocol and server | `ProtocolVersion`, `Request`, `Client.Attach`, `Authorizer` |
 | `internal/profiles` | Network store | `Store`, `Profile`, `Store.CreateFor` |
-| `internal/supervisor` | Per-network worker | `Worker`, `Config`, `Preflight`, `Worker.args` |
-| `internal/daemon` | Host, run-mode decisions, API | `Run`, `Options`, `Daemon.reconcile`, `Daemon.miniCopy`, `Daemon.checkMini`, `Daemon.binariesFor`, `Daemon.certNames`, `Daemon.handleCert` |
+| `internal/supervisor` | Per-network worker | `Worker`, `Config`, `Preflight`, `Worker.args`, `coreLog` |
+| `internal/daemon` | Host, run-mode decisions, API | `Run`, `Options`, `Daemon.reconcile`, `Daemon.stopWorkers`, `Daemon.miniCopy`, `Daemon.checkMini`, `Daemon.binariesFor`, `Daemon.certNames`, `Daemon.handleCert` |
 | `internal/helper` | Privileged helper installation and self-update | `Install`, `Uninstall`, `Inspect`, `SelfUpdate`, `installBundle`, `replaceSigned` (macOS) |
 | `internal/bundlesig` | Signed app bundles for helper self-update | `Sign`, `Read`, `Bundle` |
 | `internal/cores` | EasyTier core manager | `Manager.ReleasesOf`, `Manager.Install`, `Manager.NewestMini`, `Core.Binaries`, `Binaries` |

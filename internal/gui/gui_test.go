@@ -417,3 +417,27 @@ func TestAutoInstallDue(t *testing.T) {
 		}
 	}
 }
+
+// TestApplyPushReplacesOnNewSession checks that reconnecting to a daemon
+// replaces prior events and traffic points instead of duplicating them.
+func TestApplyPushReplacesOnNewSession(t *testing.T) {
+	a := New()
+	ev := health.Event{Reason: "no-peers"}
+	net := []localapi.NetworkStatus{{ID: "n1", Name: "N1", Run: true, State: localapi.StateConnected}}
+	pt := localapi.TrafficPoint{Seq: 1, Rx: 10, Tx: 20}
+	a.applyPush(&localapi.Push{
+		Session:  "s1",
+		Networks: net,
+		Traffic:  map[string][]localapi.TrafficPoint{"n1": {pt}},
+		Events:   []health.Event{ev},
+	})
+	a.applyPush(&localapi.Push{
+		Session:  "s2",
+		Networks: net,
+		Traffic:  map[string][]localapi.TrafficPoint{"n1": {pt}},
+		Events:   []health.Event{ev},
+	})
+	if len(a.events) != 1 || len(a.traffic["n1"]) != 1 {
+		t.Fatalf("reconnect duplicated history: events=%d traffic=%d", len(a.events), len(a.traffic["n1"]))
+	}
+}

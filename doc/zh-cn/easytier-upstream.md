@@ -23,7 +23,7 @@
 
 ## v2.7.0 / v2.7.1 中的变化
 
-2026-10-16 用 `v2.7.0-8b7f1f01` 验证，2026-11-21 用 `v2.7.1-0d9c52b1` 验证（自 0.2.5 起作为内置内核；上游在 GitHub 上仍将 v2.7.1 标为预发布）：64 位计数器（`rx_bytes`、`latency_us` 等）是带引号的字符串，NAT 类型是名称（`"Symmetric"`），默认值字段会被省略。适配器两种形式都接受（`coreadapter.Uint64`、`NatType.UnmarshalJSON`）；v2.7.1、v2.7.0 与 v2.6.4 的夹具都在 `internal/coreadapter/testdata`。
+2026-10-16 用 `v2.7.0-8b7f1f01` 验证，2026-11-21 用 `v2.7.1-0d9c52b1` 验证（上游在 GitHub 上仍将 v2.7.x 标为预发布；因 `v2.7.1` 在 Windows 上出现 WinTun 创建超时回归，内置内核已回退为稳定版 `v2.6.4`）：64 位计数器（`rx_bytes`、`latency_us` 等）是带引号的字符串，NAT 类型是名称（`"Symmetric"`），默认值字段会被省略。适配器两种形式都接受（`coreadapter.Uint64`、`NatType.UnmarshalJSON`）；v2.6.4（内置）、v2.7.0 与 v2.7.1 的夹具都在 `internal/coreadapter/testdata`。
 
 配置方面，依据 v2.7.0 / v2.7.1 源码（`easytier-core/src/config/toml.rs`），并于 2026-10-28 与 2026-11-21 实测核对（实测适配器测试通过；`--check-config` 接受这些文档）：
 

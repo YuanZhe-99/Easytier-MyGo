@@ -1,0 +1,78 @@
+[
+  {
+    "route": {
+      "peer_id": 4002416370,
+      "ipv4_addr": {
+        "address": {
+          "addr": 177220610
+        },
+        "network_length": 24
+      },
+      "next_hop_peer_id": 4002416370,
+      "cost": 1,
+      "path_latency": 500,
+      "hostname": "dev-b",
+      "stun_info": {
+        "udp_nat_type": "Symmetric",
+        "tcp_nat_type": "Symmetric"
+      },
+      "inst_id": "68b30278-08e9-44c9-9b16-b8ea8d24765f",
+      "version": "2.7.1-0d9c52b1-20261115",
+      "feature_flag": {
+        "kcp_input": true,
+        "support_conn_list_sync": true,
+        "quic_input": true
+      },
+      "next_hop_peer_id_latency_first": 4002416370,
+      "cost_latency_first": 1,
+      "path_latency_latency_first": 500
+    },
+    "peer": {
+      "peer_id": 4002416370,
+      "conns": [
+        {
+          "conn_id": "cc190f05-45d9-4619-9dac-3e862d80c33f",
+          "my_peer_id": 2063772996,
+          "peer_id": 4002416370,
+          "features": [
+            "liveness-echo-v1"
+          ],
+          "tunnel": {
+            "tunnel_type": "tcp",
+            "local_addr": {
+              "url": "tcp://0.0.0.0:31110"
+            },
+            "remote_addr": {
+              "url": "tcp://198.51.100.10:53669"
+            },
+            "resolved_remote_addr": {
+              "url": "tcp://198.51.100.10:53669"
+            }
+          },
+          "stats": {
+            "rx_bytes": "2201",
+            "tx_bytes": "2435",
+            "rx_packets": "17",
+            "tx_packets": "17",
+            "latency_us": "217"
+          },
+          "network_name": "example-net"
+        }
+      ],
+      "default_conn_id": {
+        "part1": 3424194309,
+        "part2": 1171867161,
+        "part3": 2645311110,
+        "part4": 763413311
+      },
+      "directly_connected_conns": [
+        {
+          "part1": 3424194309,
+          "part2": 1171867161,
+          "part3": 2645311110,
+          "part4": 763413311
+        }
+      ]
+    }
+  }
+]

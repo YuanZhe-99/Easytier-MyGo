@@ -454,12 +454,13 @@ func (w *Worker) start(rev, prev revision) error {
 }
 
 // args are the core's arguments for a revision: EasyTier mini takes the
-// file alone; the full core gets its explicit portal and ExtraArgs.
+// file alone; the full core gets its explicit portal, error-only console
+// logging and ExtraArgs.
 func (w *Worker) args(path string) []string {
 	if w.cfg.Mini {
 		return []string{"-c", path}
 	}
-	return append([]string{"-c", path, "--rpc-portal", w.cfg.RPC}, w.cfg.ExtraArgs...)
+	return append([]string{"-c", path, "--rpc-portal", w.cfg.RPC, "--console-log-level", "error"}, w.cfg.ExtraArgs...)
 }
 
 // rollback returns from a failed candidate to its previous revision.

@@ -14,8 +14,8 @@
 | `internal/telemetry` | 由计数器计算速率、曲线环形缓冲 | `Tracker.Observe`, `Ring` |
 | `internal/localapi` | 本地 API 协议与服务端 | `ProtocolVersion`, `Request`, `Client.Attach`, `Authorizer` |
 | `internal/profiles` | 网络存储 | `Store`, `Profile`, `Store.CreateFor` |
-| `internal/supervisor` | 每网络 worker | `Worker`, `Config`, `Preflight`, `Worker.args` |
-| `internal/daemon` | 宿主、运行方式判断、API | `Run`, `Options`, `Daemon.reconcile`, `Daemon.miniCopy`, `Daemon.checkMini`, `Daemon.binariesFor`, `Daemon.certNames`, `Daemon.handleCert` |
+| `internal/supervisor` | 每网络 worker | `Worker`, `Config`, `Preflight`, `Worker.args`, `coreLog` |
+| `internal/daemon` | 宿主、运行方式判断、API | `Run`, `Options`, `Daemon.reconcile`, `Daemon.stopWorkers`, `Daemon.miniCopy`, `Daemon.checkMini`, `Daemon.binariesFor`, `Daemon.certNames`, `Daemon.handleCert` |
 | `internal/helper` | 特权助手安装与自更新 | `Install`, `Uninstall`, `Inspect`, `SelfUpdate`, `installBundle`, `replaceSigned`（macOS） |
 | `internal/bundlesig` | 用于助手自更新的签名应用包 | `Sign`, `Read`, `Bundle` |
 | `internal/cores` | EasyTier 内核管理 | `Manager.ReleasesOf`, `Manager.Install`, `Manager.NewestMini`, `Core.Binaries`, `Binaries` |

@@ -3,6 +3,20 @@
 The project restarted from 0.1.0 on 2026-10-16. The earlier, inherited history (versions up to
 0.10.80) is preserved under the git tag `archive/v0.10.80` and is not continued.
 
+## 0.3.1 (2026-11-27)
+
+- Bundled EasyTier core returned to the latest stable release `v2.6.4` after `v2.7.1` regressed
+  WinTun device creation on Windows; `v2.7.0` and `v2.7.1` adapter fixtures remain covered in tests.
+- Core log (`core.log`): full cores now run with `--console-log-level error`, `coreLog` drops
+  non-`ERROR` records (such as `INFO` connection noise) and caps `core.log` strictly at 10 MiB in
+  place without `.1` backups, automatically shrinking oversized existing logs on start.
+- Windows privileged helper self-update (`SelfUpdate`) now stops running cores before exiting to
+  restart (with a 2 s settle delay) instead of killing them via Job Object close right before the
+  restarted helper launches new cores.
+- GUI: reconnecting to a daemon session now replaces prior events and traffic points instead of
+  duplicating them across helper restarts.
+- MyGo v0.10.0 / EasyTier v2.6.4 (updated from v2.7.1, checked 2026-11-27); UPX v5.3.1.
+
 ## 0.3.0 (2026-11-27)
 
 - HTTPS certificates for MagicDNS names ([certificates.md](certificates.md)): the daemon runs a

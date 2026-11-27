@@ -5,6 +5,7 @@ import (
 	"errors"
 	"os"
 	"path/filepath"
+	"runtime"
 	"slices"
 	"strings"
 
@@ -254,6 +255,9 @@ func (d *Daemon) Handle(ctx context.Context, req localapi.Request, access locala
 		}
 		if err := d.opts.OnSelfUpdate(req.Text); err != nil {
 			return localapi.Fail(localapi.CodeNeedsAdmin, "%s", supervisor.ScrubDetail(err.Error()))
+		}
+		if runtime.GOOS == "windows" {
+			d.stopWorkers()
 		}
 		return localapi.Response{OK: true}
 	case localapi.RequestCertStatus, localapi.RequestCertCAGenerate, localapi.RequestCertCAImport, localapi.RequestCertCAExport,

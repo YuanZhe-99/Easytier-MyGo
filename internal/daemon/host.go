@@ -384,6 +384,26 @@ func (d *Daemon) reconcile() {
 	d.notify()
 }
 
+// stopWorkers stops every running core before a Windows helper self-update
+// exits, keeping stored Run intents intact so the restarted helper brings
+// them back without overlapping cores.
+func (d *Daemon) stopWorkers() {
+	d.mu.Lock()
+	var ws []*supervisor.Worker
+	for _, e := range d.workers {
+		if e.running {
+			e.running = false
+			ws = append(ws, e.w)
+		}
+	}
+	d.mu.Unlock()
+	ctx, cancel := context.WithTimeout(d.ctx, 5*time.Second)
+	defer cancel()
+	for _, w := range ws {
+		_ = w.Disconnect(ctx)
+	}
+}
+
 // startWorker connects a network with its applied revision (or the saved
 // document when it was never applied).
 func (d *Daemon) startWorker(id string, w *supervisor.Worker) error {

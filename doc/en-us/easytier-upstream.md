@@ -39,11 +39,12 @@ version; re-check them when the bundled version moves.
 
 ## Changes in v2.7.0 / v2.7.1
 
-Verified 2026-10-16 with `v2.7.0-8b7f1f01` and 2026-11-21 with `v2.7.1-0d9c52b1` (bundled since
-0.2.5; upstream still marks v2.7.1 as pre-release on GitHub): 64-bit counters (`rx_bytes`,
-`latency_us`, …) are quoted strings, NAT types are names (`"Symmetric"`), and default-valued fields
-are omitted. The adapter accepts both forms (`coreadapter.Uint64`, `NatType.UnmarshalJSON`);
-fixtures for v2.7.1, v2.7.0 and v2.6.4 live in `internal/coreadapter/testdata`.
+Verified 2026-10-16 with `v2.7.0-8b7f1f01` and 2026-11-21 with `v2.7.1-0d9c52b1` (upstream still marks
+v2.7.x as pre-release on GitHub; the bundled core returned to stable `v2.6.4` after `v2.7.1`
+regressed WinTun creation on Windows): 64-bit counters (`rx_bytes`, `latency_us`, …) are quoted
+strings, NAT types are names (`"Symmetric"`), and default-valued fields are omitted. The adapter
+accepts both forms (`coreadapter.Uint64`, `NatType.UnmarshalJSON`); fixtures for v2.6.4 (bundled),
+v2.7.0 and v2.7.1 live in `internal/coreadapter/testdata`.
 
 Configuration, read from the v2.7.0 / v2.7.1 source (`easytier-core/src/config/toml.rs`) and checked
 live on 2026-10-28 and 2026-11-21 (the live adapter test passes; `--check-config` accepts the

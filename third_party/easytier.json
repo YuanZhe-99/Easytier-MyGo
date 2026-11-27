@@ -1,13 +1,12 @@
 {
   "repository": "EasyTier/EasyTier",
   "license": "LGPL-3.0",
-  "source": "https://github.com/EasyTier/EasyTier/tree/v2.7.1",
-  "bundled": "v2.7.1",
-  "published": "2026-11-16",
+  "source": "https://github.com/EasyTier/EasyTier/tree/v2.6.4",
+  "bundled": "v2.6.4",
+  "published": "2026-05-12",
   "tested": [
     "v2.6.4",
-    "v2.7.0",
-    "v2.7.1"
+    "v2.7.0"
   ],
   "mini_repository": "EasyTier/easytier-mini",
   "mini_tested": [
@@ -15,45 +14,45 @@
   ],
   "assets": {
     "darwin-amd64": {
-      "name": "easytier-macos-x86_64-v2.7.1.zip",
-      "url": "https://github.com/EasyTier/EasyTier/releases/download/v2.7.1/easytier-macos-x86_64-v2.7.1.zip",
-      "sha256": "26693f4aa684b4420c04dccfe282120df670dcb1100ead4ad82fe09c1a93ce15",
-      "size": 41544541,
+      "name": "easytier-macos-x86_64-v2.6.4.zip",
+      "url": "https://github.com/EasyTier/EasyTier/releases/download/v2.6.4/easytier-macos-x86_64-v2.6.4.zip",
+      "sha256": "89fc28a6e6995259d76ce3f11775220e8a21c760e94df91a6a9db30a69b6982e",
+      "size": 33733545,
       "dir": "easytier-macos-x86_64"
     },
     "darwin-arm64": {
-      "name": "easytier-macos-aarch64-v2.7.1.zip",
-      "url": "https://github.com/EasyTier/EasyTier/releases/download/v2.7.1/easytier-macos-aarch64-v2.7.1.zip",
-      "sha256": "3a1f660237de475cba4a9644b95e04469c4f78c617c9a68e9cd7f41d9706f94d",
-      "size": 37576010,
+      "name": "easytier-macos-aarch64-v2.6.4.zip",
+      "url": "https://github.com/EasyTier/EasyTier/releases/download/v2.6.4/easytier-macos-aarch64-v2.6.4.zip",
+      "sha256": "4be1882d1aa36d31c1d6ba0596f2cf8a097e371f8da124212324b2e0f8df7e4b",
+      "size": 30174017,
       "dir": "easytier-macos-aarch64"
     },
     "linux-amd64": {
-      "name": "easytier-linux-x86_64-v2.7.1.zip",
-      "url": "https://github.com/EasyTier/EasyTier/releases/download/v2.7.1/easytier-linux-x86_64-v2.7.1.zip",
-      "sha256": "8dc4f8576c7a4978c1f000630014b75ec88d172f6cb10935e72092ddd5ec7a9a",
-      "size": 31108807,
+      "name": "easytier-linux-x86_64-v2.6.4.zip",
+      "url": "https://github.com/EasyTier/EasyTier/releases/download/v2.6.4/easytier-linux-x86_64-v2.6.4.zip",
+      "sha256": "61b659eaedba658fa66fe47d17e1426cdd77e5d02fa15fed447bb4357c09dfd6",
+      "size": 25506523,
       "dir": "easytier-linux-x86_64"
     },
     "linux-arm64": {
-      "name": "easytier-linux-aarch64-v2.7.1.zip",
-      "url": "https://github.com/EasyTier/EasyTier/releases/download/v2.7.1/easytier-linux-aarch64-v2.7.1.zip",
-      "sha256": "7f4d78aefe7437d7f213089ac7184988665e9c4d1ff163b8ad08637c1c88bb0a",
-      "size": 25506531,
+      "name": "easytier-linux-aarch64-v2.6.4.zip",
+      "url": "https://github.com/EasyTier/EasyTier/releases/download/v2.6.4/easytier-linux-aarch64-v2.6.4.zip",
+      "sha256": "f533ec25a7ea714e09f645615012200278058525795cc3bb690ff011aec1a70f",
+      "size": 20487230,
       "dir": "easytier-linux-aarch64"
     },
     "windows-amd64": {
-      "name": "easytier-windows-x86_64-v2.7.1.zip",
-      "url": "https://github.com/EasyTier/EasyTier/releases/download/v2.7.1/easytier-windows-x86_64-v2.7.1.zip",
-      "sha256": "6279ce18906f345345780b2f0c507125fcae861a54c45cc62efe58d5312de46b",
-      "size": 40591822,
+      "name": "easytier-windows-x86_64-v2.6.4.zip",
+      "url": "https://github.com/EasyTier/EasyTier/releases/download/v2.6.4/easytier-windows-x86_64-v2.6.4.zip",
+      "sha256": "27af91e270e554709b048bd32327fefd2dfce5062ae1e8701af7550c6f525f84",
+      "size": 32657720,
       "dir": "easytier-windows-x86_64"
     },
     "windows-arm64": {
-      "name": "easytier-windows-arm64-v2.7.1.zip",
-      "url": "https://github.com/EasyTier/EasyTier/releases/download/v2.7.1/easytier-windows-arm64-v2.7.1.zip",
-      "sha256": "5f6f72024df93c17fa98719569b769298cb72cf528e74378f343ac4d136a4003",
-      "size": 37902628,
+      "name": "easytier-windows-arm64-v2.6.4.zip",
+      "url": "https://github.com/EasyTier/EasyTier/releases/download/v2.6.4/easytier-windows-arm64-v2.6.4.zip",
+      "sha256": "37023f8a3451c9234b17ee2089a03dc344ce90d803b5b359cb6c46682b0549b4",
+      "size": 30136892,
       "dir": "easytier-windows-arm64"
     }
   }

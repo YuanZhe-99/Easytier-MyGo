@@ -281,6 +281,12 @@ func (a *App) applyPush(p *localapi.Push) {
 	a.lastPush = time.Now()
 	if p.Session != "" {
 		a.session = p.Session
+		// A new session starts with the daemon's current ring and recent
+		// events; replace prior history instead of duplicating across reconnects.
+		a.traffic = map[string][]localapi.TrafficPoint{}
+		a.events = slices.Clone(p.Events)
+	} else {
+		a.events = append(a.events, p.Events...)
 	}
 	a.pendingNotes = append(a.pendingNotes, a.noticeChanges(a.networks, p.Networks)...)
 	a.networks = p.Networks
@@ -302,7 +308,6 @@ func (a *App) applyPush(p *localapi.Push) {
 			delete(a.summaries, id)
 		}
 	}
-	a.events = append(a.events, p.Events...)
 	if len(a.events) > 300 {
 		a.events = a.events[len(a.events)-300:]
 	}

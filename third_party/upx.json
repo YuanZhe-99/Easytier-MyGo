@@ -1,27 +1,27 @@
 {
-  "version": "v5.3.0",
+  "version": "v5.3.1",
   "license": "GPL-2.0-or-later with the UPX exception",
-  "source": "https://github.com/upx/upx/tree/v5.3.0",
+  "source": "https://github.com/upx/upx/tree/v5.3.1",
   "assets": {
     "linux-amd64": {
-      "name": "upx-5.3.0-amd64_linux.tar.xz",
-      "url": "https://github.com/upx/upx/releases/download/v5.3.0/upx-5.3.0-amd64_linux.tar.xz",
-      "sha256": "79cea8a50b6fa102d10c7b79a419cd77dead3cc2d78661de2dc5e5815dc505c1"
+      "name": "upx-5.3.1-amd64_linux.tar.xz",
+      "url": "https://github.com/upx/upx/releases/download/v5.3.1/upx-5.3.1-amd64_linux.tar.xz",
+      "sha256": "a559745c9de96101f77cab4a71c396556181b748fcade73e51cc5a6268dcecad"
     },
     "linux-arm64": {
-      "name": "upx-5.3.0-arm64_linux.tar.xz",
-      "url": "https://github.com/upx/upx/releases/download/v5.3.0/upx-5.3.0-arm64_linux.tar.xz",
-      "sha256": "2a4afa860ac7aa6968f88df7841823746e5d00ba56affdf9342c2f5254fb776f"
+      "name": "upx-5.3.1-arm64_linux.tar.xz",
+      "url": "https://github.com/upx/upx/releases/download/v5.3.1/upx-5.3.1-arm64_linux.tar.xz",
+      "sha256": "e227cff8f0458b9754c9fa8747d094237b34be0ad5466d6fc89d7cee542963a8"
     },
     "windows-amd64": {
-      "name": "upx-5.3.0-win64.zip",
-      "url": "https://github.com/upx/upx/releases/download/v5.3.0/upx-5.3.0-win64.zip",
-      "sha256": "d127996c76615e431be810e9c8d2910dbe3dd400600c5c0c50276fc5a17a9705"
+      "name": "upx-5.3.1-win64.zip",
+      "url": "https://github.com/upx/upx/releases/download/v5.3.1/upx-5.3.1-win64.zip",
+      "sha256": "9ff51d1646153b33e8c595b02a4f042fe76be6e7f0abcb752918373ac1f9af04"
     },
     "windows-arm64": {
-      "name": "upx-5.3.0-win64.zip",
-      "url": "https://github.com/upx/upx/releases/download/v5.3.0/upx-5.3.0-win64.zip",
-      "sha256": "d127996c76615e431be810e9c8d2910dbe3dd400600c5c0c50276fc5a17a9705"
+      "name": "upx-5.3.1-win64.zip",
+      "url": "https://github.com/upx/upx/releases/download/v5.3.1/upx-5.3.1-win64.zip",
+      "sha256": "9ff51d1646153b33e8c595b02a4f042fe76be6e7f0abcb752918373ac1f9af04"
     }
   }
 }

@@ -181,7 +181,7 @@ func SelfUpdate(from, running string) error {
 		return err
 	}
 	go func() {
-		time.Sleep(time.Second)
+		time.Sleep(2 * time.Second)
 		os.Exit(3) // recovery action: restart with the new executable
 	}()
 	return nil
