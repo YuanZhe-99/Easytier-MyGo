@@ -4,7 +4,7 @@ A native desktop client for [EasyTier](https://github.com/EasyTier/EasyTier), bu
 [MyGo](https://github.com/egoist/mygo). A small daemon runs the EasyTier core, watches its health,
 and recovers local faults without ever overriding what you asked for.
 
-> **Status:** 0.2.5. Linux is fully tested; Windows (x64, ARM64) and macOS pass CI smoke tests and
+> **Status:** 0.3.0. Linux is fully tested; Windows (x64, ARM64) and macOS pass CI smoke tests and
 > are partly verified on real machines. See the [platform notes](doc/en-us/platform-notes.md) and
 > the [version history](doc/en-us/version-history.md).
 
@@ -23,6 +23,9 @@ and recovers local faults without ever overriding what you asked for.
   build, without updating the app.
 - Lossless configuration editing (form or raw TOML) with conflict checks, backups and rollback.
 - Health monitoring that tells local faults from outages, with bounded recovery.
+- HTTPS for MagicDNS names: a private CA issues certificates for this computer's MagicDNS name,
+  hostname and virtual IP, keeps them renewed in a folder of your choice, and reloads your web
+  server afterwards (see [Local HTTPS certificates](#local-https-certificates)).
 - Signed self-update from GitHub releases, checked daily (can be turned off) and installed only when
   you ask.
 - Lives in the tray; on macOS closing the window also hides the Dock icon.
@@ -41,6 +44,68 @@ Artifacts land in `build/<goos>-<goarch>/`: on Linux a `.tar.gz` (install with `
 root) and a `.deb`; on Windows an `.exe` and an installer; on macOS an `.app` and a `.dmg`.
 
 Development commands and the dev loop are in [doc/en-us/development.md](doc/en-us/development.md).
+
+## Local HTTPS certificates
+
+EasyTier's MagicDNS names (`laptop.et.net`) have no certificates of their own. The daemon can run a
+private certificate authority and keep server certificates current for them; details are in
+[doc/en-us/certificates.md](doc/en-us/certificates.md). In the app it is all in Settings ›
+Certificates; the same from a terminal:
+
+```bash
+# 1. Create the CA (ECDSA P-256, 10 years), or import yours: cert ca-import CA.pem CA-KEY.pem
+easytier-mygo-ctl cert ca-generate -cn "Home CA"
+
+# 2. Trust it on this computer; without sudo this prints the exact command to run instead
+sudo easytier-mygo-ctl cert trust install -file ~/.local/state/easytier-mygo/certs/ca.crt
+#    and export it for phones and other computers
+easytier-mygo-ctl cert ca-export home-ca.crt
+
+# 3. A certificate for a network's names plus extra ones, renewed automatically
+easytier-mygo-ctl list                       # the network ID
+easytier-mygo-ctl cert job-set -id web -network NETWORK-ID \
+  -dns '*.laptop.et.net' -ip 192.168.1.20 \
+  -out /srv/certs/web -hook 'caddy reload --config /etc/caddy/Caddyfile'
+easytier-mygo-ctl cert status
+```
+
+The same job as JSON (`easytier-mygo-ctl cert job-set -file web.json`):
+
+```json
+{
+  "id": "web",
+  "network": "NETWORK-ID",
+  "dns_names": ["*.laptop.et.net"],
+  "ips": ["192.168.1.20"],
+  "out_dir": "/srv/certs/web",
+  "validity_days": 90,
+  "renew_before_days": 30,
+  "key_mode": "0640",
+  "hook": {
+    "enabled": true,
+    "command": "caddy reload --config /etc/caddy/Caddyfile",
+    "timeout_seconds": 30
+  }
+}
+```
+
+The folder then holds `cert.pem` (the certificate), `fullchain.pem` (certificate + CA) and
+`key.pem`. Certificates are valid for 90 days and renewed 30 days before they expire, when the
+network's name or address changes, or when the CA changes; the hook runs only after a new
+certificate was written. Use them in Caddy with:
+
+```caddyfile
+laptop.et.net, grafana.laptop.et.net {
+	tls /srv/certs/web/fullchain.pem /srv/certs/web/key.pem
+	reverse_proxy 127.0.0.1:3000
+}
+```
+
+Nginx takes the same files (`ssl_certificate .../fullchain.pem; ssl_certificate_key .../key.pem;`);
+for a container, mount the folder read-only and reload with a hook such as `docker restart caddy`.
+The hook runs with the daemon's rights. In the privileged helper (Follow GUI and Background service
+modes) it runs as administrator, so a folder of your choice and a hook need an administrator's
+approval once: the app asks when you save; `cert job-set` prints the command to run.
 
 ## Network access
 

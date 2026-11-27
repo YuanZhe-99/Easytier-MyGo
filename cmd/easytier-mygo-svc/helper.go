@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"errors"
 	"flag"
@@ -10,7 +11,10 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
+	"strings"
+	"time"
 
+	"github.com/YuanZhe-99/Easytier-MyGo/internal/certmanager"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/cores"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/fsutil"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/helper"
@@ -123,8 +127,67 @@ func helperCmd(args []string) error {
 			}
 		}
 		return nil
+	case "approve-cert":
+		return approveCert(args[1:])
 	}
 	usage()
+	return nil
+}
+
+// approveCert records an administrator's approval of one certificate's
+// own folder, file names, permissions and command in the privileged
+// helper (doc/en-us/certificates.md, "Privileged helper").
+// Inputs: -job (the job as base64url JSON, as the GUI passes it) or -file
+// (a JSON file, as the CLI suggests).
+// Side effects: writes <helper state>/certs/approved.json; prints what was
+// approved.
+// Notes: refuses to run without administrator rights: this command is the
+// only way an approval is added.
+func approveCert(args []string) error {
+	fs := flag.NewFlagSet("helper approve-cert", flag.ExitOnError)
+	encoded := fs.String("job", "", "the certificate job as base64url-encoded JSON")
+	file := fs.String("file", "", "the certificate job as a JSON file")
+	fs.Parse(args)
+	if !helper.Elevated() {
+		return errors.New("approving a certificate's folder or command needs administrator rights")
+	}
+	if helper.StateDir == "" {
+		return errors.New("the privileged helper is not supported on this system")
+	}
+	var data []byte
+	var err error
+	switch {
+	case *encoded != "":
+		data, err = base64.RawURLEncoding.DecodeString(strings.TrimRight(*encoded, "="))
+	case *file != "":
+		data, err = os.ReadFile(*file)
+	default:
+		return errors.New("pass -job or -file")
+	}
+	if err != nil {
+		return err
+	}
+	var job certmanager.Job
+	if err := json.Unmarshal(data, &job); err != nil {
+		return fmt.Errorf("certificate job: %w", err)
+	}
+	by := ""
+	if uid, err := invokingUID(); err == nil {
+		by = strconv.FormatUint(uint64(uid), 10)
+	} else if u, err := user.Current(); err == nil {
+		by = u.Username
+	}
+	a, err := certmanager.Approve(filepath.Join(helper.StateDir, "certs"), job, by, time.Now())
+	if err != nil {
+		return err
+	}
+	fmt.Printf("approved for certificate %s:\n", a.JobID)
+	if a.OutDir != "" {
+		fmt.Printf("  folder:  %s (resolves to %s)\n", a.OutDir, a.Resolved)
+	}
+	if a.Command != "" {
+		fmt.Printf("  command: %s (runs as administrator)\n", a.Command)
+	}
 	return nil
 }
 

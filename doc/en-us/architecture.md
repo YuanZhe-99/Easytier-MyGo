@@ -29,6 +29,7 @@ paths and lifetime differ.
 | `internal/helper` | Installing, removing and inspecting the privileged helper (Linux: systemd). |
 | `internal/bundlesig` | Signing and verifying the app bundle the helper updates itself from (Linux, Windows; macOS checks the code signature); verified files are returned as bytes, never re-read. |
 | `internal/sdnotify` | systemd notifications and socket activation. |
+| `internal/certmanager` | Private CA, TLS certificates for network names, renewal, hooks, system trust store ([certificates.md](certificates.md)). |
 | `internal/fsutil` | Atomic file writes and JSON documents. |
 | `internal/gui` | The GUI: daemon connection, session, views, tray. |
 | `internal/version` | The single product version. |

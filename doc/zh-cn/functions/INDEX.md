@@ -5,8 +5,8 @@
 | 包 | 职责 | 先看 |
 |---|---|---|
 | `cmd/easytier-mygo` | GUI 入口 | `main` |
-| `internal/gui` | GUI 状态、视图、托盘 | `App`, `App.view`, `App.connectLoop`, `App.pane`, `App.sidebar`, `App.settingsSheet`, `App.tourView`, `App.tourSheet`, `computerModel`, `App.peerList`, `TitleBarOptions`, `rows`, `settingsHits`, `autoInstallDue`, `App.coreNotes`, `App.miniCopy`, `App.miniReleases`, `friendlyName`, `vendorLogo`, `magicDNSName` |
-| `cmd/easytier-mygo-svc` | Daemon 入口与助手子命令 | `run`, `helperCmd` |
+| `internal/gui` | GUI 状态、视图、托盘 | `App`, `App.view`, `App.connectLoop`, `App.pane`, `App.sidebar`, `App.settingsSheet`, `App.tourView`, `App.tourSheet`, `computerModel`, `App.peerList`, `TitleBarOptions`, `rows`, `settingsHits`, `autoInstallDue`, `App.coreNotes`, `App.miniCopy`, `App.miniReleases`, `friendlyName`, `vendorLogo`, `magicDNSName`, `App.certsPage`, `jobFromDialog` |
+| `cmd/easytier-mygo-svc` | Daemon 入口与助手子命令 | `run`, `helperCmd`, `approveCert` |
 | `cmd/easytier-mygo-ctl` | 本地 API 命令行客户端 | `main` |
 | `internal/health` | 健康引擎 | `Engine.Observe`, `Policy`, `DefaultPolicy` |
 | `internal/configdoc` | 原文配置文档 | `Store`, `Extract`, `Changes`, `ApplyValues`, `NewUUID`, `MagicDNSZone`, `StripForMini`, `VersionConflicts`, `SetVpnPortal` |
@@ -15,10 +15,11 @@
 | `internal/localapi` | 本地 API 协议与服务端 | `ProtocolVersion`, `Request`, `Client.Attach`, `Authorizer` |
 | `internal/profiles` | 网络存储 | `Store`, `Profile`, `Store.CreateFor` |
 | `internal/supervisor` | 每网络 worker | `Worker`, `Config`, `Preflight`, `Worker.args` |
-| `internal/daemon` | 宿主、运行方式判断、API | `Run`, `Options`, `Daemon.reconcile`, `Daemon.miniCopy`, `Daemon.checkMini`, `Daemon.binariesFor` |
+| `internal/daemon` | 宿主、运行方式判断、API | `Run`, `Options`, `Daemon.reconcile`, `Daemon.miniCopy`, `Daemon.checkMini`, `Daemon.binariesFor`, `Daemon.certNames`, `Daemon.handleCert` |
 | `internal/helper` | 特权助手安装与自更新 | `Install`, `Uninstall`, `Inspect`, `SelfUpdate`, `installBundle`, `replaceSigned`（macOS） |
 | `internal/bundlesig` | 用于助手自更新的签名应用包 | `Sign`, `Read`, `Bundle` |
 | `internal/cores` | EasyTier 内核管理 | `Manager.ReleasesOf`, `Manager.Install`, `Manager.NewestMini`, `Core.Binaries`, `Binaries` |
+| `internal/certmanager` | 私有 CA 与 TLS 证书 | `Manager`, `Manager.Check`, `GenerateCA`, `ParseCA`, `Issue`, `Decide`, `WriteOutputs`, `RunHook`, `Trust`, `InstallTrust`, `Job`, `Approve`, `NeedsApproval` |
 | `internal/fsutil` | 原子写入 | `WriteFileAtomic`, `WriteJSON` |
 | `internal/sdnotify` | systemd 通知、socket 激活 | `FromEnv`, `Listeners` |
 | `internal/version` | 产品版本 | `Version` |

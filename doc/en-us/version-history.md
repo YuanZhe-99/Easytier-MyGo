@@ -3,6 +3,26 @@
 The project restarted from 0.1.0 on 2026-10-16. The earlier, inherited history (versions up to
 0.10.80) is preserved under the git tag `archive/v0.10.80` and is not continued.
 
+## 0.3.0 (2026-11-27)
+
+- HTTPS certificates for MagicDNS names ([certificates.md](certificates.md)): the daemon runs a
+  private certificate authority (generate ECDSA P-256 or RSA, or import one; export the
+  certificate, or it with its private key) and keeps server certificates current for a network's
+  MagicDNS name, hostname and virtual IP plus names of your own (wildcards and IPs in the SAN,
+  90 days by default, at most 397). Files (`cert.pem`, `fullchain.pem`, `key.pem`) are written
+  atomically to a folder you choose; certificates renew at start, every 6 hours and when a
+  network's name or address or the CA changes; a command after renewal (for example
+  `caddy reload`) runs with a timeout only when a new certificate was written, and its failure
+  never undoes the certificate.
+- Settings › Certificates in the app, and `easytier-mygo-ctl cert …` from a terminal. Trusting the
+  CA on this computer is a command to run as administrator (`cert trust install` runs it when
+  elevated); the app never asks for administrator rights for it and the daemon never changes the
+  system trust store.
+- In the privileged helper a certificate's own folder or command needs an administrator's approval
+  (`easytier-mygo-svc helper approve-cert`; the app asks once when saving), checked again before
+  every write or command; the command runs as administrator.
+- Local API: `cert.*` requests (write tier) within protocol version 2.
+- MyGo v0.10.0 / EasyTier v2.7.1 (checked 2026-11-27, unchanged).
 ## 0.2.5 (2026-11-21)
 
 - Bundled EasyTier core updated from v2.6.4 to v2.7.1 (upstream still marks 2.7.1 as pre-release

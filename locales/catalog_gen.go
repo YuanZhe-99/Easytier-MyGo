@@ -5136,3 +5136,873 @@ func CoresMiniAbout() string { return In(i18n.Locale()).CoresMiniAbout() }
 func (msgs Messages) CoresMiniAbout() string {
 	return Catalog.Format(msgs.locale, "CoresMiniAbout", nil)
 }
+
+// SettingsCerts says "Certificates"
+// in the language the app shows.
+func SettingsCerts() string { return In(i18n.Locale()).SettingsCerts() }
+
+// SettingsCerts says "Certificates"
+// in the language of msgs.
+func (msgs Messages) SettingsCerts() string {
+	return Catalog.Format(msgs.locale, "SettingsCerts", nil)
+}
+
+// SettingsCertsAbout says "HTTPS certificates for this computer's MagicDNS names, renewed automatically."
+// in the language the app shows.
+func SettingsCertsAbout() string { return In(i18n.Locale()).SettingsCertsAbout() }
+
+// SettingsCertsAbout says "HTTPS certificates for this computer's MagicDNS names, renewed automatically."
+// in the language of msgs.
+func (msgs Messages) SettingsCertsAbout() string {
+	return Catalog.Format(msgs.locale, "SettingsCertsAbout", nil)
+}
+
+// SectionCertAuthority says "Certificate authority"
+// in the language the app shows.
+func SectionCertAuthority() string { return In(i18n.Locale()).SectionCertAuthority() }
+
+// SectionCertAuthority says "Certificate authority"
+// in the language of msgs.
+func (msgs Messages) SectionCertAuthority() string {
+	return Catalog.Format(msgs.locale, "SectionCertAuthority", nil)
+}
+
+// CertCANone says "No certificate authority yet"
+// in the language the app shows.
+func CertCANone() string { return In(i18n.Locale()).CertCANone() }
+
+// CertCANone says "No certificate authority yet"
+// in the language of msgs.
+func (msgs Messages) CertCANone() string {
+	return Catalog.Format(msgs.locale, "CertCANone", nil)
+}
+
+// CertCANoneAbout says "Create one here, or import the one your other computers use."
+// in the language the app shows.
+func CertCANoneAbout() string { return In(i18n.Locale()).CertCANoneAbout() }
+
+// CertCANoneAbout says "Create one here, or import the one your other computers use."
+// in the language of msgs.
+func (msgs Messages) CertCANoneAbout() string {
+	return Catalog.Format(msgs.locale, "CertCANoneAbout", nil)
+}
+
+// CertCAValid says "Valid until {date}"
+// in the language the app shows.
+func CertCAValid(date string) string { return In(i18n.Locale()).CertCAValid(date) }
+
+// CertCAValid says "Valid until {date}"
+// in the language of msgs.
+func (msgs Messages) CertCAValid(date string) string {
+	return Catalog.Format(msgs.locale, "CertCAValid", map[string]any{"date": date})
+}
+
+// CertCAProblem says "Cannot issue certificates: {problem}"
+// in the language the app shows.
+func CertCAProblem(problem string) string { return In(i18n.Locale()).CertCAProblem(problem) }
+
+// CertCAProblem says "Cannot issue certificates: {problem}"
+// in the language of msgs.
+func (msgs Messages) CertCAProblem(problem string) string {
+	return Catalog.Format(msgs.locale, "CertCAProblem", map[string]any{"problem": problem})
+}
+
+// ActionCreateCA says "Create"
+// in the language the app shows.
+func ActionCreateCA() string { return In(i18n.Locale()).ActionCreateCA() }
+
+// ActionCreateCA says "Create"
+// in the language of msgs.
+func (msgs Messages) ActionCreateCA() string {
+	return Catalog.Format(msgs.locale, "ActionCreateCA", nil)
+}
+
+// ActionImportCA says "Import…"
+// in the language the app shows.
+func ActionImportCA() string { return In(i18n.Locale()).ActionImportCA() }
+
+// ActionImportCA says "Import…"
+// in the language of msgs.
+func (msgs Messages) ActionImportCA() string {
+	return Catalog.Format(msgs.locale, "ActionImportCA", nil)
+}
+
+// ActionReplaceCA says "Replace…"
+// in the language the app shows.
+func ActionReplaceCA() string { return In(i18n.Locale()).ActionReplaceCA() }
+
+// ActionReplaceCA says "Replace…"
+// in the language of msgs.
+func (msgs Messages) ActionReplaceCA() string {
+	return Catalog.Format(msgs.locale, "ActionReplaceCA", nil)
+}
+
+// CertExportTitle says "Export"
+// in the language the app shows.
+func CertExportTitle() string { return In(i18n.Locale()).CertExportTitle() }
+
+// CertExportTitle says "Export"
+// in the language of msgs.
+func (msgs Messages) CertExportTitle() string {
+	return Catalog.Format(msgs.locale, "CertExportTitle", nil)
+}
+
+// CertExportAbout says "Install the certificate on phones and other computers so they trust this authority too."
+// in the language the app shows.
+func CertExportAbout() string { return In(i18n.Locale()).CertExportAbout() }
+
+// CertExportAbout says "Install the certificate on phones and other computers so they trust this authority too."
+// in the language of msgs.
+func (msgs Messages) CertExportAbout() string {
+	return Catalog.Format(msgs.locale, "CertExportAbout", nil)
+}
+
+// ActionExportCA says "Certificate…"
+// in the language the app shows.
+func ActionExportCA() string { return In(i18n.Locale()).ActionExportCA() }
+
+// ActionExportCA says "Certificate…"
+// in the language of msgs.
+func (msgs Messages) ActionExportCA() string {
+	return Catalog.Format(msgs.locale, "ActionExportCA", nil)
+}
+
+// ActionExportCAKey says "With private key…"
+// in the language the app shows.
+func ActionExportCAKey() string { return In(i18n.Locale()).ActionExportCAKey() }
+
+// ActionExportCAKey says "With private key…"
+// in the language of msgs.
+func (msgs Messages) ActionExportCAKey() string {
+	return Catalog.Format(msgs.locale, "ActionExportCAKey", nil)
+}
+
+// CertTrusted says "Trusted by this computer"
+// in the language the app shows.
+func CertTrusted() string { return In(i18n.Locale()).CertTrusted() }
+
+// CertTrusted says "Trusted by this computer"
+// in the language of msgs.
+func (msgs Messages) CertTrusted() string {
+	return Catalog.Format(msgs.locale, "CertTrusted", nil)
+}
+
+// CertTrustedAbout says "Browsers and apps on this computer accept its certificates."
+// in the language the app shows.
+func CertTrustedAbout() string { return In(i18n.Locale()).CertTrustedAbout() }
+
+// CertTrustedAbout says "Browsers and apps on this computer accept its certificates."
+// in the language of msgs.
+func (msgs Messages) CertTrustedAbout() string {
+	return Catalog.Format(msgs.locale, "CertTrustedAbout", nil)
+}
+
+// CertNotTrusted says "Not trusted by this computer yet"
+// in the language the app shows.
+func CertNotTrusted() string { return In(i18n.Locale()).CertNotTrusted() }
+
+// CertNotTrusted says "Not trusted by this computer yet"
+// in the language of msgs.
+func (msgs Messages) CertNotTrusted() string {
+	return Catalog.Format(msgs.locale, "CertNotTrusted", nil)
+}
+
+// CertNotTrustedAbout says "Run this command once in an administrator terminal. The app never asks for administrator rights for this."
+// in the language the app shows.
+func CertNotTrustedAbout() string { return In(i18n.Locale()).CertNotTrustedAbout() }
+
+// CertNotTrustedAbout says "Run this command once in an administrator terminal. The app never asks for administrator rights for this."
+// in the language of msgs.
+func (msgs Messages) CertNotTrustedAbout() string {
+	return Catalog.Format(msgs.locale, "CertNotTrustedAbout", nil)
+}
+
+// CertTrustUnsupported says "This system's trust store is not supported; export the certificate and install it by hand."
+// in the language the app shows.
+func CertTrustUnsupported() string { return In(i18n.Locale()).CertTrustUnsupported() }
+
+// CertTrustUnsupported says "This system's trust store is not supported; export the certificate and install it by hand."
+// in the language of msgs.
+func (msgs Messages) CertTrustUnsupported() string {
+	return Catalog.Format(msgs.locale, "CertTrustUnsupported", nil)
+}
+
+// ActionCopyCommand says "Copy command"
+// in the language the app shows.
+func ActionCopyCommand() string { return In(i18n.Locale()).ActionCopyCommand() }
+
+// ActionCopyCommand says "Copy command"
+// in the language of msgs.
+func (msgs Messages) ActionCopyCommand() string {
+	return Catalog.Format(msgs.locale, "ActionCopyCommand", nil)
+}
+
+// ToastCommandCopied says "Command copied."
+// in the language the app shows.
+func ToastCommandCopied() string { return In(i18n.Locale()).ToastCommandCopied() }
+
+// ToastCommandCopied says "Command copied."
+// in the language of msgs.
+func (msgs Messages) ToastCommandCopied() string {
+	return Catalog.Format(msgs.locale, "ToastCommandCopied", nil)
+}
+
+// SectionCerts says "Certificates"
+// in the language the app shows.
+func SectionCerts() string { return In(i18n.Locale()).SectionCerts() }
+
+// SectionCerts says "Certificates"
+// in the language of msgs.
+func (msgs Messages) SectionCerts() string {
+	return Catalog.Format(msgs.locale, "SectionCerts", nil)
+}
+
+// ActionAddCert says "Add certificate"
+// in the language the app shows.
+func ActionAddCert() string { return In(i18n.Locale()).ActionAddCert() }
+
+// ActionAddCert says "Add certificate"
+// in the language of msgs.
+func (msgs Messages) ActionAddCert() string {
+	return Catalog.Format(msgs.locale, "ActionAddCert", nil)
+}
+
+// CertNone says "No certificates yet"
+// in the language the app shows.
+func CertNone() string { return In(i18n.Locale()).CertNone() }
+
+// CertNone says "No certificates yet"
+// in the language of msgs.
+func (msgs Messages) CertNone() string {
+	return Catalog.Format(msgs.locale, "CertNone", nil)
+}
+
+// CertNoneAbout says "Add one for a network's MagicDNS name and address, or for names of your own."
+// in the language the app shows.
+func CertNoneAbout() string { return In(i18n.Locale()).CertNoneAbout() }
+
+// CertNoneAbout says "Add one for a network's MagicDNS name and address, or for names of your own."
+// in the language of msgs.
+func (msgs Messages) CertNoneAbout() string {
+	return Catalog.Format(msgs.locale, "CertNoneAbout", nil)
+}
+
+// CertNeedsCA says "Create or import a certificate authority first."
+// in the language the app shows.
+func CertNeedsCA() string { return In(i18n.Locale()).CertNeedsCA() }
+
+// CertNeedsCA says "Create or import a certificate authority first."
+// in the language of msgs.
+func (msgs Messages) CertNeedsCA() string {
+	return Catalog.Format(msgs.locale, "CertNeedsCA", nil)
+}
+
+// CertValid says "Valid until {date}, renewed automatically"
+// in the language the app shows.
+func CertValid(date string) string { return In(i18n.Locale()).CertValid(date) }
+
+// CertValid says "Valid until {date}, renewed automatically"
+// in the language of msgs.
+func (msgs Messages) CertValid(date string) string {
+	return Catalog.Format(msgs.locale, "CertValid", map[string]any{"date": date})
+}
+
+// CertWaiting says "Waiting for {network} to connect, to learn its name and address"
+// in the language the app shows.
+func CertWaiting(network string) string { return In(i18n.Locale()).CertWaiting(network) }
+
+// CertWaiting says "Waiting for {network} to connect, to learn its name and address"
+// in the language of msgs.
+func (msgs Messages) CertWaiting(network string) string {
+	return Catalog.Format(msgs.locale, "CertWaiting", map[string]any{"network": network})
+}
+
+// CertFailed says "Could not issue it: {error}"
+// in the language the app shows.
+func CertFailed(error string) string { return In(i18n.Locale()).CertFailed(error) }
+
+// CertFailed says "Could not issue it: {error}"
+// in the language of msgs.
+func (msgs Messages) CertFailed(error string) string {
+	return Catalog.Format(msgs.locale, "CertFailed", map[string]any{"error": error})
+}
+
+// CertPending says "Not issued yet"
+// in the language the app shows.
+func CertPending() string { return In(i18n.Locale()).CertPending() }
+
+// CertPending says "Not issued yet"
+// in the language of msgs.
+func (msgs Messages) CertPending() string {
+	return Catalog.Format(msgs.locale, "CertPending", nil)
+}
+
+// CertUnnamed says "Certificate"
+// in the language the app shows.
+func CertUnnamed() string { return In(i18n.Locale()).CertUnnamed() }
+
+// CertUnnamed says "Certificate"
+// in the language of msgs.
+func (msgs Messages) CertUnnamed() string {
+	return Catalog.Format(msgs.locale, "CertUnnamed", nil)
+}
+
+// CertSavedIn says "Saved in {dir}"
+// in the language the app shows.
+func CertSavedIn(dir string) string { return In(i18n.Locale()).CertSavedIn(dir) }
+
+// CertSavedIn says "Saved in {dir}"
+// in the language of msgs.
+func (msgs Messages) CertSavedIn(dir string) string {
+	return Catalog.Format(msgs.locale, "CertSavedIn", map[string]any{"dir": dir})
+}
+
+// CertHookPill says "Command failed"
+// in the language the app shows.
+func CertHookPill() string { return In(i18n.Locale()).CertHookPill() }
+
+// CertHookPill says "Command failed"
+// in the language of msgs.
+func (msgs Messages) CertHookPill() string {
+	return Catalog.Format(msgs.locale, "CertHookPill", nil)
+}
+
+// CertHookFailed says "The command after renewal failed: {error}"
+// in the language the app shows.
+func CertHookFailed(error string) string { return In(i18n.Locale()).CertHookFailed(error) }
+
+// CertHookFailed says "The command after renewal failed: {error}"
+// in the language of msgs.
+func (msgs Messages) CertHookFailed(error string) string {
+	return Catalog.Format(msgs.locale, "CertHookFailed", map[string]any{"error": error})
+}
+
+// CertHookRights says "It may lack rights it needs: it runs as the user the background service runs as."
+// in the language the app shows.
+func CertHookRights() string { return In(i18n.Locale()).CertHookRights() }
+
+// CertHookRights says "It may lack rights it needs: it runs as the user the background service runs as."
+// in the language of msgs.
+func (msgs Messages) CertHookRights() string {
+	return Catalog.Format(msgs.locale, "CertHookRights", nil)
+}
+
+// ActionRenewCert says "Renew now"
+// in the language the app shows.
+func ActionRenewCert() string { return In(i18n.Locale()).ActionRenewCert() }
+
+// ActionRenewCert says "Renew now"
+// in the language of msgs.
+func (msgs Messages) ActionRenewCert() string {
+	return Catalog.Format(msgs.locale, "ActionRenewCert", nil)
+}
+
+// ActionEditCert says "Edit"
+// in the language the app shows.
+func ActionEditCert() string { return In(i18n.Locale()).ActionEditCert() }
+
+// ActionEditCert says "Edit"
+// in the language of msgs.
+func (msgs Messages) ActionEditCert() string {
+	return Catalog.Format(msgs.locale, "ActionEditCert", nil)
+}
+
+// ToastCertRenewed says "Certificate renewed."
+// in the language the app shows.
+func ToastCertRenewed() string { return In(i18n.Locale()).ToastCertRenewed() }
+
+// ToastCertRenewed says "Certificate renewed."
+// in the language of msgs.
+func (msgs Messages) ToastCertRenewed() string {
+	return Catalog.Format(msgs.locale, "ToastCertRenewed", nil)
+}
+
+// ToastCertSaved says "Certificate saved."
+// in the language the app shows.
+func ToastCertSaved() string { return In(i18n.Locale()).ToastCertSaved() }
+
+// ToastCertSaved says "Certificate saved."
+// in the language of msgs.
+func (msgs Messages) ToastCertSaved() string {
+	return Catalog.Format(msgs.locale, "ToastCertSaved", nil)
+}
+
+// ToastCertRemoved says "Certificate removed; its files stay in their folder."
+// in the language the app shows.
+func ToastCertRemoved() string { return In(i18n.Locale()).ToastCertRemoved() }
+
+// ToastCertRemoved says "Certificate removed; its files stay in their folder."
+// in the language of msgs.
+func (msgs Messages) ToastCertRemoved() string {
+	return Catalog.Format(msgs.locale, "ToastCertRemoved", nil)
+}
+
+// ToastCAReady says "Certificate authority ready."
+// in the language the app shows.
+func ToastCAReady() string { return In(i18n.Locale()).ToastCAReady() }
+
+// ToastCAReady says "Certificate authority ready."
+// in the language of msgs.
+func (msgs Messages) ToastCAReady() string {
+	return Catalog.Format(msgs.locale, "ToastCAReady", nil)
+}
+
+// ToastCAExported says "Certificate authority exported."
+// in the language the app shows.
+func ToastCAExported() string { return In(i18n.Locale()).ToastCAExported() }
+
+// ToastCAExported says "Certificate authority exported."
+// in the language of msgs.
+func (msgs Messages) ToastCAExported() string {
+	return Catalog.Format(msgs.locale, "ToastCAExported", nil)
+}
+
+// CertsUnavailable says "Certificates are not available: {error}"
+// in the language the app shows.
+func CertsUnavailable(error string) string { return In(i18n.Locale()).CertsUnavailable(error) }
+
+// CertsUnavailable says "Certificates are not available: {error}"
+// in the language of msgs.
+func (msgs Messages) CertsUnavailable(error string) string {
+	return Catalog.Format(msgs.locale, "CertsUnavailable", map[string]any{"error": error})
+}
+
+// CertsOldService says "The background service is older than the app and has no certificates. Update it first."
+// in the language the app shows.
+func CertsOldService() string { return In(i18n.Locale()).CertsOldService() }
+
+// CertsOldService says "The background service is older than the app and has no certificates. Update it first."
+// in the language of msgs.
+func (msgs Messages) CertsOldService() string {
+	return Catalog.Format(msgs.locale, "CertsOldService", nil)
+}
+
+// CertsRestricted says "In the privileged helper, a folder of your choice and a command after renewal need administrator approval when you sa…"
+// in the language the app shows.
+func CertsRestricted() string { return In(i18n.Locale()).CertsRestricted() }
+
+// CertsRestricted says "In the privileged helper, a folder of your choice and a command after renewal need administrator approval when you sa…"
+// in the language of msgs.
+func (msgs Messages) CertsRestricted() string {
+	return Catalog.Format(msgs.locale, "CertsRestricted", nil)
+}
+
+// CertsLoading says "Reading certificates…"
+// in the language the app shows.
+func CertsLoading() string { return In(i18n.Locale()).CertsLoading() }
+
+// CertsLoading says "Reading certificates…"
+// in the language of msgs.
+func (msgs Messages) CertsLoading() string {
+	return Catalog.Format(msgs.locale, "CertsLoading", nil)
+}
+
+// CertJobAddTitle says "Add certificate"
+// in the language the app shows.
+func CertJobAddTitle() string { return In(i18n.Locale()).CertJobAddTitle() }
+
+// CertJobAddTitle says "Add certificate"
+// in the language of msgs.
+func (msgs Messages) CertJobAddTitle() string {
+	return Catalog.Format(msgs.locale, "CertJobAddTitle", nil)
+}
+
+// CertJobEditTitle says "Edit certificate"
+// in the language the app shows.
+func CertJobEditTitle() string { return In(i18n.Locale()).CertJobEditTitle() }
+
+// CertJobEditTitle says "Edit certificate"
+// in the language of msgs.
+func (msgs Messages) CertJobEditTitle() string {
+	return Catalog.Format(msgs.locale, "CertJobEditTitle", nil)
+}
+
+// CertJobAbout says "The certificate carries every name below. It is renewed before it ends, and when the names or the authority change."
+// in the language the app shows.
+func CertJobAbout() string { return In(i18n.Locale()).CertJobAbout() }
+
+// CertJobAbout says "The certificate carries every name below. It is renewed before it ends, and when the names or the authority change."
+// in the language of msgs.
+func (msgs Messages) CertJobAbout() string {
+	return Catalog.Format(msgs.locale, "CertJobAbout", nil)
+}
+
+// CertNameAbout says "Shown in this list only."
+// in the language the app shows.
+func CertNameAbout() string { return In(i18n.Locale()).CertNameAbout() }
+
+// CertNameAbout says "Shown in this list only."
+// in the language of msgs.
+func (msgs Messages) CertNameAbout() string {
+	return Catalog.Format(msgs.locale, "CertNameAbout", nil)
+}
+
+// FieldCertNetwork says "Network"
+// in the language the app shows.
+func FieldCertNetwork() string { return In(i18n.Locale()).FieldCertNetwork() }
+
+// FieldCertNetwork says "Network"
+// in the language of msgs.
+func (msgs Messages) FieldCertNetwork() string {
+	return Catalog.Format(msgs.locale, "FieldCertNetwork", nil)
+}
+
+// CertNetworkAbout says "Adds this computer's MagicDNS name, hostname and virtual address in it."
+// in the language the app shows.
+func CertNetworkAbout() string { return In(i18n.Locale()).CertNetworkAbout() }
+
+// CertNetworkAbout says "Adds this computer's MagicDNS name, hostname and virtual address in it."
+// in the language of msgs.
+func (msgs Messages) CertNetworkAbout() string {
+	return Catalog.Format(msgs.locale, "CertNetworkAbout", nil)
+}
+
+// CertNetworkNone says "None"
+// in the language the app shows.
+func CertNetworkNone() string { return In(i18n.Locale()).CertNetworkNone() }
+
+// CertNetworkNone says "None"
+// in the language of msgs.
+func (msgs Messages) CertNetworkNone() string {
+	return Catalog.Format(msgs.locale, "CertNetworkNone", nil)
+}
+
+// FieldCertDNS says "More names"
+// in the language the app shows.
+func FieldCertDNS() string { return In(i18n.Locale()).FieldCertDNS() }
+
+// FieldCertDNS says "More names"
+// in the language of msgs.
+func (msgs Messages) FieldCertDNS() string {
+	return Catalog.Format(msgs.locale, "FieldCertDNS", nil)
+}
+
+// CertDNSAbout says "Separated by commas; *. at the start covers every name under it."
+// in the language the app shows.
+func CertDNSAbout() string { return In(i18n.Locale()).CertDNSAbout() }
+
+// CertDNSAbout says "Separated by commas; *. at the start covers every name under it."
+// in the language of msgs.
+func (msgs Messages) CertDNSAbout() string {
+	return Catalog.Format(msgs.locale, "CertDNSAbout", nil)
+}
+
+// FieldCertIPs says "More addresses"
+// in the language the app shows.
+func FieldCertIPs() string { return In(i18n.Locale()).FieldCertIPs() }
+
+// FieldCertIPs says "More addresses"
+// in the language of msgs.
+func (msgs Messages) FieldCertIPs() string {
+	return Catalog.Format(msgs.locale, "FieldCertIPs", nil)
+}
+
+// CertIPsAbout says "IP addresses, separated by commas."
+// in the language the app shows.
+func CertIPsAbout() string { return In(i18n.Locale()).CertIPsAbout() }
+
+// CertIPsAbout says "IP addresses, separated by commas."
+// in the language of msgs.
+func (msgs Messages) CertIPsAbout() string {
+	return Catalog.Format(msgs.locale, "CertIPsAbout", nil)
+}
+
+// FieldCertFolder says "Folder"
+// in the language the app shows.
+func FieldCertFolder() string { return In(i18n.Locale()).FieldCertFolder() }
+
+// FieldCertFolder says "Folder"
+// in the language of msgs.
+func (msgs Messages) FieldCertFolder() string {
+	return Catalog.Format(msgs.locale, "FieldCertFolder", nil)
+}
+
+// CertFolderAbout says "cert.pem, fullchain.pem and key.pem are written here. Empty: the app's own folder."
+// in the language the app shows.
+func CertFolderAbout() string { return In(i18n.Locale()).CertFolderAbout() }
+
+// CertFolderAbout says "cert.pem, fullchain.pem and key.pem are written here. Empty: the app's own folder."
+// in the language of msgs.
+func (msgs Messages) CertFolderAbout() string {
+	return Catalog.Format(msgs.locale, "CertFolderAbout", nil)
+}
+
+// CertFolderHelper says "cert.pem, fullchain.pem and key.pem are written here. Empty: the helper's own folder. Another folder needs administra…"
+// in the language the app shows.
+func CertFolderHelper() string { return In(i18n.Locale()).CertFolderHelper() }
+
+// CertFolderHelper says "cert.pem, fullchain.pem and key.pem are written here. Empty: the helper's own folder. Another folder needs administra…"
+// in the language of msgs.
+func (msgs Messages) CertFolderHelper() string {
+	return Catalog.Format(msgs.locale, "CertFolderHelper", nil)
+}
+
+// ActionChooseFolder says "Choose…"
+// in the language the app shows.
+func ActionChooseFolder() string { return In(i18n.Locale()).ActionChooseFolder() }
+
+// ActionChooseFolder says "Choose…"
+// in the language of msgs.
+func (msgs Messages) ActionChooseFolder() string {
+	return Catalog.Format(msgs.locale, "ActionChooseFolder", nil)
+}
+
+// FieldCertDays says "Valid for"
+// in the language the app shows.
+func FieldCertDays() string { return In(i18n.Locale()).FieldCertDays() }
+
+// FieldCertDays says "Valid for"
+// in the language of msgs.
+func (msgs Messages) FieldCertDays() string {
+	return Catalog.Format(msgs.locale, "FieldCertDays", nil)
+}
+
+// CertDaysAbout says "Renewed well before it ends. 397 days is the most browsers accept."
+// in the language the app shows.
+func CertDaysAbout() string { return In(i18n.Locale()).CertDaysAbout() }
+
+// CertDaysAbout says "Renewed well before it ends. 397 days is the most browsers accept."
+// in the language of msgs.
+func (msgs Messages) CertDaysAbout() string {
+	return Catalog.Format(msgs.locale, "CertDaysAbout", nil)
+}
+
+// CertDays says "{days} days"
+// in the language the app shows.
+func CertDays(days string) string { return In(i18n.Locale()).CertDays(days) }
+
+// CertDays says "{days} days"
+// in the language of msgs.
+func (msgs Messages) CertDays(days string) string {
+	return Catalog.Format(msgs.locale, "CertDays", map[string]any{"days": days})
+}
+
+// FieldCertHook says "Command after renewal"
+// in the language the app shows.
+func FieldCertHook() string { return In(i18n.Locale()).FieldCertHook() }
+
+// FieldCertHook says "Command after renewal"
+// in the language of msgs.
+func (msgs Messages) FieldCertHook() string {
+	return Catalog.Format(msgs.locale, "FieldCertHook", nil)
+}
+
+// CertHookAbout says "Reloads your web server. Runs only when a new certificate was written."
+// in the language the app shows.
+func CertHookAbout() string { return In(i18n.Locale()).CertHookAbout() }
+
+// CertHookAbout says "Reloads your web server. Runs only when a new certificate was written."
+// in the language of msgs.
+func (msgs Messages) CertHookAbout() string {
+	return Catalog.Format(msgs.locale, "CertHookAbout", nil)
+}
+
+// CertHookHelper says "Reloads your web server. Saving asks for administrator approval; it runs as administrator, only after a new certifica…"
+// in the language the app shows.
+func CertHookHelper() string { return In(i18n.Locale()).CertHookHelper() }
+
+// CertHookHelper says "Reloads your web server. Saving asks for administrator approval; it runs as administrator, only after a new certifica…"
+// in the language of msgs.
+func (msgs Messages) CertHookHelper() string {
+	return Catalog.Format(msgs.locale, "CertHookHelper", nil)
+}
+
+// CertJobMissing says "Choose a network, or enter at least one name or address."
+// in the language the app shows.
+func CertJobMissing() string { return In(i18n.Locale()).CertJobMissing() }
+
+// CertJobMissing says "Choose a network, or enter at least one name or address."
+// in the language of msgs.
+func (msgs Messages) CertJobMissing() string {
+	return Catalog.Format(msgs.locale, "CertJobMissing", nil)
+}
+
+// CertCAAbout says "Devices that trust it accept every certificate it issues. Its private key stays with the background service."
+// in the language the app shows.
+func CertCAAbout() string { return In(i18n.Locale()).CertCAAbout() }
+
+// CertCAAbout says "Devices that trust it accept every certificate it issues. Its private key stays with the background service."
+// in the language of msgs.
+func (msgs Messages) CertCAAbout() string {
+	return Catalog.Format(msgs.locale, "CertCAAbout", nil)
+}
+
+// CertCAModeCreate says "Create new"
+// in the language the app shows.
+func CertCAModeCreate() string { return In(i18n.Locale()).CertCAModeCreate() }
+
+// CertCAModeCreate says "Create new"
+// in the language of msgs.
+func (msgs Messages) CertCAModeCreate() string {
+	return Catalog.Format(msgs.locale, "CertCAModeCreate", nil)
+}
+
+// CertCAModeImport says "Import"
+// in the language the app shows.
+func CertCAModeImport() string { return In(i18n.Locale()).CertCAModeImport() }
+
+// CertCAModeImport says "Import"
+// in the language of msgs.
+func (msgs Messages) CertCAModeImport() string {
+	return Catalog.Format(msgs.locale, "CertCAModeImport", nil)
+}
+
+// CertCANameAbout says "How devices list it among their trusted certificates."
+// in the language the app shows.
+func CertCANameAbout() string { return In(i18n.Locale()).CertCANameAbout() }
+
+// CertCANameAbout says "How devices list it among their trusted certificates."
+// in the language of msgs.
+func (msgs Messages) CertCANameAbout() string {
+	return Catalog.Format(msgs.locale, "CertCANameAbout", nil)
+}
+
+// FieldCAKeyType says "Key"
+// in the language the app shows.
+func FieldCAKeyType() string { return In(i18n.Locale()).FieldCAKeyType() }
+
+// FieldCAKeyType says "Key"
+// in the language of msgs.
+func (msgs Messages) FieldCAKeyType() string {
+	return Catalog.Format(msgs.locale, "FieldCAKeyType", nil)
+}
+
+// CertKeyAbout says "ECDSA is smaller and faster; RSA suits older devices."
+// in the language the app shows.
+func CertKeyAbout() string { return In(i18n.Locale()).CertKeyAbout() }
+
+// CertKeyAbout says "ECDSA is smaller and faster; RSA suits older devices."
+// in the language of msgs.
+func (msgs Messages) CertKeyAbout() string {
+	return Catalog.Format(msgs.locale, "CertKeyAbout", nil)
+}
+
+// CertKeyECDSA says "ECDSA P-256 (recommended)"
+// in the language the app shows.
+func CertKeyECDSA() string { return In(i18n.Locale()).CertKeyECDSA() }
+
+// CertKeyECDSA says "ECDSA P-256 (recommended)"
+// in the language of msgs.
+func (msgs Messages) CertKeyECDSA() string {
+	return Catalog.Format(msgs.locale, "CertKeyECDSA", nil)
+}
+
+// CertYears says "{years} years"
+// in the language the app shows.
+func CertYears(years string) string { return In(i18n.Locale()).CertYears(years) }
+
+// CertYears says "{years} years"
+// in the language of msgs.
+func (msgs Messages) CertYears(years string) string {
+	return Catalog.Format(msgs.locale, "CertYears", map[string]any{"years": years})
+}
+
+// CertYearsAbout says "Certificates it issues never outlast it."
+// in the language the app shows.
+func CertYearsAbout() string { return In(i18n.Locale()).CertYearsAbout() }
+
+// CertYearsAbout says "Certificates it issues never outlast it."
+// in the language of msgs.
+func (msgs Messages) CertYearsAbout() string {
+	return Catalog.Format(msgs.locale, "CertYearsAbout", nil)
+}
+
+// FieldCACert says "Certificate"
+// in the language the app shows.
+func FieldCACert() string { return In(i18n.Locale()).FieldCACert() }
+
+// FieldCACert says "Certificate"
+// in the language of msgs.
+func (msgs Messages) FieldCACert() string {
+	return Catalog.Format(msgs.locale, "FieldCACert", nil)
+}
+
+// CertCACertAbout says "A PEM file, or its text pasted below."
+// in the language the app shows.
+func CertCACertAbout() string { return In(i18n.Locale()).CertCACertAbout() }
+
+// CertCACertAbout says "A PEM file, or its text pasted below."
+// in the language of msgs.
+func (msgs Messages) CertCACertAbout() string {
+	return Catalog.Format(msgs.locale, "CertCACertAbout", nil)
+}
+
+// FieldCAKey says "Private key"
+// in the language the app shows.
+func FieldCAKey() string { return In(i18n.Locale()).FieldCAKey() }
+
+// FieldCAKey says "Private key"
+// in the language of msgs.
+func (msgs Messages) FieldCAKey() string {
+	return Catalog.Format(msgs.locale, "FieldCAKey", nil)
+}
+
+// CertCAKeyAbout says "A PEM file without a password. A file exported with its private key holds both."
+// in the language the app shows.
+func CertCAKeyAbout() string { return In(i18n.Locale()).CertCAKeyAbout() }
+
+// CertCAKeyAbout says "A PEM file without a password. A file exported with its private key holds both."
+// in the language of msgs.
+func (msgs Messages) CertCAKeyAbout() string {
+	return Catalog.Format(msgs.locale, "CertCAKeyAbout", nil)
+}
+
+// ActionChooseFile says "Choose file…"
+// in the language the app shows.
+func ActionChooseFile() string { return In(i18n.Locale()).ActionChooseFile() }
+
+// ActionChooseFile says "Choose file…"
+// in the language of msgs.
+func (msgs Messages) ActionChooseFile() string {
+	return Catalog.Format(msgs.locale, "ActionChooseFile", nil)
+}
+
+// CertReplaceWarn says "Replacing it re-issues every certificate. Devices that trust the current authority need the new one."
+// in the language the app shows.
+func CertReplaceWarn() string { return In(i18n.Locale()).CertReplaceWarn() }
+
+// CertReplaceWarn says "Replacing it re-issues every certificate. Devices that trust the current authority need the new one."
+// in the language of msgs.
+func (msgs Messages) CertReplaceWarn() string {
+	return Catalog.Format(msgs.locale, "CertReplaceWarn", nil)
+}
+
+// ActionReplace says "Replace"
+// in the language the app shows.
+func ActionReplace() string { return In(i18n.Locale()).ActionReplace() }
+
+// ActionReplace says "Replace"
+// in the language of msgs.
+func (msgs Messages) ActionReplace() string {
+	return Catalog.Format(msgs.locale, "ActionReplace", nil)
+}
+
+// CertImportMissing says "Choose or paste both the certificate and its private key."
+// in the language the app shows.
+func CertImportMissing() string { return In(i18n.Locale()).CertImportMissing() }
+
+// CertImportMissing says "Choose or paste both the certificate and its private key."
+// in the language of msgs.
+func (msgs Messages) CertImportMissing() string {
+	return Catalog.Format(msgs.locale, "CertImportMissing", nil)
+}
+
+// CertExportKeyTitle says "Export the private key too?"
+// in the language the app shows.
+func CertExportKeyTitle() string { return In(i18n.Locale()).CertExportKeyTitle() }
+
+// CertExportKeyTitle says "Export the private key too?"
+// in the language of msgs.
+func (msgs Messages) CertExportKeyTitle() string {
+	return Catalog.Format(msgs.locale, "CertExportKeyTitle", nil)
+}
+
+// CertExportKeyBody says "Anyone with this file can issue certificates that every device trusting this authority accepts. Copy it only to compu…"
+// in the language the app shows.
+func CertExportKeyBody() string { return In(i18n.Locale()).CertExportKeyBody() }
+
+// CertExportKeyBody says "Anyone with this file can issue certificates that every device trusting this authority accepts. Copy it only to compu…"
+// in the language of msgs.
+func (msgs Messages) CertExportKeyBody() string {
+	return Catalog.Format(msgs.locale, "CertExportKeyBody", nil)
+}

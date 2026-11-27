@@ -256,6 +256,9 @@ func (d *Daemon) Handle(ctx context.Context, req localapi.Request, access locala
 			return localapi.Fail(localapi.CodeNeedsAdmin, "%s", supervisor.ScrubDetail(err.Error()))
 		}
 		return localapi.Response{OK: true}
+	case localapi.RequestCertStatus, localapi.RequestCertCAGenerate, localapi.RequestCertCAImport, localapi.RequestCertCAExport,
+		localapi.RequestCertJobSet, localapi.RequestCertJobRemove, localapi.RequestCertRenew:
+		return d.handleCert(ctx, req)
 	case localapi.RequestSessionWatch:
 		d.setWatch(req.Session, req.Watch)
 		return localapi.Response{OK: true}

@@ -175,6 +175,15 @@ var writeRequests = map[RequestType]bool{
 	RequestHelperUpdate:  true,
 	RequestReleases:      true, // reaches the network on the daemon's behalf
 	RequestShutdown:      true,
+	// Certificates: paths, hook output and the CA key never reach a
+	// read-only peer.
+	RequestCertStatus:     true,
+	RequestCertCAGenerate: true,
+	RequestCertCAImport:   true,
+	RequestCertCAExport:   true,
+	RequestCertJobSet:     true,
+	RequestCertJobRemove:  true,
+	RequestCertRenew:      true,
 }
 
 // ErrForbidden is returned when a request exceeds the connection's tier.

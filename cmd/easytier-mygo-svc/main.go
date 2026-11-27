@@ -7,6 +7,8 @@
 //	easytier-mygo-svc helper install     install the privileged helper (root, via pkexec)
 //	easytier-mygo-svc helper uninstall [--purge]
 //	easytier-mygo-svc helper status      JSON status, no privileges needed
+//	easytier-mygo-svc helper approve-cert -file JOB.json | -job BASE64
+//	                                     approve a certificate's folder and command (administrator)
 //	easytier-mygo-svc version
 //
 // See doc/en-us/run-modes.md.
@@ -56,7 +58,7 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintln(os.Stderr, "usage: easytier-mygo-svc run --host user|helper [flags] | helper install|uninstall [--purge]|status | version")
+	fmt.Fprintln(os.Stderr, "usage: easytier-mygo-svc run --host user|helper [flags] | helper install|uninstall [--purge]|status|approve-cert | version")
 	os.Exit(2)
 }
 

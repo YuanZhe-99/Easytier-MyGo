@@ -15,6 +15,7 @@ Windows and macOS backends are experimental and partly verified on real machines
 | [run-modes.md](run-modes.md) | The three run modes, the privileged helper, authorization |
 | [health-monitoring.md](health-monitoring.md) | Health vocabulary, policy, bounded recovery |
 | [configuration.md](configuration.md) | Raw config documents, form projection, save vs. apply |
+| [certificates.md](certificates.md) | Private CA, TLS certificates for MagicDNS names, renewal, hooks, trust store |
 | [gui.md](gui.md) | Window, sidebar, network pane, editing, Settings, first run, peer rows, wording, charts, tray, languages |
 | [easytier-upstream.md](easytier-upstream.md) | The EasyTier CLI contract, release assets and verified quirks |
 | [platform-notes.md](platform-notes.md) | What is implemented and verified on each platform |

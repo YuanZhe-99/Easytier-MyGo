@@ -20,6 +20,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/YuanZhe-99/Easytier-MyGo/internal/certmanager"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/configdoc"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/cores"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/fsutil"
@@ -93,6 +94,10 @@ type Daemon struct {
 	// miniOwner is the mini network that last took EasyTier mini's fixed
 	// port; it blocks other mini networks while the daemon wants it running.
 	miniOwner string
+	// certs is the certificate manager (nil when it could not open:
+	// certErr says why).
+	certs   *certmanager.Manager
+	certErr error
 }
 
 type workerEntry struct {
@@ -150,6 +155,11 @@ func Run(ctx context.Context, opts Options) error {
 		d.addWorker(p.ID)
 	}
 	d.reconcile()
+	d.openCerts()
+	if d.certs != nil {
+		d.wg.Add(1)
+		go func() { defer d.wg.Done(); d.certs.Run(ctx) }()
+	}
 
 	if opts.Lifeline != nil {
 		go func() {

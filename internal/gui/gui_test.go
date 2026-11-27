@@ -12,6 +12,7 @@ import (
 	"github.com/egoist/mygo/i18n"
 	"github.com/egoist/mygo/ui"
 
+	"github.com/YuanZhe-99/Easytier-MyGo/internal/certmanager"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/health"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/helper"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/localapi"
@@ -54,12 +55,39 @@ func demoApp(t *testing.T) *App {
 		{Hostname: "macbook-pro", IPv4: "10.144.144.5/24", Direct: true, Cost: 1, LatencyMS: 12.5, Tunnel: "udp", NATType: "PortRestricted", Version: "2.6.4"},
 		{Hostname: "Intel-NUC8i5BEH", IPv4: "10.144.144.9/24", Direct: true, Cost: 1, LatencyMS: 231, Tunnel: "tcp", NATType: "OpenInternet", Version: "2.7.1"},
 	}}
+	a.certsView = certsState{loaded: true, loadedAt: now, status: demoCerts(now)}
 	a.events = []health.Event{
 		{Time: now.Add(-90 * time.Minute), Component: health.Component{Kind: health.KindInstance, ID: "n1"}, Kind: health.EventLevelChanged, To: health.LevelHealthy},
 		{Time: now.Add(-30 * time.Minute), Component: health.Component{Kind: health.KindCore, ID: "n1"}, Kind: health.EventLevelChanged, To: health.LevelFailed, Reason: "process-exited"},
 		{Time: now.Add(-29 * time.Minute), Component: health.Component{Kind: health.KindCore, ID: "n1"}, Kind: health.EventRecoveryFinished},
 	}
 	return a
+}
+
+// demoCerts is the certificate state of a daemon with a CA this computer
+// does not trust yet and three certificates: current, waiting for its
+// network, and one whose command after renewal failed.
+func demoCerts(now time.Time) *certmanager.Status {
+	dir := "/home/me/.local/state/easytier-mygo/certs"
+	until := now.AddDate(0, 0, 83)
+	return &certmanager.Status{
+		CA: &certmanager.CAStatus{Name: "Home CA", NotAfter: now.AddDate(10, 0, 0), Usable: true, Path: dir + "/ca.crt"},
+		Trust: certmanager.TrustStatus{Supported: true, Store: "linux-debian",
+			InstallCommand: "sudo install -m 0644 " + dir + "/ca.crt /usr/local/share/ca-certificates/easytier-mygo-ca-1cb9f544.crt && sudo update-ca-certificates"},
+		Jobs: []certmanager.JobStatus{
+			{Job: certmanager.Job{ID: "web", Name: "Web server", Network: "n1", DNSNames: []string{"*.laptop.et.net"}},
+				Phase: certmanager.PhaseOK, Dir: "/srv/certs/web",
+				Cert:     &certmanager.LeafStatus{SANs: certmanager.SANs{DNS: []string{"*.laptop.et.net", "laptop", "laptop.et.net"}, IPs: []string{"10.144.144.2"}}, NotAfter: until},
+				JobState: certmanager.JobState{LastIssued: now.AddDate(0, 0, -7), LastCheck: now, Hook: &certmanager.HookResult{OK: true}}},
+			{Job: certmanager.Job{ID: "lab", Network: "n2"}, Phase: certmanager.PhaseWaiting, Dir: dir + "/out/lab",
+				JobState: certmanager.JobState{LastCheck: now}},
+			{Job: certmanager.Job{ID: "nas", Name: "NAS", IPs: []string{"192.168.1.20"}, Hook: certmanager.Hook{Enabled: true, Command: "docker restart caddy"}},
+				Phase: certmanager.PhaseOK, Dir: "/srv/certs/nas", HookWarning: true,
+				Cert: &certmanager.LeafStatus{SANs: certmanager.SANs{IPs: []string{"192.168.1.20"}}, NotAfter: until},
+				JobState: certmanager.JobState{LastCheck: now, Hook: &certmanager.HookResult{ExitCode: 1, PermissionDenied: true, Error: "exit status 1",
+					Output: "permission denied while trying to connect to the Docker daemon socket at unix:///var/run/docker.sock"}}},
+		},
+	}
 }
 
 // tourPage shows the first-run tour at a step, with the computer of a
@@ -136,7 +164,28 @@ func TestViewsRender(t *testing.T) {
 				mini: []localapi.ReleaseInfo{{Tag: "v2.7.0", Prerelease: true, Published: time.Date(2026, 10, 6, 0, 0, 0, 0, time.UTC), Size: 2395328, Installed: true},
 					{Tag: "v2.7.0-preview.2", Published: time.Date(2026, 9, 6, 0, 0, 0, 0, time.UTC), Size: 2301000}}}
 		},
-		"create": func(a *App) { a.createDlg = &createDialog{name: "Office"} },
+		"create":         func(a *App) { a.createDlg = &createDialog{name: "Office"} },
+		"settings-certs": func(a *App) { a.settingsOpen, a.settingsAt = true, setCerts },
+		"settings-certs-empty": func(a *App) {
+			a.settingsOpen, a.settingsAt = true, setCerts
+			a.certsView.status = &certmanager.Status{Trust: certmanager.TrustStatus{Supported: true}}
+		},
+		"settings-certs-helper": func(a *App) {
+			a.settingsOpen, a.settingsAt = true, setCerts
+			a.certsView.status.Restricted, a.certsView.status.Trust.Installed = true, true
+		},
+		"cert-job": func(a *App) {
+			a.settingsOpen, a.settingsAt = true, setCerts
+			a.selected = "n1"
+			a.openCertJob(&a.certsView.status.Jobs[0].Job)
+		},
+		"cert-job-helper": func(a *App) {
+			a.settingsOpen, a.settingsAt = true, setCerts
+			a.certsView.status.Restricted = true
+			a.openCertJob(nil)
+		},
+		"ca-create":  func(a *App) { a.settingsOpen, a.settingsAt = true, setCerts; a.openCA(0, false) },
+		"ca-replace": func(a *App) { a.settingsOpen, a.settingsAt = true, setCerts; a.openCA(1, true) },
 		"helper-stopped": func(a *App) {
 			a.connected, a.connErr, a.prefs.Mode = false, "daemon not running", ModeHelper
 			a.helperSt = helper.Status{Installed: true}

@@ -20,7 +20,8 @@ installed, and never again when the GUI starts. The GUI itself never runs elevat
   group (supplementary groups included); other users are refused. Only the Linux installer creates
   the group; on macOS it is honored when an administrator creates it.
 - Prompts appear only for: installing or uninstalling the helper, installing a custom core binary,
-  and updating the helper from an unsigned build. Never on GUI start.
+  updating the helper from an unsigned build, and approving a certificate's own folder or command
+  ([certificates.md](certificates.md)). Never on GUI start.
 
 ## Session binding
 
@@ -36,6 +37,10 @@ The helper runs cores as root/SYSTEM, so:
 - official cores are downloaded and SHA-256-verified by the helper itself, never copied from a
   user-writable file;
 - custom core binaries require administrator authorization each time;
+- a certificate writes to a folder of its own or runs a command (as root/SYSTEM) only while an
+  administrator's approval covers exactly those settings, given by `easytier-mygo-svc helper
+  approve-cert` and never through the API; the helper never changes the system trust store
+  ([certificates.md](certificates.md));
 - the helper binary lives in a root-owned location; it replaces itself only with a build carrying
   a valid release signature: release builds write `bundle.json` (SHA-256 of `easytier-mygo-svc`,
   the core, the CLI and `upx`) and `bundle.sig` (ed25519, `internal/bundlesig`). The helper reads

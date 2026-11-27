@@ -14,7 +14,7 @@
 
 - 安装或卸载助手时询问一次：pkexec（Linux）、管理员密码（macOS）、UAC（Windows）。执行安装的用户成为 **operator**。
 - 助手的 socket 接受 operator 及 `easytier-mygo` 组成员（含附属组）的写入，拒绝其他用户。只有 Linux 安装程序会创建该组；在 macOS 上，管理员自行创建后才生效。
-- 只有以下情况会弹出授权：安装或卸载助手、安装自定义内核二进制、用未签名构建更新助手。启动 GUI 时绝不弹出。
+- 只有以下情况会弹出授权：安装或卸载助手、安装自定义内核二进制、用未签名构建更新助手、批准证书自选的文件夹或命令（[certificates.md](certificates.md)）。启动 GUI 时绝不弹出。
 
 ## 会话绑定
 
@@ -27,6 +27,7 @@ GUI 与助手保持一条长连接会话。会话关闭且当前为随界面方�
 - 路径类配置项（日志目录）被强制放在助手状态目录下；
 - 官方内核由助手自行下载并校验 SHA-256，绝不从用户可写的文件复制；
 - 自定义内核二进制每次都需要管理员授权；
+- 证书只有在管理员的批准恰好涵盖其设置时，才会写入自选文件夹或（以 root/SYSTEM 身份）运行命令；批准只能通过 `easytier-mygo-svc helper approve-cert` 给出，绝不经由 API；助手从不修改系统信任库（[certificates.md](certificates.md)）；
 - 助手二进制位于 root 拥有的位置；只会用带有效发布签名的构建替换自身：发布构建会写出 `bundle.json`（`easytier-mygo-svc`、内核、CLI 与 `upx` 的 SHA-256）和 `bundle.sig`（ed25519，`internal/bundlesig`）。助手只读取每个文件一次，用内嵌的公钥（`internal/bundlesig/release.pub`）校验签名、每个哈希，并确认版本不更旧，然后写入它所校验的那些字节并重启。它不会再次读取用户可写的应用文件夹，因此校验之后在那里被替换的文件不会被安装。未签名的（开发）构建回退为一次管理员授权。
 
 ## 与其他 EasyTier 安装隔离

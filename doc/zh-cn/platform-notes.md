@@ -36,6 +36,7 @@
 | 助手自更新 | 签名的构建包无需弹窗即被接受（替换二进制并重启助手）；未签名或被篡改的构建包被拒绝；`release.yml` 用 GitHub secret 签名的构建包同样被接受 |
 | GUI 助手按钮 | 经真实 polkit 对话框（pkexec）卸载与安装，operator 被记录 |
 | EasyTier 2.7.0 与 mini（WSL Debian 13 aarch64，2026-10-28） | 实测适配器测试在 v2.7.0 内核和 mini（由 v2.7.0 CLI 查询）上通过；用户 daemon 从 GitHub 下载 mini v2.7.0 及其 CLI（SHA-256 已校验），生成不含 QUIC 监听地址与 MagicDNS 的 “Default Network (mini)”（原网络不变），与 v2.7.0 上的完整网络一起运行——两者都已连接并经 TCP 互连——并拒绝第二个 mini 网络 |
+| 证书（WSL Debian 13 aarch64，2026-11-27） | `internal/certmanager` 测试（CA、SAN、续期判断、原子写入、TLS 握手、超时结束进程组的 Hook）与 daemon 测试（任务跟随运行中网络的名称；助手拒绝 Hook 和输出目录）通过；未运行安装到信任库（需要 root） |
 
 ## macOS 与 Windows
 
@@ -76,5 +77,6 @@ macOS 上未验证：GUI 安装按钮触发的 `osascript` 授权、助手自更
 - 标为未测试的内核可能改变 CLI 输出或配置格式；应用会降级为“无法读取状态”而不重启任何东西，也可以重新选回之前的内核。
 - 未认证的 GitHub API 请求每小时限 60 次；发布列表按 ETag 缓存，只在请求时或每日检查时获取。
 - `.deb` 不依赖 WebKitGTK（`mygo.json` 中的 `linux.webview: false`）。
+- Windows 11 ARM64 上的证书（2026-11-27）：用户态 daemon 生成了 CA，为含通配符和 IP 的任务签发证书并运行其 `cmd` Hook，跳过了无变化的任务，导出了 CA；未提权时 `cert trust install` 打印了 `certutil` 命令；界面的证书请求（新建 CA、保存带命令的证书、立即续期）也在同类 daemon 上运行过。助手批准：未提权时 `helper approve-cert` 拒绝运行；助手方式的 daemon 拒绝了带命令的任务（`needs-admin`），接受了不带命令的任务；`cert job-set` 打印了指向已安装助手副本的管理员命令；在 Linux（WSL）上，daemon 测试完成了批准、保存和运行命令，并拒绝了修改过的命令和被重定向的文件夹。尚未在任何平台运行：通过真实管理员授权（pkexec、macOS 密码、UAC）进行批准、提权安装到信任库（Windows、macOS、Linux）、原生窗口中的证书界面（只在视图测试中渲染过）、真实的 Caddy 重载。
 - macOS 应用已签名但未经公证：Gatekeeper 会拦截下载的副本。复制到“应用程序”后移除一次隔离属性（`xattr -dr com.apple.quarantine "/Applications/EasyTier MyGo.app"`），或在“系统设置 → 隐私与安全性”中允许它。从使用 Apple Development 证书之前（ad hoc）签名的版本更新可以正常进行，但 macOS 会再请求一次隐私权限；之后的更新会保留这些权限。
 - 在 macOS 上，0.1.5 及更早的助手无法按代码签名自更新（0.1.5 校验构建包清单；更早的构建是 ad hoc 签名），因此更新它需要一次管理员批准（[packaging.md](packaging.md)）。

@@ -37,6 +37,7 @@ Verified on the development machine (2026-10-16, EasyTier v2.6.4, isolated ports
 | Helper self-update | Signed bundle accepted without a prompt (binary replaced, helper restarted); unsigned and tampered bundles refused; the bundle signed by `release.yml` with the GitHub secret is accepted too |
 | GUI helper buttons | Remove and install through the real polkit dialog (pkexec), operator recorded |
 | EasyTier 2.7.0 and mini (WSL Debian 13 aarch64, 2026-10-28) | Live adapter test passes on a v2.7.0 core and on mini (queried by the v2.7.0 CLI); the user daemon downloads mini v2.7.0 with its CLI from GitHub (SHA-256 verified), makes "Default Network (mini)" without a QUIC listener and MagicDNS (the original unchanged), runs it beside the full network on v2.7.0 — both connected and peered over TCP — and refuses a second mini network |
+| Certificates (WSL Debian 13 aarch64, 2026-11-27) | `internal/certmanager` tests (CA, SANs, renewal decisions, atomic writes, TLS handshake, hooks with process-group timeout) and the daemon tests (a job follows a running network's names; the helper refuses hooks and output directories) pass; installing into the trust store was not run (needs root) |
 
 ## macOS and Windows
 
@@ -105,6 +106,7 @@ the app, and the GUI's appearance (no screenshot was taken).
 - Unauthenticated GitHub API requests are limited to 60 per hour; release lists are cached with
   their ETag and fetched only on request or by the daily check.
 - The `.deb` does not depend on WebKitGTK (`linux.webview: false` in `mygo.json`).
+- Certificates on Windows 11 ARM64 (2026-11-27): the user daemon generated a CA, issued a job with a wildcard and an IP, ran its `cmd` hook, skipped an unchanged job, exported the CA, and `cert trust install` without elevation printed the `certutil` command; the GUI's certificate requests (create a CA, save a certificate with a command, Renew now) ran against the same kind of daemon. Helper approvals: `helper approve-cert` refuses to run unelevated; a daemon in helper mode refused a job with a command (`needs-admin`) and kept one without; `cert job-set` printed the administrator command naming the installed helper's copy; on Linux (WSL) the daemon tests approve, save and run a command and refuse a changed command or a redirected folder. Not run anywhere yet: an approval through a real administrator prompt (pkexec, macOS password, UAC), elevated trust store installs (Windows, macOS, Linux), the certificate views in a native window (only rendered by the view tests), a real Caddy reload.
 - The macOS app is signed but not notarized: Gatekeeper blocks a downloaded copy. Remove its
   quarantine once after copying it to Applications (`xattr -dr com.apple.quarantine
   "/Applications/EasyTier MyGo.app"`), or allow it in System Settings → Privacy & Security.

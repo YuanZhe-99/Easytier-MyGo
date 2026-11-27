@@ -45,6 +45,8 @@ func (a *App) view(c *ui.Context) {
 	a.settingsSheet(c)
 	a.tourSheet(c)
 	a.createDialogView(c)
+	a.certJobDialogView(c)
+	a.caDialogView(c)
 }
 
 // welcomeShell is the first run: one pane, no sidebar. On macOS a strip

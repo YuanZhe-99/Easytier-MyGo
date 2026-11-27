@@ -88,7 +88,7 @@ screenshots (`SCREENSHOT_DIR`).
   sides, 48 from its top and 32 from its bottom, over the window dimmed. Its header says Settings
   with ×; Escape, a click outside or × closes it.
 - On the left a search field and the sections (`settingsGroups`): Preferences › General; This
-  computer › Run mode, EasyTier core; EasyTier MyGo › About & updates. While the search holds
+  computer › Run mode, EasyTier core, Certificates; EasyTier MyGo › About & updates. While the search holds
   words, the settings whose title or words hold every one of them, ignoring case, replace the
   sections, titles that match first, each with its page (`settingsHits`, `searchSettings`; every
   hit shows on its page, `TestSettingsHitsShow`); choosing one opens its page scrolled to it and
@@ -109,6 +109,18 @@ screenshots (`SCREENSHOT_DIR`).
   EasyTier mini, optional (`miniReleases`): what it is, Check for releases, and its releases, all
   of them since mini marks most as pre-releases. An installed mini core shows In use when mini
   copies run on it and has no Use: it is never the selected core.
+- **Certificates** (`certsPage`, [certificates.md](certificates.md)): the certificate authority —
+  Create or Import… while there is none, else its name and end date with Replace…; Export with
+  Certificate… and With private key… (after a warning: one PEM file that Import accepts for both
+  fields); whether this computer trusts it, and when not the command to run in an administrator
+  terminal with Copy command (the GUI never asks for administrator rights). Then the certificates,
+  each with its state (valid until, waiting for its network, failed), Renew now and Edit, its
+  names, its folder, and a failed command after renewal with its last lines of output. Add
+  certificate and Edit open a dialog (name, network, more names and addresses, lifetime, folder
+  with Choose…, command after renewal; Remove when editing) whose buttons stay in view while its
+  rows scroll; settings it does not show, made with the CLI, are kept (`jobFromDialog`). In the
+  privileged helper a notice and the rows say that a folder of your choice and the command need
+  administrator approval: Save then asks for it (the one prompt, `approve-cert`) and saves again.
 - **About & updates:** the version with Source code, the license with EasyTier's source code,
   the design credit with EasyTier-iOS; the app's updates — a new version with Install and
   restart, the download's progress, or when it was last checked with Check for updates — and the

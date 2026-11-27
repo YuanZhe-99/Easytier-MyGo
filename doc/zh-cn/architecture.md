@@ -26,6 +26,7 @@ Daemon 按运行方式（[run-modes.md](run-modes.md)）运行在两种权限环
 | `internal/helper` | 安装、卸载与检查特权助手（Linux：systemd）。 |
 | `internal/bundlesig` | 签名并校验助手用来自更新的应用包（Linux、Windows；macOS 校验代码签名）；校验过的文件以字节返回，绝不重新读取。 |
 | `internal/sdnotify` | systemd 通知与 socket 激活。 |
+| `internal/certmanager` | 私有 CA、为网络名称签发 TLS 证书、续期、Hook、系统信任库（[certificates.md](certificates.md)）。 |
 | `internal/fsutil` | 原子文件写入与 JSON 文档。 |
 | `internal/gui` | GUI：连接 daemon、会话、视图、托盘。 |
 | `internal/version` | 唯一的产品版本。 |

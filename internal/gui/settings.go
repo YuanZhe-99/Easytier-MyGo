@@ -46,6 +46,7 @@ const (
 	setGeneral settingsPage = iota
 	setRunMode
 	setCore
+	setCerts
 	setAbout
 )
 
@@ -70,6 +71,7 @@ func settingsGroups() []settingsGroup {
 		{L.SettingsGroupComputer(), []settingsItem{
 			{setRunMode, iconShield, L.SettingsRunMode()},
 			{setCore, iconCPU, L.SettingsCores()},
+			{setCerts, iconLock, L.SettingsCerts()},
 		}},
 		{appName, []settingsItem{{setAbout, iconInfo, L.SettingsAboutTitle()}}},
 	}
@@ -149,6 +151,8 @@ func (a *App) settingsPageView(c *ui.Context, pg settingsPage) {
 		a.runModePage(c)
 	case setCore:
 		a.corePage(c)
+	case setCerts:
+		a.certsPage(c)
 	case setAbout:
 		a.aboutPage(c)
 	default:
@@ -293,6 +297,8 @@ func settingsHits() []settingsHit {
 		{setCore, L.SettingsCheckUpdates(), L.SettingsCheckUpdatesHint()},
 		{setCore, L.CoresAvailable(), join(L.ActionCheckReleases(), L.CoresShowPre())},
 		{setCore, L.CoreMini(), join(L.CoresMiniTitle(), L.CoresMiniAbout())},
+		{setCerts, L.SectionCertAuthority(), join(L.SettingsCertsAbout(), L.CertExportTitle(), L.ActionImportCA(), L.CertNotTrusted())},
+		{setCerts, L.SectionCerts(), join(L.ActionAddCert(), L.ActionRenewCert(), L.FieldCertHook(), "HTTPS MagicDNS")},
 		{setAbout, L.AboutLicenseTitle(), join(L.AboutLicense(), L.AboutSource())},
 		{setAbout, L.DiagFile(), join(L.ActionExportDiagnostics(), L.SettingsAdvancedHint())},
 		{setAbout, L.DiagLogs(), join(L.ActionOpenLogs(), L.DiagLogsAbout())},

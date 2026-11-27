@@ -21,6 +21,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/YuanZhe-99/Easytier-MyGo/internal/certmanager"
 	"github.com/YuanZhe-99/Easytier-MyGo/internal/health"
 )
 
@@ -72,6 +73,15 @@ const (
 	RequestCoreAdd       RequestType = "cores.add" // custom build: Name, Text = directory (user daemon only)
 	RequestShutdown      RequestType = "shutdown"
 	RequestHelperUpdate  RequestType = "helper.update" // Text = app directory with a signed bundle
+
+	// Certificates (internal/certmanager); every one is write tier.
+	RequestCertStatus     RequestType = "cert.status"
+	RequestCertCAGenerate RequestType = "cert.ca.generate" // Cert.CA, Cert.Replace; then every job is checked
+	RequestCertCAImport   RequestType = "cert.ca.import"   // Cert.CertPEM + Cert.KeyPEM, Cert.Replace; same
+	RequestCertCAExport   RequestType = "cert.ca.export"   // Cert.WithKey also returns the private key
+	RequestCertJobSet     RequestType = "cert.job.set"     // Cert.Job (added, or replaced by ID), then checked
+	RequestCertJobRemove  RequestType = "cert.job.remove"  // Cert.JobID; its files stay on disk
+	RequestCertRenew      RequestType = "cert.renew"       // Cert.JobID ("": every job), Cert.Force
 )
 
 // ErrorCode classifies a failed request for clients that react to it.
@@ -89,19 +99,33 @@ const (
 
 // Request is one command.
 type Request struct {
-	Version  int         `json:"version"`
-	Type     RequestType `json:"type"`
-	Network  string      `json:"network,omitempty"`
-	Name     string      `json:"name,omitempty"`
-	Text     string      `json:"text,omitempty"`
-	Expected string      `json:"expected,omitempty"` // revision the edit started from
-	Since    uint64      `json:"since,omitempty"`    // traffic sequence
-	Session  string      `json:"session,omitempty"`
-	Watch    []string    `json:"watch,omitempty"` // network IDs on screen
-	Tag      string      `json:"tag,omitempty"`   // core release tag
-	Pre      bool        `json:"pre,omitempty"`   // include pre-releases
-	Mini     bool        `json:"mini,omitempty"`  // releases and installs of EasyTier mini
-	Settings *Settings   `json:"settings,omitempty"`
+	Version  int          `json:"version"`
+	Type     RequestType  `json:"type"`
+	Network  string       `json:"network,omitempty"`
+	Name     string       `json:"name,omitempty"`
+	Text     string       `json:"text,omitempty"`
+	Expected string       `json:"expected,omitempty"` // revision the edit started from
+	Since    uint64       `json:"since,omitempty"`    // traffic sequence
+	Session  string       `json:"session,omitempty"`
+	Watch    []string     `json:"watch,omitempty"` // network IDs on screen
+	Tag      string       `json:"tag,omitempty"`   // core release tag
+	Pre      bool         `json:"pre,omitempty"`   // include pre-releases
+	Mini     bool         `json:"mini,omitempty"`  // releases and installs of EasyTier mini
+	Settings *Settings    `json:"settings,omitempty"`
+	Cert     *CertRequest `json:"cert,omitempty"`
+}
+
+// CertRequest carries the arguments of the cert.* requests.
+type CertRequest struct {
+	CA      *certmanager.CAOptions `json:"ca,omitempty"`
+	CertPEM string                 `json:"cert_pem,omitempty"`
+	KeyPEM  string                 `json:"key_pem,omitempty"` // a CA key: never logged
+	// Replace allows a new CA when one exists (every certificate is re-issued).
+	Replace bool             `json:"replace,omitempty"`
+	WithKey bool             `json:"with_key,omitempty"`
+	Job     *certmanager.Job `json:"job,omitempty"`
+	JobID   string           `json:"job_id,omitempty"`
+	Force   bool             `json:"force,omitempty"`
 }
 
 // Response is one answer, or one pushed frame of a session.
@@ -124,6 +148,9 @@ type Response struct {
 	// settings left out of it (configdoc feature IDs).
 	Created string   `json:"created,omitempty"`
 	Removed []string `json:"removed,omitempty"`
+	// Cert answers the cert.* requests; CertExport answers cert.ca.export.
+	Cert       *certmanager.Status `json:"cert,omitempty"`
+	CertExport *certmanager.Export `json:"cert_export,omitempty"`
 }
 
 // CoreInfo is an installed EasyTier core.
@@ -343,7 +370,8 @@ func NewClient(path string) *Client {
 func (c *Client) Do(ctx context.Context, req Request) (*Response, error) {
 	timeout := c.Timeout
 	switch req.Type {
-	case RequestApply, RequestConnect, RequestDisconnect, RequestNetworkDelete, RequestShutdown, RequestCoreInstall, RequestSettingsSet:
+	case RequestApply, RequestConnect, RequestDisconnect, RequestNetworkDelete, RequestShutdown, RequestCoreInstall, RequestSettingsSet,
+		RequestCertCAGenerate, RequestCertCAImport, RequestCertJobSet, RequestCertRenew: // key generation, hooks
 		timeout = c.LongTimeout
 	}
 	ctx, cancel := context.WithTimeout(ctx, timeout)

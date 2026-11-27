@@ -54,6 +54,13 @@
 | EasyTier mini / mini copy | EasyTier mini / mini 副本 |
 | WireGuard portal | WireGuard 入口 |
 | prefer existing relays | 优先使用已有中继 |
+| certificate authority (CA) | 证书颁发机构（CA） |
+| certificate job | 证书任务 |
+| trust store | 信任库 |
+| full chain | 完整证书链 |
+| renewal window | 续期窗口 |
+| hook | Hook |
+| administrator approval | 管理员授权（批准） |
 
 ## 6. 审阅清单
 

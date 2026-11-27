@@ -785,5 +785,162 @@
   "EditMiniNotRun": "EasyTier mini does not run this.",
   "CoreMiniAbout": "Runs the networks made for EasyTier mini.",
   "CoresMiniTitle": "A compact client, optional",
-  "CoresMiniAbout": "A small EasyTier client with TCP, UDP and the virtual device only. Networks run on it as mini copies, one at a time."
+  "CoresMiniAbout": "A small EasyTier client with TCP, UDP and the virtual device only. Networks run on it as mini copies, one at a time.",
+  "SettingsCerts": "Certificates",
+  "SettingsCertsAbout": "HTTPS certificates for this computer's MagicDNS names, renewed automatically.",
+  "SectionCertAuthority": "Certificate authority",
+  "CertCANone": "No certificate authority yet",
+  "CertCANoneAbout": "Create one here, or import the one your other computers use.",
+  "CertCAValid": "Valid until {date}",
+  "@CertCAValid": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "CertCAProblem": "Cannot issue certificates: {problem}",
+  "@CertCAProblem": {
+    "placeholders": {
+      "problem": {
+        "type": "String"
+      }
+    }
+  },
+  "ActionCreateCA": "Create",
+  "ActionImportCA": "Import…",
+  "ActionReplaceCA": "Replace…",
+  "CertExportTitle": "Export",
+  "CertExportAbout": "Install the certificate on phones and other computers so they trust this authority too.",
+  "ActionExportCA": "Certificate…",
+  "ActionExportCAKey": "With private key…",
+  "CertTrusted": "Trusted by this computer",
+  "CertTrustedAbout": "Browsers and apps on this computer accept its certificates.",
+  "CertNotTrusted": "Not trusted by this computer yet",
+  "CertNotTrustedAbout": "Run this command once in an administrator terminal. The app never asks for administrator rights for this.",
+  "CertTrustUnsupported": "This system's trust store is not supported; export the certificate and install it by hand.",
+  "ActionCopyCommand": "Copy command",
+  "ToastCommandCopied": "Command copied.",
+  "SectionCerts": "Certificates",
+  "ActionAddCert": "Add certificate",
+  "CertNone": "No certificates yet",
+  "CertNoneAbout": "Add one for a network's MagicDNS name and address, or for names of your own.",
+  "CertNeedsCA": "Create or import a certificate authority first.",
+  "CertValid": "Valid until {date}, renewed automatically",
+  "@CertValid": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "CertWaiting": "Waiting for {network} to connect, to learn its name and address",
+  "@CertWaiting": {
+    "placeholders": {
+      "network": {
+        "type": "String"
+      }
+    }
+  },
+  "CertFailed": "Could not issue it: {error}",
+  "@CertFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "CertPending": "Not issued yet",
+  "CertUnnamed": "Certificate",
+  "CertSavedIn": "Saved in {dir}",
+  "@CertSavedIn": {
+    "placeholders": {
+      "dir": {
+        "type": "String"
+      }
+    }
+  },
+  "CertHookPill": "Command failed",
+  "CertHookFailed": "The command after renewal failed: {error}",
+  "@CertHookFailed": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "CertHookRights": "It may lack rights it needs: it runs as the user the background service runs as.",
+  "ActionRenewCert": "Renew now",
+  "ActionEditCert": "Edit",
+  "ToastCertRenewed": "Certificate renewed.",
+  "ToastCertSaved": "Certificate saved.",
+  "ToastCertRemoved": "Certificate removed; its files stay in their folder.",
+  "ToastCAReady": "Certificate authority ready.",
+  "ToastCAExported": "Certificate authority exported.",
+  "CertsUnavailable": "Certificates are not available: {error}",
+  "@CertsUnavailable": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "CertsOldService": "The background service is older than the app and has no certificates. Update it first.",
+  "CertsRestricted": "In the privileged helper, a folder of your choice and a command after renewal need administrator approval when you save them, and the command runs as administrator.",
+  "CertsLoading": "Reading certificates…",
+  "CertJobAddTitle": "Add certificate",
+  "CertJobEditTitle": "Edit certificate",
+  "CertJobAbout": "The certificate carries every name below. It is renewed before it ends, and when the names or the authority change.",
+  "CertNameAbout": "Shown in this list only.",
+  "FieldCertNetwork": "Network",
+  "CertNetworkAbout": "Adds this computer's MagicDNS name, hostname and virtual address in it.",
+  "CertNetworkNone": "None",
+  "FieldCertDNS": "More names",
+  "CertDNSAbout": "Separated by commas; *. at the start covers every name under it.",
+  "FieldCertIPs": "More addresses",
+  "CertIPsAbout": "IP addresses, separated by commas.",
+  "FieldCertFolder": "Folder",
+  "CertFolderAbout": "cert.pem, fullchain.pem and key.pem are written here. Empty: the app's own folder.",
+  "CertFolderHelper": "cert.pem, fullchain.pem and key.pem are written here. Empty: the helper's own folder. Another folder needs administrator approval.",
+  "ActionChooseFolder": "Choose…",
+  "FieldCertDays": "Valid for",
+  "CertDaysAbout": "Renewed well before it ends. 397 days is the most browsers accept.",
+  "CertDays": "{days} days",
+  "@CertDays": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "FieldCertHook": "Command after renewal",
+  "CertHookAbout": "Reloads your web server. Runs only when a new certificate was written.",
+  "CertHookHelper": "Reloads your web server. Saving asks for administrator approval; it runs as administrator, only after a new certificate was written.",
+  "CertJobMissing": "Choose a network, or enter at least one name or address.",
+  "CertCAAbout": "Devices that trust it accept every certificate it issues. Its private key stays with the background service.",
+  "CertCAModeCreate": "Create new",
+  "CertCAModeImport": "Import",
+  "CertCANameAbout": "How devices list it among their trusted certificates.",
+  "FieldCAKeyType": "Key",
+  "CertKeyAbout": "ECDSA is smaller and faster; RSA suits older devices.",
+  "CertKeyECDSA": "ECDSA P-256 (recommended)",
+  "CertYears": "{years} years",
+  "@CertYears": {
+    "placeholders": {
+      "years": {
+        "type": "String"
+      }
+    }
+  },
+  "CertYearsAbout": "Certificates it issues never outlast it.",
+  "FieldCACert": "Certificate",
+  "CertCACertAbout": "A PEM file, or its text pasted below.",
+  "FieldCAKey": "Private key",
+  "CertCAKeyAbout": "A PEM file without a password. A file exported with its private key holds both.",
+  "ActionChooseFile": "Choose file…",
+  "CertReplaceWarn": "Replacing it re-issues every certificate. Devices that trust the current authority need the new one.",
+  "ActionReplace": "Replace",
+  "CertImportMissing": "Choose or paste both the certificate and its private key.",
+  "CertExportKeyTitle": "Export the private key too?",
+  "CertExportKeyBody": "Anyone with this file can issue certificates that every device trusting this authority accepts. Copy it only to computers you control, then delete it."
 }

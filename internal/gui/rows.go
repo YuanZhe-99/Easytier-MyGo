@@ -47,7 +47,6 @@ type rows struct {
 // right (a note or a button; nil for none), then its rows in one rounded
 // list.
 func (r *rows) section(c *ui.Context, key, title string, aside func(), body func(r *rows)) {
-	t := c.Theme()
 	head := ui.Row(c.Key(key+"-head")).FillWidth().MinHeight(28).AlignItems(ui.Center).Padding(18, 4, 8, 4).Gap(gap)
 	if r.hit != nil {
 		if _, scroll := r.hit(title); scroll {
@@ -55,11 +54,18 @@ func (r *rows) section(c *ui.Context, key, title string, aside func(), body func
 		}
 	}
 	head.Children(func() {
-		ui.Text(c, title).FontSize(sizeSmall).Bold().TextColor(t.TextMuted).Grow(1)
+		ui.Text(c, title).FontSize(sizeSmall).Bold().TextColor(c.Theme().TextMuted).Grow(1)
 		if aside != nil {
 			aside()
 		}
 	})
+	r.list(c, key, body)
+}
+
+// list is a section's rounded list of rows without its head (a dialog
+// whose title already says what the rows are).
+func (r *rows) list(c *ui.Context, key string, body func(r *rows)) {
+	t := c.Theme()
 	bg := t.Background
 	if t.Dark {
 		bg = t.Surface

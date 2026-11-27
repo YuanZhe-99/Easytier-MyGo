@@ -12,6 +12,7 @@
 //	easytier-mygo-ctl cores | releases [--pre] | install-core TAG | remove-core TAG | use-core TAG
 //	easytier-mygo-ctl mini-releases | install-mini TAG   EasyTier mini (optional)
 //	easytier-mygo-ctl mini-copy ID           copy a network for EasyTier mini
+//	easytier-mygo-ctl cert ...               private CA and TLS certificates (cert alone: usage)
 //
 // Without -socket it uses the privileged helper's socket when it exists,
 // else the per-user socket.
@@ -32,7 +33,7 @@ import (
 func main() {
 	socket := flag.String("socket", "", "daemon socket")
 	flag.Usage = func() {
-		fmt.Fprintln(os.Stderr, "usage: easytier-mygo-ctl [-socket PATH] list|info|events|create|connect|disconnect|apply|retry|delete|detail|config|save|watch|background ...")
+		fmt.Fprintln(os.Stderr, "usage: easytier-mygo-ctl [-socket PATH] list|info|events|create|connect|disconnect|apply|retry|delete|detail|config|save|watch|background|cert ...")
 	}
 	flag.Parse()
 	args := flag.Args()
@@ -201,6 +202,8 @@ func runCmd(ctx context.Context, c *localapi.Client, args []string) error {
 		s.Background = args[1] == "on"
 		_, err = do(localapi.Request{Type: localapi.RequestSettingsSet, Settings: &s})
 		return err
+	case "cert":
+		return runCert(ctx, c, args[1:])
 	case "watch":
 		return c.Attach(ctx, args[1:], func(p *localapi.Push) error {
 			if p.Session != "" {

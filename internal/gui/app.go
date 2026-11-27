@@ -69,6 +69,11 @@ type App struct {
 	editor    *configEditor
 	createDlg *createDialog
 	coresView coresState
+	// certsView is Settings › Certificates; certDlg and caDlg its dialogs
+	// (nil while closed).
+	certsView certsState
+	certDlg   *certJobDialog
+	caDlg     *caDialog
 	// summaries are the disconnected networks' configuration summaries,
 	// read once per saved revision (stoppedView).
 	summaries map[string]netSummary

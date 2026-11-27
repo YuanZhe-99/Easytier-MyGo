@@ -119,11 +119,14 @@ Do not change these without the user explicitly deciding to:
   backed up; applying is a separate explicit action; invalid drafts may be saved but never
   activated.
 - **The GUI never runs elevated.** Administrator prompts appear only when installing or
-  uninstalling the privileged helper, installing a custom core binary, or updating the helper from
-  an unsigned build — never when the GUI starts.
+  uninstalling the privileged helper, installing a custom core binary, updating the helper from an
+  unsigned build, or approving a certificate's own folder or command in the helper — never when
+  the GUI starts.
 - **The privileged helper** authorizes the operator and the `easytier-mygo` group only, forces
   path-valued config options under its own state directory, and verifies every official core it
-  installs. In Follow GUI mode it stops networks when the GUI session ends.
+  installs. A certificate writes to a folder of its own or runs a command in the helper only while
+  an administrator's approval (`helper approve-cert`) covers exactly those settings; no API request
+  can approve, and the helper never changes the system trust store. In Follow GUI mode it stops networks when the GUI session ends.
 - **Cores.** Never download automatically. `easytier-core` and `easytier-cli` always come from the
   same release. Untested versions are labeled; a failed `--check-config` blocks activation.
 - **`internal/localapi` is versioned.** Enums cross the socket as names; changing a field's meaning

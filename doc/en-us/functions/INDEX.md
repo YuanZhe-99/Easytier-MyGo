@@ -7,8 +7,8 @@ effects and notes where non-trivial).
 | Package | Role | Start with |
 |---|---|---|
 | `cmd/easytier-mygo` | GUI entry point | `main` |
-| `internal/gui` | GUI state, views, tray | `App`, `App.view`, `App.connectLoop`, `App.pane`, `App.sidebar`, `App.settingsSheet`, `App.tourView`, `App.tourSheet`, `computerModel`, `App.peerList`, `TitleBarOptions`, `rows`, `settingsHits`, `autoInstallDue`, `App.coreNotes`, `App.miniCopy`, `App.miniReleases`, `friendlyName`, `vendorLogo`, `magicDNSName` |
-| `cmd/easytier-mygo-svc` | Daemon entry point and helper subcommands | `run`, `helperCmd` |
+| `internal/gui` | GUI state, views, tray | `App`, `App.view`, `App.connectLoop`, `App.pane`, `App.sidebar`, `App.settingsSheet`, `App.tourView`, `App.tourSheet`, `computerModel`, `App.peerList`, `TitleBarOptions`, `rows`, `settingsHits`, `autoInstallDue`, `App.coreNotes`, `App.miniCopy`, `App.miniReleases`, `friendlyName`, `vendorLogo`, `magicDNSName`, `App.certsPage`, `jobFromDialog` |
+| `cmd/easytier-mygo-svc` | Daemon entry point and helper subcommands | `run`, `helperCmd`, `approveCert` |
 | `cmd/easytier-mygo-ctl` | Local API command-line client | `main` |
 | `internal/health` | Health engine | `Engine.Observe`, `Policy`, `DefaultPolicy` |
 | `internal/configdoc` | Raw config documents | `Store`, `Extract`, `Changes`, `ApplyValues`, `NewUUID`, `MagicDNSZone`, `StripForMini`, `VersionConflicts`, `SetVpnPortal` |
@@ -17,10 +17,11 @@ effects and notes where non-trivial).
 | `internal/localapi` | Local API protocol and server | `ProtocolVersion`, `Request`, `Client.Attach`, `Authorizer` |
 | `internal/profiles` | Network store | `Store`, `Profile`, `Store.CreateFor` |
 | `internal/supervisor` | Per-network worker | `Worker`, `Config`, `Preflight`, `Worker.args` |
-| `internal/daemon` | Host, run-mode decisions, API | `Run`, `Options`, `Daemon.reconcile`, `Daemon.miniCopy`, `Daemon.checkMini`, `Daemon.binariesFor` |
+| `internal/daemon` | Host, run-mode decisions, API | `Run`, `Options`, `Daemon.reconcile`, `Daemon.miniCopy`, `Daemon.checkMini`, `Daemon.binariesFor`, `Daemon.certNames`, `Daemon.handleCert` |
 | `internal/helper` | Privileged helper installation and self-update | `Install`, `Uninstall`, `Inspect`, `SelfUpdate`, `installBundle`, `replaceSigned` (macOS) |
 | `internal/bundlesig` | Signed app bundles for helper self-update | `Sign`, `Read`, `Bundle` |
 | `internal/cores` | EasyTier core manager | `Manager.ReleasesOf`, `Manager.Install`, `Manager.NewestMini`, `Core.Binaries`, `Binaries` |
+| `internal/certmanager` | Private CA and TLS certificates | `Manager`, `Manager.Check`, `GenerateCA`, `ParseCA`, `Issue`, `Decide`, `WriteOutputs`, `RunHook`, `Trust`, `InstallTrust`, `Job`, `Approve`, `NeedsApproval` |
 | `internal/fsutil` | Atomic writes | `WriteFileAtomic`, `WriteJSON` |
 | `internal/sdnotify` | systemd notifications, socket activation | `FromEnv`, `Listeners` |
 | `internal/version` | Product version | `Version` |
